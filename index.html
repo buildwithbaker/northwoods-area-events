@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Northwoods Area Events",
+  "schemaVersion": 1,
+  "description": "Live, always-current list of events around Ashland/Bayfield, the Chequamegon Bay, Hayward, Duluth, and the Wisconsin Dells. Past events auto-hide on open; filter by region and category; weekly recurring section (bingo, open mic, farmers market, tabletop/Magic). Data refreshed by the weekly scheduled scan."
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northwoods Area Events</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2E5082; --primary-deep:#25406A;
+  --accent:#A07020; --accent-soft:#F2E5C9; --accent-line:#C99443;
+  --gold-bg:#FDF7E6; --gold-line:#E6CF8F;
+  --neutral:#526070; --neutral-border:#B0BAC8; --neutral-soft:#DDE2EA;
+  --bg:#EFF2F7; --card:#FBFCFE; --card-body:#FFFFFF; --header-tint:#D5DEEC;
+  --text:#1A1F2B; color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:32px 16px 64px;}
+.container{max-width:780px;margin:0 auto;}
+
+.page-header{background:var(--primary);color:#fff;border-radius:12px;padding:24px 28px;margin-bottom:14px;}
+.page-header h1{font-size:23px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px;}
+.page-header .subtitle{font-size:13px;opacity:.9;line-height:1.45;}
+.page-header .meta{margin-top:15px;display:flex;gap:9px;flex-wrap:wrap;font-size:12.5px;}
+.page-header .meta span{background:rgba(255,255,255,.18);padding:5px 11px;border-radius:6px;}
+.page-header .meta b{font-weight:600;}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;position:sticky;top:0;background:var(--bg);z-index:5;padding:10px 0;}
+.vlabel{font-size:12px;font-weight:600;color:var(--neutral);}
+.viewsel{font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid var(--neutral-border);border-radius:9px;padding:9px 36px 9px 13px;cursor:pointer;appearance:none;-webkit-appearance:none;}
+.viewsel:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
+.sw{position:relative;flex:1;min-width:190px;max-width:330px;margin-left:auto;}
+.sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--neutral);pointer-events:none;}
+.search{width:100%;padding:9px 13px 9px 37px;border:1px solid var(--neutral-border);border-radius:9px;font-size:14px;font-family:inherit;background:#fff;color:var(--text);}
+.search:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
+
+.itile{flex-shrink:0;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.itile svg{width:22px;height:22px;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--neutral);background:#fff;border:1px solid var(--neutral-border);padding:2px 9px;border-radius:999px;white-space:nowrap;}
+.pill svg{width:13px;height:13px;flex-shrink:0;}
+.pill.cat{border:none;font-weight:600;}
+
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:20px 0 9px 2px;display:flex;align-items:center;gap:8px;}
+.section-label:first-child{margin-top:2px;}
+.section-label::before{content:"";width:14px;height:2px;background:var(--accent);border-radius:1px;flex-shrink:0;}
+.section-label .sl-count{color:var(--neutral);font-weight:600;letter-spacing:.02em;}
+
+.card{background:var(--card);border-radius:12px;margin-bottom:12px;border:1px solid var(--neutral-border);overflow:hidden;box-shadow:0 1px 2px rgba(82,96,112,.06);}
+.card-body{background:var(--card-body);padding:2px 16px;}
+.ev{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--neutral-soft);}
+.ev:first-child{border-top:none;}
+.ev.gold{background:var(--gold-bg);margin:0 -16px;padding:13px 16px;border-top:1px solid var(--gold-line);}
+.ev.gold + .ev{border-top:1px solid var(--neutral-soft);}
+.ev .body{flex:1;min-width:0;}
+.ev .ttl{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:3px;}
+.ev .ttl a{color:var(--text);text-decoration:none;}
+.ev .ttl a:hover{text-decoration:underline;color:var(--primary);}
+.ev .desc{font-size:12.5px;color:#3c4654;line-height:1.5;margin:0 0 9px;}
+.ev .note{font-size:12px;color:var(--neutral);font-style:italic;margin-top:5px;}
+.ev .dl{flex-shrink:0;font-size:11px;color:var(--neutral);white-space:nowrap;padding-top:14px;}
+.ev .dl.soon{color:var(--accent);font-weight:700;}
+
+.empty{color:var(--neutral);font-size:13.5px;font-style:italic;padding:18px;background:var(--card-body);border:1px solid var(--neutral-border);border-radius:12px;}
+.footer-note{font-size:12px;color:var(--neutral);margin-top:20px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6;}
+.footer-note a{color:var(--primary);}
+.footer-note strong{color:var(--text);}
+
+@media(max-width:560px){
+  body{padding:18px 10px 50px;}
+  .page-header{padding:20px 18px;}
+  .sw{margin-left:0;max-width:none;width:100%;}
+  .ev .dl{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <h1>Northwoods Area Events</h1>
+    <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div class="controls">
+    <span class="vlabel">Show</span>
+    <select class="viewsel" id="view" aria-label="Choose which events to show"></select>
+    <div class="sw">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input class="search" id="search" type="search" placeholder="Search events, places, bands&hellip;" aria-label="Search events">
+    </div>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="footer-note">
+    <strong>Sources scanned:</strong> <a href="https://visitashland.com" target="_blank" rel="noopener">Visit Ashland</a> &middot; <a href="https://www.coawi.org/517/Ashland-Community-Events" target="_blank" rel="noopener">City of Ashland</a> &middot; <a href="https://www.bayfieldcounty.wi.gov/299/Events" target="_blank" rel="noopener">Bayfield County</a> &middot; <a href="https://www.bayfield.org/events/" target="_blank" rel="noopener">bayfield.org</a> &middot; <a href="https://www.bigtop.org/lineup.html" target="_blank" rel="noopener">Big Top Chautauqua</a> &middot; <a href="https://www.stagenorth.com" target="_blank" rel="noopener">StageNorth</a> &middot; <a href="https://www.duluthplayhouse.org/upcoming-season" target="_blank" rel="noopener">Duluth Playhouse / NorShor</a> &middot; <a href="https://renegadetheaterco.org" target="_blank" rel="noopener">Renegade</a> &middot; <a href="https://uwsuper.edu/program/theatre/" target="_blank" rel="noopener">UW-Superior Theatre</a> &middot; <a href="https://muskyfest.com" target="_blank" rel="noopener">Musky Fest</a> &middot; <a href="https://lumberjackworldchampionships.com" target="_blank" rel="noopener">Lumberjack Championships</a> &middot; <a href="https://www.bayfrontfestivalpark.com/events-calendar" target="_blank" rel="noopener">Bayfront Festival Park</a> &middot; <a href="https://visitduluth.com" target="_blank" rel="noopener">Visit Duluth</a> &middot; <a href="https://www.wisdells.com/wisconsin-dells-events-calendar" target="_blank" rel="noopener">WisDells</a> &middot; <a href="https://dnr.wisconsin.gov/topic/fishing" target="_blank" rel="noopener">WI DNR fishing</a> &middot; <a href="https://www.badriver.com/calendar-of-events" target="_blank" rel="noopener">Bad River Casino</a> &middot; <a href="https://www.legendarywaters.com/events" target="_blank" rel="noopener">Legendary Waters</a> &middot; <a href="https://www.facebook.com/ashlandfunandgames" target="_blank" rel="noopener">Play Unplugged</a> &middot; <a href="https://www.levelupsuperior.com" target="_blank" rel="noopener">Level UP Superior</a> &middot; <a href="https://animecons.com/events/schedule.php?loc=us" target="_blank" rel="noopener">anime conventions (400 mi)</a>.
+    <br><br>
+    <strong>Concert watch-list</strong> tuned to your taste: metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers, mashups. Past events drop off automatically; rescanned every Sunday.
+  </div>
+
+</div>
+<script>
+// ===== Northwoods Area Events — data refreshed by the weekly scan =====
+const LAST_SCAN = "2026-06-25";
+const CATMETA = {
+  Festival:{fill:"#FAEEDA",ink:"#8A5A12",icon:'<path d="M12 3l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 17l-5.6 3.5 1.5-6.5L3 9.8l6.4-.5z"/>'},
+  Concert:{fill:"#EEEDFE",ink:"#3C3489",icon:'<path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/>'},
+  Theater:{fill:"#EEE1EA",ink:"#6B2440",icon:'<path d="M4 9V7a1 1 0 011-1h14a1 1 0 011 1v2a2 2 0 000 4v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2a2 2 0 000-4z"/><path d="M14 6v12"/>'},
+  "Anime Con":{fill:"#FBEFCF",ink:"#7A5410",icon:'<path d="M12 3l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 17l-5.6 3.5 1.5-6.5L3 9.8l6.4-.5z"/>'},
+  Local:{fill:"#E1F5EE",ink:"#085041",icon:'<path d="M3 21h18M5 21V9l7-5 7 5v12M10 21v-5h4v5"/>'},
+  "Water Park":{fill:"#E6F1FB",ink:"#0C447C",icon:'<path d="M3 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>'},
+  Tabletop:{fill:"#FBEAF0",ink:"#72243E",icon:'<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.3"/><circle cx="15" cy="15" r="1.3"/><circle cx="12" cy="12" r="1.3"/>'},
+  Fishing:{fill:"#F1EFE8",ink:"#444441",icon:'<path d="M15 12c-3-4-9-4-12 0 3 4 9 4 12 0zM15 12l6-3v6z"/>'},
+  Zoo:{fill:"#EAF3DE",ink:"#27500A",icon:'<path d="M5 21c0-9 7-16 16-16 0 9-7 16-16 16z"/><path d="M5 21c3-5 7-8 12-9"/>'},
+  Beach:{fill:"#FAECE7",ink:"#712B13",icon:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/>'},
+  Casino:{fill:"#FCEBEB",ink:"#791F1F",icon:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/>'}
+};
+const VIEWLABEL = {Festival:"Festivals",Concert:"Concerts",Theater:"Theater","Anime Con":"Conventions",Local:"Local","Water Park":"Water Parks",Tabletop:"Tabletop",Fishing:"Fishing",Zoo:"Zoo",Beach:"Beaches",Casino:"Casino"};
+const DAYLABEL = {Mon:"Mondays",Tue:"Tuesdays",Wed:"Wednesdays",Thu:"Thursdays",Fri:"Fridays",Sat:"Saturdays",Sun:"Sundays","Fri/Sat":"Friday & Saturday",Weekly:"Weekly (day varies)",Wkly:"Weekly",Monthly:"Monthly",Season:"Seasonal",Varies:"Varies","Per.":"Periodic"};
+const DAYORDER = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun","Fri/Sat","Weekly","Wkly","Monthly","Season","Periodic","Per.","Varies"];
+const REGIONS = ["Chequamegon Bay","Hayward","Duluth / Superior","Wisconsin Dells","Twin Cities","Northwoods","Eau Claire","Green Bay","Milwaukee","Chicago area","Iowa"];
+
+// One-time / dated events. start/end = YYYY-MM-DD. Past ones auto-hide on load.
+const EVENTS = [
+  {start:"2026-06-26", end:"2026-06-28", title:"Musky Festival (76th)", place:"Downtown Hayward", region:"Hayward", cat:"Festival", url:"https://muskyfest.com/events-schedule/", desc:"Hayward's flagship summer festival celebrating its muskie-fishing heritage, with a parade, street fair, food, live music, and a carnival downtown."},
+  {start:"2026-07-03", title:"Hairball + GB Leighton + The White Keys", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Concert", url:"https://www.bayfrontfestivalpark.com/events-calendar", desc:"Arena-rock tribute act Hairball brings a loud, costumed celebration of classic-rock anthems to the Duluth waterfront, with regional openers."},
+  {start:"2026-07-04", title:"America 250 Celebration", place:"Pearson Plaza, Ashland", region:"Chequamegon Bay", cat:"Local", url:"https://www.coawi.org/517/Ashland-Community-Events", desc:"Ashland's community gathering marking the 250th anniversary of American independence, with activities and festivities at Pearson Plaza."},
+  {start:"2026-07-04", title:"Fourthfest", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Festival", url:"https://www.bayfrontfestivalpark.com/fourth-fest", desc:"Duluth's big Independence Day celebration on the harbor, capped by one of the region's largest fireworks shows over Lake Superior."},
+  {start:"2026-07-04", title:"July 4th Fireworks (largest in the Dells)", place:"Mt. Olympus, Wisconsin Dells", region:"Wisconsin Dells", cat:"Water Park", url:"https://www.mtolympuspark.com/specials/", desc:"The biggest Independence Day fireworks display in the Wisconsin Dells, launched over the Mt. Olympus theme park."},
+  {start:"2026-07-09", end:"2026-07-12", title:"Kitsune Kon", place:"KI Convention Center, Green Bay", region:"Green Bay", cat:"Anime Con", url:"https://kitsunekon.com/", desc:"Green Bay's anime convention at the KI Center: cosplay, artist alley, panels, gaming, and guest voice actors. ~230 mi."},
+  {start:"2026-07-10", end:"2026-08-22", title:"Noah's Ark Neon Nights (Fri & Sat, 7–10:30pm)", place:"Noah's Ark, Wisconsin Dells", region:"Wisconsin Dells", cat:"Water Park", url:"https://www.wisdells.com/wisconsin-dells-events-calendar", desc:"Friday and Saturday after-dark sessions at Noah's Ark, America's largest waterpark, with lights and music running to 10:30pm."},
+  {start:"2026-07-11", title:"Ian Munsick w/ George Birge", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Concert", url:"https://www.bayfrontfestivalpark.com/events-calendar", desc:"Western-country singer Ian Munsick headlines the Duluth waterfront, with country opener George Birge."},
+  {start:"2026-07-16", end:"2026-07-18", title:"Lumberjack World Championships", place:"Hayward", region:"Hayward", cat:"Festival", url:"https://lumberjackworldchampionships.com/schedule/", desc:"Hayward's world-famous timbersports competition: log rolling, speed climbing, sawing, and chopping across three days."},
+  {start:"2026-07-18", title:"Bayfront Reggae & World Music Festival (20th)", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Festival", url:"https://www.bayfrontfestivalpark.com/events-calendar", desc:"A day of reggae and world music on the Duluth harbor featuring international headliners and regional acts. 20th year."},
+  {start:"2026-07-23", end:"2026-07-26", title:"Iron River Blueberry Festival", place:"Iron River", region:"Chequamegon Bay", cat:"Festival", url:"https://irlions.com/", desc:"Iron River's summer community festival celebrating the blueberry harvest, with food, crafts, a parade, and family activities."},
+  {start:"2026-07-25", title:"Washburn Homecoming", place:"Washburn", region:"Chequamegon Bay", cat:"Local", url:"https://www.bayfieldcounty.wi.gov/calendar.aspx?CID=23", desc:"Washburn's annual hometown celebration with a parade, food, music, and community events along the bay."},
+  {start:"2026-07-31", end:"2026-08-02", title:"AnimeIowa", place:"Hyatt Regency, Coralville IA", region:"Iowa", cat:"Anime Con", url:"https://animeiowa.com/", desc:"Long-running Iowa anime convention in Coralville: cosplay, panels, artist alley, gaming, and guests. ~400 mi (edge of range)."},
+  {start:"2026-08-01", title:"Dock of the Bay Fest", place:"Historic Ore Dock, Ashland", region:"Chequamegon Bay", cat:"Festival", url:"https://www.coawi.org/Calendar.aspx?EID=2423", desc:"A waterfront music festival staged near Ashland's historic Ore Dock on Chequamegon Bay."},
+  {start:"2026-08-07", end:"2026-08-08", title:"City on the Hill (music festival)", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Festival", url:"https://www.bayfrontfestivalpark.com/events-calendar", desc:"A multi-day Christian music festival on the Duluth waterfront featuring national worship and contemporary artists."},
+  {start:"2026-08-14", end:"2026-08-16", title:"Bayfront Blues Festival (37th)", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Festival", url:"https://visitduluth.com/event/bayfront-blues-festival/2026-08-14/", desc:"The Northland's premier blues festival: three days of national blues acts on the shore of Lake Superior. 37th year."},
+  {start:"2026-08-14", end:"2026-08-16", title:"Lake Effect Music Fest", place:"Big Top Chautauqua, Bayfield", region:"Chequamegon Bay", cat:"Concert", url:"https://www.bigtop.org/lake-effect-music-fest.html", desc:"A multi-day music and outdoor-adventure festival hosted at Big Top Chautauqua near Bayfield."},
+  {start:"2026-09-11", end:"2026-09-27", title:"A Chorus Line", place:"NorShor Theatre (Duluth Playhouse), Duluth", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/upcoming-season", desc:"Duluth Playhouse stages the Broadway classic following dancers as they audition for a spot in a chorus line. Main-stage musical."},
+  {start:"2026-09-12", title:"Lake Superior Harvest Festival", place:"Bayfront Festival Park, Duluth", region:"Duluth / Superior", cat:"Festival", url:"https://sfa-mn.org/harvest-festival/", desc:"Duluth's celebration of the local fall harvest, with regional growers, food, and live music on the harbor."},
+  {start:"2026-09-12", end:"2026-09-13", title:"Bayfield Festival of Arts", place:"Memorial Park, Bayfield", region:"Chequamegon Bay", cat:"Local", url:"https://www.travelwisconsin.com/events/bayfield-festival-of-arts", desc:"A juried fine-arts show in Bayfield's lakeside Memorial Park, with dozens of artists, food, and music."},
+  {start:"2026-10-02", end:"2026-10-04", title:"Bayfield Apple Festival", place:"Downtown Bayfield", region:"Chequamegon Bay", cat:"Festival", url:"https://www.bayfield.org/bayfield-apple-festival/", desc:"Bayfield's iconic first-weekend-of-October festival: orchard apples, a grand parade, carnival, food, crafts, and peak fall color."},
+  {start:"2026-10-17", title:"Harvest Fest", place:"Hodgkins Park, Ashland", region:"Chequamegon Bay", cat:"Local", url:"https://www.coawi.org/517/Ashland-Community-Events", desc:"Ashland's fall community festival at Hodgkins Park with seasonal food, crafts, and family activities."},
+  {start:"2026-10-22", end:"2026-11-08", title:"Neighborhood 3: Requisition of Doom", place:"NorShor Theatre, Duluth", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/upcoming-season", desc:"Duluth Playhouse stages a modern horror play in which a suburban video game starts bleeding into real life."},
+  {start:"2026-10-30", end:"2026-11-01", title:"M.A.G.E. (formerly MetaCon)", place:"Minneapolis, MN", region:"Twin Cities", cat:"Anime Con", url:"https://magemsp.com/", desc:"Minneapolis anime + gaming convention over Halloween weekend, blending anime, gaming, sci-fi, and cosplay. ~165 mi."},
+  {start:"2026-12-05", title:"Tree Lighting Ceremony", place:"Pearson Plaza, Ashland", region:"Chequamegon Bay", cat:"Local", url:"https://www.coawi.org/517/Ashland-Community-Events", desc:"Ashland kicks off the holidays with the lighting of the community tree and festivities at Pearson Plaza."},
+  {start:"2027-01-16", end:"2027-01-17", title:"WI Winter Free Fishing Weekend (no license needed)", place:"Statewide WI", region:"Chequamegon Bay", cat:"Fishing", url:"https://dnr.wisconsin.gov/topic/Fishing/anglereducation/freeFishingWeekend", desc:"Wisconsin's winter weekend when anyone can fish without a license, a free statewide opener perfect for ice fishing."},
+  {start:"2027-02-18", end:"2027-02-28", title:"Underground production (title TBA)", place:"NorShor Underground, Duluth", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/upcoming-season", desc:"Duluth Playhouse's edgier black-box Underground series; the winter title is still to be announced."},
+  {start:"2027-03-05", end:"2027-03-07", title:"Anime Milwaukee (AMKE)", place:"Wisconsin Center, Milwaukee", region:"Milwaukee", cat:"Anime Con", url:"https://animemilwaukee.org/", desc:"Milwaukee's large winter anime convention downtown: cosplay, concerts, panels, artist alley, and guests. ~340 mi."},
+  {start:"2027-03-26", end:"2027-03-28", title:"Anime Detour", place:"Hyatt Regency, Minneapolis MN", region:"Twin Cities", cat:"Anime Con", url:"https://www.animedetour.com/", desc:"Minnesota's largest and longest-running anime convention, drawing tens of thousands to Minneapolis each spring. ~165 mi."},
+  {start:"2027-04-30", title:"No Brand Con", place:"Eau Claire, WI", region:"Eau Claire", cat:"Anime Con", url:"https://www.nobrandcon.org/", desc:"Wisconsin's long-running, fan-run anime convention in Eau Claire, known for its quirky community vibe. ~140 mi. 2027 dates TBA (historically early May)."},
+  {start:"2027-05-07", end:"2027-05-09", title:"AniMinneapolis", place:"Minneapolis, MN", region:"Twin Cities", cat:"Anime Con", url:"https://animinneapolis.com/", desc:"A Minneapolis anime convention with cosplay, panels, gaming, and guests. ~165 mi."},
+  {start:"2027-05-14", end:"2027-05-16", title:"Anime Central (ACen)", place:"Rosemont, IL (Chicago)", region:"Chicago area", cat:"Anime Con", url:"https://www.acen.org/", desc:"The Midwest's biggest anime convention, drawing huge crowds to Rosemont near Chicago each May. ~400 mi (edge of range)."},
+  {start:"2027-05-28", end:"2027-06-06", title:"A Streetcar Named Desire", place:"NorShor Theatre, Duluth", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/upcoming-season", desc:"Duluth Playhouse stages Tennessee Williams' classic drama of desire, illusion, and decline in New Orleans."},
+  {start:"2027-07-09", end:"2027-07-25", title:"Sister Act", place:"NorShor Theatre, Duluth", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/upcoming-season", desc:"Duluth Playhouse's feel-good musical comedy about a lounge singer who hides out in a convent and shakes up the choir."},
+  {start:"2026-06-27", title:"Free RPG Day", place:"Ashland Play Unplugged, Ashland", region:"Chequamegon Bay", cat:"Tabletop", url:"https://www.facebook.com/ashlandfunandgames/upcoming_hosted_events", desc:"A nationwide event where game shops give away free tabletop RPG adventures and run demos; Play Unplugged takes part. Starts noon."},
+  {start:"2026-06-15", end:"2026-09-07", title:"Big Top Chautauqua Summer Series", place:"Big Top Chautauqua, Bayfield", region:"Chequamegon Bay", cat:"Concert", url:"https://www.bigtop.org/lineup.html", desc:"The Northwoods' beloved canvas-tent concert series near Bayfield, running mid-June through early September. Full lineup refreshes each weekly scan."}
+];
+
+// Recurring / weekly — shown in the Weekly Events view, grouped by day.
+const RECURRING = [
+  {day:"Tue", title:"Bingo", place:"Our Lady of the Lake, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Doors 5:30 · games 6:30"},
+  {day:"Wed", title:"Open Mic Night", place:"Big Top Backstage, Bayfield", region:"Chequamegon Bay", cat:"Concert", note:"6–9pm, year-round"},
+  {day:"Wed", title:"One-Shot RPG Wednesdays", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Tabletop", note:"Drop-in one-shot RPG night"},
+  {day:"Thu", title:"TCG Thursdays (Magic & Pokémon)", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Tabletop", note:"Trading card game night (Magic, Pokémon TCG)"},
+  {day:"Sat", title:"Ashland Farmers Market", place:"601 Main St W, Ashland", region:"Chequamegon Bay", cat:"Local", note:"8:30–12:30 · May 16–Oct 10"},
+  {day:"Fri/Sat", title:"Renegade improv comedy", place:"Teatro Zuccone, Duluth", region:"Duluth / Superior", cat:"Theater", note:"Late-night improv year-round + season plays"},
+  {day:"Weekly", title:"RPBound Nexus Nights", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Tabletop", note:"RPG league night at Play Unplugged"},
+  {day:"Monthly", title:"Pokémon Trade Days", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Tabletop", note:"Around the first Saturday, 12pm"},
+  {day:"Season", title:"StageNorth live theater", place:"StageNorth, Washburn", region:"Chequamegon Bay", cat:"Theater", note:"7+ plays/yr; dated shows added each scan"},
+  {day:"Season", title:"UW-Superior Theatre", place:"UW-Superior, Superior", region:"Duluth / Superior", cat:"Theater", note:"2–3 productions/yr during the school year"},
+  {day:"Season", title:"Legendary Waters Big Top concerts", place:"Legendary Waters, Red Cliff", region:"Chequamegon Bay", cat:"Concert", note:"60+ shows Jun–Sep in the 900-seat tent"},
+  {day:"Per.", title:"Quizband Trivia Night", place:"The Sandbar, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Think & Drink specials"},
+  {day:"Varies", title:"Bad River Casino live entertainment", place:"Bad River Lodge & Casino, Odanah", region:"Chequamegon Bay", cat:"Casino", note:"Concerts & events; check the casino calendar"}
+];
+
+// ===== render logic =====
+const $=s=>document.querySelector(s);
+const today=(()=>{const d=new Date();d.setHours(0,0,0,0);return d;})();
+const pd=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONF=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const endOf=e=>pd(e.end||e.start);
+const daysTo=e=>Math.round((pd(e.start)-today)/864e5);
+function fmtRange(e){
+  const s=pd(e.start);
+  if(e.end){const en=pd(e.end);return en.getMonth()===s.getMonth()?`${MON[s.getMonth()]} ${s.getDate()}–${en.getDate()}`:`${MON[s.getMonth()]} ${s.getDate()} – ${MON[en.getMonth()]} ${en.getDate()}`;}
+  return `${DOW[s.getDay()]} ${MON[s.getMonth()]} ${s.getDate()}`;
+}
+const ICON={pin:'<path d="M12 21s6-5.3 6-10a6 6 0 10-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/>',cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/>'};
+function svg(p){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;}
+function catMeta(c){return CATMETA[c]||{fill:"#EDEFF3",ink:"#3A3F4A",icon:'<circle cx="12" cy="12" r="8"/>'};}
+function iconTile(c){const m=catMeta(c);return `<span class="itile" style="background:${m.fill};color:${m.ink}">${svg(m.icon)}</span>`;}
+function catPill(c){const m=catMeta(c);return `<span class="pill cat" style="background:${m.fill};color:${m.ink}">${c}</span>`;}
+function locPill(place,region){return `<span class="pill">${svg(ICON.pin)}${place}${region?" · "+region:""}</span>`;}
+function datePill(t){return `<span class="pill">${svg(ICON.cal)}${t}</span>`;}
+function linkTitle(e){return e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.title}</a>`:e.title;}
+function dlabel(e){const n=daysTo(e);if(n<=0)return{t:"now",soon:true};if(n===1)return{t:"tomorrow",soon:true};if(n<=14)return{t:"in "+n+"d",soon:true};return{t:"in "+n+"d",soon:false};}
+function evRow(e){
+  const dl=dlabel(e);
+  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="ttl">${linkTitle(e)}</div>${e.desc?`<div class="desc">${e.desc}</div>`:""}<div class="pills">${catPill(e.cat)}${locPill(e.place,e.region)}${datePill(fmtRange(e))}</div>${e.note?`<div class="note">${e.note}</div>`:""}</div><div class="dl${dl.soon?" soon":""}">${dl.t}</div></div>`;
+}
+function recRow(e){
+  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="ttl">${e.title}</div><div class="pills">${catPill(e.cat)}${locPill(e.place,e.region)}</div>${e.note?`<div class="note">${e.note}</div>`:""}</div></div>`;
+}
+function monthGroup(list){
+  if(!list.length)return `<div class="empty">Nothing here right now. Check back after Sunday's scan.</div>`;
+  const arr=[...list].sort((a,b)=>pd(a.start)-pd(b.start));
+  const counts={};arr.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();counts[k]=(counts[k]||0)+1;});
+  let html="",cur=null;
+  arr.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();
+    if(k!==cur){if(cur!==null)html+="</div></div>";html+=`<div class="section-label">${MONF[s.getMonth()]} ${s.getFullYear()} <span class="sl-count">${counts[k]}</span></div><div class="card"><div class="card-body">`;cur=k;}
+    html+=evRow(e);
+  });
+  return html+"</div></div>";
+}
+function dayGroup(list){
+  if(!list.length)return `<div class="empty">No weekly events match.</div>`;
+  const idx=d=>{const i=DAYORDER.indexOf(d);return i<0?99:i;};
+  const arr=[...list].sort((a,b)=>idx(a.day)-idx(b.day));
+  let html="",cur=null;
+  arr.forEach(e=>{if(e.day!==cur){if(cur!==null)html+="</div></div>";html+=`<div class="section-label">${DAYLABEL[e.day]||e.day}</div><div class="card"><div class="card-body">`;cur=e.day;}html+=recRow(e);});
+  return html+"</div></div>";
+}
+
+let q="";
+let activeView=localStorage.getItem("ev_view")||"__weekly";
+function matches(o){
+  if(!q)return true;
+  const h=(o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat).toLowerCase();
+  return h.includes(q);
+}
+function upcoming(){return EVENTS.filter(e=>endOf(e)>=today&&matches(e));}
+function buildView(){
+  const up=upcoming();
+  const present=Object.keys(CATMETA).filter(c=>up.some(e=>e.cat===c));
+  const recF=RECURRING.filter(matches);
+  const views=[{id:"__weekly",label:"Weekly Events",count:recF.length}]
+    .concat(present.map(c=>({id:c,label:(VIEWLABEL[c]||c),count:up.filter(e=>e.cat===c).length})))
+    .concat([{id:"__all",label:"All Events",count:up.length}]);
+  if(!views.some(v=>v.id===activeView))activeView="__weekly";
+  $("#view").innerHTML=views.map(v=>`<option value="${v.id}"${v.id===activeView?" selected":""}>${v.label} (${v.count})</option>`).join("");
+  let inner;
+  if(activeView==="__weekly")inner=dayGroup(recF);
+  else if(activeView==="__all")inner=monthGroup(up);
+  else inner=monthGroup(up.filter(e=>e.cat===activeView));
+  $("#content").innerHTML=inner;
+}
+function setMeta(){
+  const up=EVENTS.filter(e=>endOf(e)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
+  const next=up[0];const nd=next?daysTo(next):null;
+  const nextTxt=next?(nd<=0?"happening now":nd===1?"next up tomorrow":"next up in "+nd+"d"):"none scheduled";
+  $("#meta").innerHTML=`<span>Updated <b>${pd(LAST_SCAN).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</b></span><span><b>${up.length}</b> upcoming</span><span>${nextTxt}</span>`;
+}
+$("#view").onchange=e=>{activeView=e.target.value;localStorage.setItem("ev_view",activeView);buildView();};
+$("#search").oninput=e=>{q=e.target.value.trim().toLowerCase();buildView();};
+setMeta();buildView();
+</script>
+</body>
+</html>

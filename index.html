@@ -131,6 +131,7 @@ const LAST_SCAN = "2026-06-25";
 const CATMETA = {
   Festival:{fill:"#FAEEDA",ink:"#8A5A12",icon:'<path d="M12 3l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 17l-5.6 3.5 1.5-6.5L3 9.8l6.4-.5z"/>'},
   Concert:{fill:"#EEEDFE",ink:"#3C3489",icon:'<path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/>'},
+  "My Bands":{fill:"#D9F2EC",ink:"#0B5A4F",icon:'<path d="M12 3c4.5 0 7.5 3 7.5 7 0 5-5 11-7.5 11S4.5 15 4.5 10c0-4 3-7 7.5-7z"/><path d="M9.5 9.5l5 5"/>'},
   Theater:{fill:"#EEE1EA",ink:"#6B2440",icon:'<path d="M4 9V7a1 1 0 011-1h14a1 1 0 011 1v2a2 2 0 000 4v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2a2 2 0 000-4z"/><path d="M14 6v12"/>'},
   "Convention":{fill:"#FBEFCF",ink:"#7A5410",icon:'<path d="M12 3l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 17l-5.6 3.5 1.5-6.5L3 9.8l6.4-.5z"/>'},
   Local:{fill:"#E1F5EE",ink:"#085041",icon:'<path d="M3 21h18M5 21V9l7-5 7 5v12M10 21v-5h4v5"/>'},
@@ -141,7 +142,7 @@ const CATMETA = {
   Beach:{fill:"#FAECE7",ink:"#712B13",icon:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/>'},
   Casino:{fill:"#FCEBEB",ink:"#791F1F",icon:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/>'}
 };
-const VIEWLABEL = {Festival:"Festivals",Concert:"Concerts",Theater:"Theater","Convention":"Conventions",Local:"Local","Water Park":"Water Parks",Gaming:"Gaming",Fishing:"Fishing",Zoo:"Zoo",Beach:"Beaches",Casino:"Casino"};
+const VIEWLABEL = {Festival:"Festivals",Concert:"Concerts","My Bands":"My Bands",Theater:"Theater","Convention":"Conventions",Local:"Local","Water Park":"Water Parks",Gaming:"Gaming",Fishing:"Fishing",Zoo:"Zoo",Beach:"Beaches",Casino:"Casino"};
 const DAYLABEL = {Mon:"Mondays",Tue:"Tuesdays",Wed:"Wednesdays",Thu:"Thursdays",Fri:"Fridays",Sat:"Saturdays",Sun:"Sundays","Fri/Sat":"Friday & Saturday",Weekly:"Weekly (day varies)",Wkly:"Weekly",Monthly:"Monthly",Season:"Seasonal",Varies:"Varies","Per.":"Periodic"};
 const DAYORDER = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun","Fri/Sat","Weekly","Wkly","Monthly","Season","Periodic","Per.","Varies"];
 const REGIONS = ["Chequamegon Bay","Hayward","Duluth / Superior","Wisconsin Dells","Twin Cities","Northwoods","Hurley / Iron County","Eau Claire","Green Bay","Madison","Milwaukee","Chicago area","Iowa"];
@@ -360,7 +361,7 @@ function matches(o){
 function upcoming(){return EVENTS.filter(e=>endOf(e)>=today&&matches(e));}
 function buildView(){
   const up=upcoming();
-  const present=Object.keys(CATMETA).filter(c=>up.some(e=>e.cat===c));
+  const present=Object.keys(CATMETA).filter(c=>c==="My Bands"||up.some(e=>e.cat===c));
   const recF=RECURRING.filter(matches);
   const views=[{id:"__weekly",label:"Weekly Events",count:recF.length}]
     .concat(present.map(c=>({id:c,label:(VIEWLABEL[c]||c),count:up.filter(e=>e.cat===c).length})))
@@ -370,7 +371,7 @@ function buildView(){
   let inner;
   if(activeView==="__weekly")inner=dayGroup(recF);
   else if(activeView==="__all")inner=monthGroup(up);
-  else inner=monthGroup(up.filter(e=>e.cat===activeView));
+  else{const list=up.filter(e=>e.cat===activeView);inner=list.length?monthGroup(list):'<p style="padding:20px 4px;color:#6b7280;font-size:15px">'+(activeView==="My Bands"?"No upcoming shows from your watch-list yet - the weekly scan adds your bands when one books a show within driving range.":"Nothing upcoming here right now.")+'</p>';}
   $("#content").innerHTML=inner;
 }
 function setMeta(){

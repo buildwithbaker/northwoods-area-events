@@ -1,0 +1,10 @@
+scan-sources.md
+.DS_Store
+outputs/
+
+# Private music data (Adam's YT Music) - never publish to the public Pages repo
+concert-watchlist-artists.md
+concert-watchlist-bands.md
+youtube-music-artists-A-Z.md
+youtube-music-artists-by-playlist.md
+youtube-music-artists-raw.json

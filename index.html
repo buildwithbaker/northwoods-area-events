@@ -19,6 +19,7 @@
   --primary:#2E5082; --primary-deep:#25406A;
   --accent:#A07020; --accent-soft:#F2E5C9; --accent-line:#C99443;
   --gold-bg:#FDF7E6; --gold-line:#E6CF8F;
+  --warn-bg:#F5E3BE; --warn-line:#D9B269; --warn-ink:#6B4A12;
   --neutral:#526070; --neutral-border:#B0BAC8; --neutral-soft:#DDE2EA;
   --bg:#EFF2F7; --card:#FBFCFE; --card-body:#FFFFFF; --header-tint:#D5DEEC;
   --surface:#FFFFFF; --desc:#3c4654;
@@ -28,6 +29,7 @@
   --primary:#33598C; --primary-deep:#22344F;
   --accent:#D6A24A; --accent-soft:#3A3320; --accent-line:#7A5E2C;
   --gold-bg:#2A2614; --gold-line:#5C4A20;
+  --warn-bg:#43351A; --warn-line:#8A6A2E; --warn-ink:#F0C878;
   --neutral:#9AA6B6; --neutral-border:#3A4556; --neutral-soft:#2A3342;
   --bg:#0F1420; --card:#161D2B; --card-body:#1B2330; --header-tint:#22344F;
   --surface:#222C3C; --desc:#C2CAD6;
@@ -43,6 +45,7 @@ body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Ari
 .page-header .meta{margin-top:15px;display:flex;gap:9px;flex-wrap:wrap;font-size:12.5px;}
 .page-header .meta span{background:rgba(255,255,255,.18);padding:5px 11px;border-radius:6px;}
 .page-header .meta b{font-weight:600;}
+.page-header .meta .stale{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-line);font-weight:600;}
 
 .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;position:sticky;top:0;background:var(--bg);z-index:5;padding:10px 0;}
 .vlabel{font-size:12px;font-weight:600;color:var(--neutral);}
@@ -128,6 +131,8 @@ body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Ari
 <script>
 // ===== Northwoods Area Events - data refreshed by the weekly scan =====
 const LAST_SCAN = "2026-08-06";
+// Refresh cadence is weekly - flag the meta bar once the last scan is older than this.
+const SCAN_STALE_DAYS = 10;
 const CATMETA = {
   Festival:{fill:"#FAEEDA",ink:"#8A5A12",icon:'<path d="M12 3l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 17l-5.6 3.5 1.5-6.5L3 9.8l6.4-.5z"/>'},
   Concert:{fill:"#EEEDFE",ink:"#3C3489",icon:'<path d="M9 17V5l11-2v12"/><circle cx="6" cy="17" r="3"/><circle cx="17" cy="15" r="3"/>'},
@@ -590,68 +595,68 @@ const RECURRING = [
   {day:"Wed", title:"Open Mic Night", place:"The Backstage, Big Top, Bayfield", region:"Chequamegon Bay", cat:"Concert", note:"6-9pm year-round · rotating hosts (Danielle Diamond, Nick Foytik)"},
   {day:"Wed", title:"One-Shot RPG Wednesdays", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"$5 · 5pm character help, 6pm play, paid GMs"},
   {day:"Thu", title:"TCG Thursdays (Magic & Pokémon)", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"6-8pm · $5 or 5 XP · Pokémon, Riftbound, Lorcana, MTG, Yu-Gi-Oh!, SWU · some weeks swap to a Special TTRPG Thursday (5.5e, Dungeon Crawl Classics)"},
-  {day:"Sat", title:"Ashland Farmers Market", place:"601 Main St W, Ashland", region:"Chequamegon Bay", cat:"Local", note:"8:30-12:30 · May 16-Oct 10; second market on Chapple Ave by Black Cat"},
+  {day:"Sat", title:"Ashland Farmers Market", place:"601 Main St W, Ashland", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-10", note:"8:30-12:30 · May 16-Oct 10; second market on Chapple Ave by Black Cat"},
   {day:"Fri", title:"Renegade improv comedy", place:"Teatro Zuccone, Duluth", region:"Duluth / Superior", cat:"Theater", note:"Late-night improv every Friday 10pm, year-round; Science Riot standup nights TBD"},
   {day:"Tue", title:"Riftbound Nexus Nights", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"5-9pm league night at Play Unplugged"},
   {day:"Monthly", title:"Pokémon Trade Days", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"First Saturday, 12-3pm"},
   {day:"Monthly", title:"Digimon TCG Tournament", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"Last Sunday, 5-9pm · $10 · three rounds"},
   {day:"Season", title:"StageNorth live music", place:"StageNorth, Washburn", region:"Chequamegon Bay", cat:"Concert", note:"Programmed through the Big Top box office; no plays this season, but Live in the Lounge Thursdays and Jazz Jams run year-round"},
   {day:"Season", title:"UW-Superior Theatre", place:"UW-Superior, Superior", region:"Duluth / Superior", cat:"Theater", note:"2-3 productions/yr; 2026-27 season still unposted (Ride the Cyclone hinted for spring)"},
-  {day:"Season", title:"Legendary Waters Big Top concerts", place:"Legendary Waters, Red Cliff", region:"Chequamegon Bay", cat:"Concert", note:"60+ shows Jun-Sep in the 900-seat tent; 2026 calendar still not published"},
+  {day:"Season", title:"Legendary Waters Big Top concerts", place:"Legendary Waters, Red Cliff", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-30", note:"60+ shows Jun-Sep in the 900-seat tent; 2026 calendar still not published"},
   {day:"Per.", title:"Quizband Trivia Night", place:"The Sandbar, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Fridays 6:30-8pm · teams of 2-6 · free to play, Think & Drink specials"},
   {day:"Varies", title:"Bad River Casino live entertainment", place:"Bad River Lodge & Casino, Odanah", region:"Chequamegon Bay", cat:"Casino", note:"Concerts & events; calendar renders dynamically - check the casino site"},
-  {day:"Tue", title:"Pinball league (The Left Out-lane)", place:"Bohemian Hall basement, 319 11th Ave E, Ashland", region:"Chequamegon Bay", cat:"Gaming", note:"6-8pm · $5/week · 21+ · IFPA-ranked · 13 machines · Summer season runs to Sept 15; Fall season Sept 29 - Dec 15"},
+  {day:"Tue", title:"Pinball league (The Left Out-lane)", place:"Bohemian Hall basement, 319 11th Ave E, Ashland", region:"Chequamegon Bay", cat:"Gaming", seasonEnd:"2026-12-15", note:"6-8pm · $5/week · 21+ · IFPA-ranked · 13 machines · Summer season runs to Sept 15; Fall season Sept 29 - Dec 15"},
   {day:"Fri", title:"Free Play Fridays (pinball)", place:"The Left Out-lane, Ashland", region:"Chequamegon Bay", cat:"Gaming", note:"$10 cover, all machines on free play, 5-8pm · open Mon-Fri 5-8pm and Sun 2-6pm"},
   {day:"Varies", title:"Vaughn Public Library programs", place:"Vaughn Public Library, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Story times, book clubs, Lego open houses, swap series, paint nights and author talks"},
-  {day:"Summer", title:"Concerts in the Park", place:"Pearson Plaza / Prentice Park, Ashland", region:"Chequamegon Bay", cat:"Concert", note:"Free Thursday concerts ~7pm through Sept 10; named lineups listed individually"},
-  {day:"Tue/Thu", title:"Concerts by the Lake", place:"Memorial Park, Bayfield", region:"Chequamegon Bay", cat:"Concert", note:"Free live music, June-Aug, 6-8pm (through Aug 27)"},
-  {day:"Wed", title:"Bayfield Summer Concerts", place:"Bayfield Presbyterian Church", region:"Chequamegon Bay", cat:"Concert", note:"Chamber & jazz series, 5:30pm, through Sept 2"},
+  {day:"Summer", title:"Concerts in the Park", place:"Pearson Plaza / Prentice Park, Ashland", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-10", note:"Free Thursday concerts ~7pm through Sept 10; named lineups listed individually"},
+  {day:"Tue/Thu", title:"Concerts by the Lake", place:"Memorial Park, Bayfield", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-08-27", note:"Free live music, June-Aug, 6-8pm (through Aug 27)"},
+  {day:"Wed", title:"Bayfield Summer Concerts", place:"Bayfield Presbyterian Church", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-02", note:"Chamber & jazz series, 5:30pm, through Sept 2"},
   {day:"Sat", title:"ABC Raceway stock car races", place:"ABC Raceway, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Summer Saturday race nights; grandstands 5pm, hot laps ~6:30pm"},
   {day:"Thu", title:"Live in the Lounge", place:"StageNorth, Washburn", region:"Chequamegon Bay", cat:"Concert", note:"Weekly donation-based concert, 7:30pm, a new band each week"},
-  {day:"Monthly", title:"Jazz Jams with the Baba Fats fellas", place:"StageNorth, Washburn", region:"Chequamegon Bay", cat:"Concert", note:"Last Tuesday, 7-10pm · Aug 25, Sept 29, Oct 27, Dec 29"},
+  {day:"Monthly", title:"Jazz Jams with the Baba Fats fellas", place:"StageNorth, Washburn", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-12-29", note:"Last Tuesday, 7-10pm · Aug 25, Sept 29, Oct 27, Dec 29"},
   {day:"Sat", title:"Black Cat Coffeehouse live music", place:"211 Chapple Ave, Ashland", region:"Chequamegon Bay", cat:"Concert", note:"Saturdays 7-10pm; Sunday brunch shows 11am-1pm"},
   {day:"Sat", title:"South Shore Brewery Taphouse live music", place:"South Shore Brewery, Washburn", region:"Chequamegon Bay", cat:"Concert", note:"Saturdays 7-9pm, year-round"},
   {day:"Thu", title:"Solstice Outdoors Community Nights", place:"The Sandbar, Ashland", region:"Chequamegon Bay", cat:"Local", note:"4-8pm · free kayak, paddleboard and bike rentals, bonfire, some live music"},
   {day:"Thu", title:"Madeline Island Music in the Park", place:"Rec center park, La Pointe", region:"Chequamegon Bay", cat:"Concert", note:"Thursday evenings through early September"},
-  {day:"Sat", title:"MIWP fall guided hikes", place:"North end trails, Madeline Island", region:"Chequamegon Bay", cat:"Local", note:"Free 10am-noon, Sept 19-Oct 24 · trailhead picked week-of based on conditions, boots required"},
-  {day:"Fri/Sat", title:"Guided Mural Trolley Tours", place:"Bay Area Civic Center lot, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Fri & Sat 10am and 1:30pm, Mon 1:30pm, through Sept 12 · $5 cash"},
-  {day:"Summer", title:"Washburn Music in the Park + Food Truck Mondays", place:"Central Ave & Legion Park, Washburn", region:"Chequamegon Bay", cat:"Concert", note:"Music in the Park Mondays 6-8pm through Aug 31; food trucks Mondays 11am-7:30pm, June-Sept"},
-  {day:"Wed", title:"Washburn Farmers Market", place:"Central Ave, Washburn", region:"Chequamegon Bay", cat:"Local", note:"3-6pm through October, between The Club and the Cultural Center"},
+  {day:"Sat", title:"MIWP fall guided hikes", place:"North end trails, Madeline Island", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-24", note:"Free 10am-noon, Sept 19-Oct 24 · trailhead picked week-of based on conditions, boots required"},
+  {day:"Fri/Sat", title:"Guided Mural Trolley Tours", place:"Bay Area Civic Center lot, Ashland", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-09-12", note:"Fri & Sat 10am and 1:30pm, Mon 1:30pm, through Sept 12 · $5 cash"},
+  {day:"Summer", title:"Washburn Music in the Park + Food Truck Mondays", place:"Central Ave & Legion Park, Washburn", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-30", note:"Music in the Park Mondays 6-8pm through Aug 31; food trucks Mondays 11am-7:30pm, June-Sept"},
+  {day:"Wed", title:"Washburn Farmers Market", place:"Central Ave, Washburn", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-31", note:"3-6pm through October, between The Club and the Cultural Center"},
   {day:"Sat", title:"Bayfield Farmers Market", place:"Rittenhouse Ave & First St, Bayfield", region:"Chequamegon Bay", cat:"Local", note:"8:30am-12pm through the fall"},
-  {day:"Fri", title:"Red Cliff Friday Farm Stand", place:"Mino Bimaadiziiwin Tribal Farm, Red Cliff", region:"Chequamegon Bay", cat:"Local", note:"10am-4pm Fridays, confirmed running through Oct 30"},
-  {day:"Sat", title:"Port Wing Saturday Market", place:"Port Wing Town Pavilion", region:"Chequamegon Bay", cat:"Local", note:"9am-1pm Saturdays through Oct 3 · vendors, entertainers, produce, baked goods, arts and antiques"},
-  {day:"Thu", title:"Cornucopia Market + Summer Concert Series", place:"Cornucopia Coffee & Sweet Shoppe", region:"Chequamegon Bay", cat:"Concert", note:"Farmers market 4-6pm through Sept 24; live music 6-8:30pm through Aug 27"},
+  {day:"Fri", title:"Red Cliff Friday Farm Stand", place:"Mino Bimaadiziiwin Tribal Farm, Red Cliff", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-30", note:"10am-4pm Fridays, confirmed running through Oct 30"},
+  {day:"Sat", title:"Port Wing Saturday Market", place:"Port Wing Town Pavilion", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-03", note:"9am-1pm Saturdays through Oct 3 · vendors, entertainers, produce, baked goods, arts and antiques"},
+  {day:"Thu", title:"Cornucopia Market + Summer Concert Series", place:"Cornucopia Coffee & Sweet Shoppe", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-24", note:"Farmers market 4-6pm through Sept 24; live music 6-8:30pm through Aug 27"},
   {day:"Sat", title:"Mellen Flea & Farmers Market", place:"Main St & W Bennett, Mellen", region:"Northwoods", cat:"Local", note:"9am-12pm, kitty-corner from City Hall"},
-  {day:"Sat", title:"Bayfield Winery live music", place:"Bayfield Winery & Blue Ox Cider", region:"Chequamegon Bay", cat:"Concert", note:"Heard It Through The Grapevine, Sat & Sun 2-4:30pm through Sept 26"},
-  {day:"Sat", title:"Twin Ports farmers markets", place:"Barker's Island & downtown Superior", region:"Duluth / Superior", cat:"Local", note:"Barker's Island Saturdays through Oct 31; downtown Superior Wednesdays through Oct 28"},
-  {day:"Mon", title:"Bay City Cycles Casual Group Ride", place:"Departs Pearson Plaza / City Hall, Ashland", region:"Chequamegon Bay", cat:"Local", note:"6pm Mondays May-October · 10-13 miles, casual pace"},
+  {day:"Sat", title:"Bayfield Winery live music", place:"Bayfield Winery & Blue Ox Cider", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-09-26", note:"Heard It Through The Grapevine, Sat & Sun 2-4:30pm through Sept 26"},
+  {day:"Sat", title:"Twin Ports farmers markets", place:"Barker's Island & downtown Superior", region:"Duluth / Superior", cat:"Local", seasonEnd:"2026-10-31", note:"Barker's Island Saturdays through Oct 31; downtown Superior Wednesdays through Oct 28"},
+  {day:"Mon", title:"Bay City Cycles Casual Group Ride", place:"Departs Pearson Plaza / City Hall, Ashland", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-31", note:"6pm Mondays May-October · 10-13 miles, casual pace"},
   {day:"Fri", title:"Friday Night Magic Commander", place:"Ashland Play Unplugged", region:"Chequamegon Bay", cat:"Gaming", note:"5-9:30pm · pods at 5:30 and 7:35 · entry = buy one booster"},
   {day:"Weekly", title:"The Loch Cafe & Games nights", place:"The Loch, Duluth", region:"Duluth / Superior", cat:"Gaming", note:"Board games Mon, D&D Tue, Pokémon Wed · schedule lives on their socials"},
   {day:"Weekly", title:"Level UP Superior tournaments", place:"Level UP, 525 Tower Ave, Superior", region:"Duluth / Superior", cat:"Gaming", note:"Digimon Mon, One Piece Thu 6-9pm (free, promos for all), Gundam Fri, MTG Modern Sat 5:30, Riftbound Sat 12:30"},
-  {day:"Sun", title:"Wilderness Resort Sunday Funday", place:"Wilderness Resort, Wisconsin Dells", region:"Wisconsin Dells", cat:"Water Park", note:"Duck derby 9:30am, free games 1-4pm, free foam party 4:15-5pm · last Sunday of the outdoor season is Sept 6"},
+  {day:"Sun", title:"Wilderness Resort Sunday Funday", place:"Wilderness Resort, Wisconsin Dells", region:"Wisconsin Dells", cat:"Water Park", seasonEnd:"2026-09-06", note:"Duck derby 9:30am, free games 1-4pm, free foam party 4:15-5pm · last Sunday of the outdoor season is Sept 6"},
   {day:"Tue", title:"Talon Talk live raptor program", place:"Cable Natural History Museum, Cable", region:"Northwoods", cat:"Local", note:"2-3pm, donations welcome"},
   {day:"Varies", title:"Cable Museum naturalist programs", place:"Cable Natural History Museum, Cable", region:"Northwoods", cat:"Local", note:"Loon pontoon tours, foraging walks, drawing classes, Friday Field Notes · most need advance registration"},
-  {day:"Monthly", title:"Boo at the Zoo", place:"Lake Superior Zoo, Duluth", region:"Duluth / Superior", cat:"Zoo", note:"Three Saturdays in October - 2026 dates not published yet. Trick-or-treat stations, Boo-tique, magic shows, food trucks"},
-  {day:"Thu", title:"First Thursdays Music & Dinner", place:"St James Social, Bayfield", region:"Chequamegon Bay", cat:"Concert", note:"First Thursday of the month, 5-8:30pm · dinner plus live music with Molly Otis · Aug 6, Sept 3, Oct 1, Nov 5, Dec 3"},
-  {day:"Wed", title:"Beach Yoga, Sound Bath, Sauna & Lake Superior Plunge", place:"79290 Howell Drive, Washburn", region:"Chequamegon Bay", cat:"Local", note:"5-7pm through Oct 14 · $20 · guided yoga, sound bath, then sauna and cold plunge on the shore"},
+  {day:"Monthly", title:"Boo at the Zoo", place:"Lake Superior Zoo, Duluth", region:"Duluth / Superior", cat:"Zoo", seasonEnd:"2026-10-31", note:"Three Saturdays in October - 2026 dates not published yet. Trick-or-treat stations, Boo-tique, magic shows, food trucks"},
+  {day:"Thu", title:"First Thursdays Music & Dinner", place:"St James Social, Bayfield", region:"Chequamegon Bay", cat:"Concert", seasonEnd:"2026-12-03", note:"First Thursday of the month, 5-8:30pm · dinner plus live music with Molly Otis · Aug 6, Sept 3, Oct 1, Nov 5, Dec 3"},
+  {day:"Wed", title:"Beach Yoga, Sound Bath, Sauna & Lake Superior Plunge", place:"79290 Howell Drive, Washburn", region:"Chequamegon Bay", cat:"Local", seasonEnd:"2026-10-14", note:"5-7pm through Oct 14 · $20 · guided yoga, sound bath, then sauna and cold plunge on the shore"},
   {day:"Wed", title:"Xtreme Bar Bingo", place:"Firehouse Bar, Washburn", region:"Chequamegon Bay", cat:"Local", note:"Nine free games, 7-9pm · also Mondays at Scenic Drive Resort, Iron River, 6-8pm"},
   {day:"Sat", title:"Deck Days of Summer", place:"Wags and Wine, Herbster", region:"Chequamegon Bay", cat:"Local", note:"Saturday wine tasting on the deck, noon-4pm · themed weekly"},
   {day:"Varies", title:"Hatch Clayworks pottery workshops", place:"209 Main St E, Ashland", region:"Chequamegon Bay", cat:"Local", note:"Throw 'N Go wheel workshops ($50, all inclusive) plus multi-week Monday and Wednesday beginner wheel classes"},
   {day:"Wed", title:"Open Mic Night at The Portage", place:"The Portage, Cable", region:"Northwoods", cat:"Concert", note:"Last Wednesday of the month · sign up on arrival for seven minutes or two songs"},
-  {day:"Thu", title:"Twin Ports Roots Market", place:"Harrison Community Center, Lincoln Park, Duluth", region:"Duluth / Superior", cat:"Local", note:"3-6pm Thursdays through Oct 1"},
+  {day:"Thu", title:"Twin Ports Roots Market", place:"Harrison Community Center, Lincoln Park, Duluth", region:"Duluth / Superior", cat:"Local", seasonEnd:"2026-10-01", note:"3-6pm Thursdays through Oct 1"},
   {day:"Thu", title:"Celtic Jam", place:"Sir Benedict's Tavern on the Lake, Duluth", region:"Duluth / Superior", cat:"Concert", note:"Open Celtic session every Thursday 7-10pm · free, bring an instrument"},
-  {day:"Fri", title:"Movies in the Park", place:"Leif Erikson Park, Duluth", region:"Duluth / Superior", cat:"Theater", note:"Free outdoor movies at sunset every Friday through the end of August, on a giant screen over Lake Superior"},
-  {day:"Sat", title:"Duluth River Train", place:"Lake Superior & Mississippi Railroad, Duluth", region:"Duluth / Superior", cat:"Local", note:"Two-hour vintage rail excursion along the St. Louis River, weekends through Oct 18 · departs 10:30am and 1:30pm"},
-  {day:"Season", title:"Fred Scheer's Lumberjack Show", place:"Scheer's Hayward Arena, Hayward", region:"Hayward", cat:"Local", note:"Regular season through Aug 15 (Mon 7:30pm, Tue/Thu/Sat 2pm), then 2pm shows Aug 18, 20, 22, 25, 27, 29 and Sept 1, 3, 5 · $19.95 adults"},
+  {day:"Fri", title:"Movies in the Park", place:"Leif Erikson Park, Duluth", region:"Duluth / Superior", cat:"Theater", seasonEnd:"2026-08-31", note:"Free outdoor movies at sunset every Friday through the end of August, on a giant screen over Lake Superior"},
+  {day:"Sat", title:"Duluth River Train", place:"Lake Superior & Mississippi Railroad, Duluth", region:"Duluth / Superior", cat:"Local", seasonEnd:"2026-10-18", note:"Two-hour vintage rail excursion along the St. Louis River, weekends through Oct 18 · departs 10:30am and 1:30pm"},
+  {day:"Season", title:"Fred Scheer's Lumberjack Show", place:"Scheer's Hayward Arena, Hayward", region:"Hayward", cat:"Local", seasonEnd:"2026-09-05", note:"Regular season through Aug 15 (Mon 7:30pm, Tue/Thu/Sat 2pm), then 2pm shows Aug 18, 20, 22, 25, 27, 29 and Sept 1, 3, 5 · $19.95 adults"},
   {day:"Fri/Sat", title:"Sevenwinds Casino lounge shows", place:"Sevenwinds Casino, Hayward", region:"Hayward", cat:"Casino", note:"Free live music most Friday and Saturday nights, 9pm-1am, a different band each weekend through fall"},
-  {day:"Mon", title:"Hayward Farmers Market", place:"Historic Lumberjack Bowl, Hayward", region:"Hayward", cat:"Local", note:"Mondays, June through September · posted hours vary by source, so check before you go"},
-  {day:"Fri", title:"Minocqua Farmers Market", place:"Minocqua Parks Complex", region:"Northwoods", cat:"Local", note:"Fridays 8am-1pm, mid-May through October"},
+  {day:"Mon", title:"Hayward Farmers Market", place:"Historic Lumberjack Bowl, Hayward", region:"Hayward", cat:"Local", seasonEnd:"2026-09-30", note:"Mondays, June through September · posted hours vary by source, so check before you go"},
+  {day:"Fri", title:"Minocqua Farmers Market", place:"Minocqua Parks Complex", region:"Northwoods", cat:"Local", seasonEnd:"2026-10-31", note:"Fridays 8am-1pm, mid-May through October"},
   {day:"Sun", title:"Eagle River Farmers & Artisans Market", place:"Hwy 45 north of the bridge, Eagle River", region:"Northwoods", cat:"Local", note:"Sundays and Wednesdays 8:30am-1pm"},
-  {day:"Sat", title:"Iron County Farmers Market", place:"10th Ave off Hwy 51, Hurley", region:"Hurley / Iron County", cat:"Local", note:"Saturdays 10am-1pm through Oct 3 · Wednesday market 3-6pm through Aug 26"},
-  {day:"Mon", title:"St. Germain Flea Market", place:"Town park behind the fire department, St. Germain", region:"Northwoods", cat:"Local", note:"One of the Midwest's largest · Mondays 8am-3pm through Labor Day"},
+  {day:"Sat", title:"Iron County Farmers Market", place:"10th Ave off Hwy 51, Hurley", region:"Hurley / Iron County", cat:"Local", seasonEnd:"2026-10-03", note:"Saturdays 10am-1pm through Oct 3 · Wednesday market 3-6pm through Aug 26"},
+  {day:"Mon", title:"St. Germain Flea Market", place:"Town park behind the fire department, St. Germain", region:"Northwoods", cat:"Local", seasonEnd:"2026-09-07", note:"One of the Midwest's largest · Mondays 8am-3pm through Labor Day"},
   {day:"Tue", title:"Boulder Junction Lions Flea Market", place:"Community Center, Boulder Junction", region:"Northwoods", cat:"Local", note:"Tuesdays 8am-2pm, alongside the Friends of the Library book sale"},
   {day:"Wed", title:"Boulder Junction Block Party & Music on Main", place:"Downtown Boulder Junction", region:"Northwoods", cat:"Concert", note:"Wednesdays 4-8pm with live music on Main Street 6-8pm"},
-  {day:"Wed", title:"Min-Aqua Bats water ski show", place:"Lake Minocqua, Minocqua", region:"Northwoods", cat:"Local", note:"Free 7pm shows Wednesdays, Fridays and Sundays · 2026 season ends Aug 16"}
+  {day:"Wed", title:"Min-Aqua Bats water ski show", place:"Lake Minocqua, Minocqua", region:"Northwoods", cat:"Local", seasonEnd:"2026-08-16", note:"Free 7pm shows Wednesdays, Fridays and Sundays · 2026 season ends Aug 16"}
 ];
 
 // ===== render logic =====
@@ -684,16 +689,20 @@ function evRow(e){
 function recRow(e){
   return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="ttl">${e.title}</div><div class="pills">${catPill(e.cat)}${locPill(e.place,e.region)}</div>${e.note?`<div class="note">${e.note}</div>`:""}</div></div>`;
 }
+// Groups run in emitted order: anything already under way leads under "Happening now",
+// then the rest by start month. Sections are built as whole units so the card markup always balances.
 function monthGroup(list){
   if(!list.length)return `<div class="empty">Nothing here right now. Check back after Sunday's scan.</div>`;
-  const arr=[...list].sort((a,b)=>pd(a.start)-pd(b.start));
-  const counts={};arr.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();counts[k]=(counts[k]||0)+1;});
-  let html="",cur=null;
-  arr.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();
-    if(k!==cur){if(cur!==null)html+="</div></div>";html+=`<div class="section-label">${MONF[s.getMonth()]} ${s.getFullYear()} <span class="sl-count">${counts[k]}</span></div><div class="card"><div class="card-body">`;cur=k;}
-    html+=evRow(e);
+  const running=list.filter(e=>pd(e.start)<today).sort((a,b)=>endOf(a)-endOf(b)||pd(a.start)-pd(b.start));
+  const ahead=list.filter(e=>pd(e.start)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
+  const sections=[];
+  if(running.length)sections.push({key:"running",label:"Happening now",items:running});
+  ahead.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();
+    const last=sections[sections.length-1];
+    if(last&&last.key===k)last.items.push(e);
+    else sections.push({key:k,label:`${MONF[s.getMonth()]} ${s.getFullYear()}`,items:[e]});
   });
-  return html+"</div></div>";
+  return sections.map(sec=>`<div class="section-label">${sec.label} <span class="sl-count">${sec.items.length}</span></div><div class="card"><div class="card-body">${sec.items.map(evRow).join("")}</div></div>`).join("");
 }
 function dayGroup(list){
   if(!list.length)return `<div class="empty">No weekly events match.</div>`;
@@ -712,10 +721,14 @@ function matches(o){
   return h.includes(q);
 }
 function upcoming(){return EVENTS.filter(e=>endOf(e)>=today&&matches(e));}
+// A recurring entry with a seasonEnd stops rendering the day after its season closes.
+// Entries with no seasonEnd have no readable end date in their note and keep running.
+function inSeason(o){return !o.seasonEnd||pd(o.seasonEnd)>=today;}
+function weekly(){return RECURRING.filter(o=>inSeason(o)&&matches(o));}
 function buildView(){
   const up=upcoming();
   const present=Object.keys(CATMETA).filter(c=>c==="My Bands"||up.some(e=>e.cat===c));
-  const recF=RECURRING.filter(matches);
+  const recF=weekly();
   const views=[{id:"__weekly",label:"Weekly Events",count:recF.length}]
     .concat(present.map(c=>({id:c,label:(VIEWLABEL[c]||c),count:up.filter(e=>e.cat===c).length})))
     .concat([{id:"__all",label:"All Events",count:up.length}]);
@@ -731,7 +744,9 @@ function setMeta(){
   const up=EVENTS.filter(e=>endOf(e)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
   const next=up[0];const nd=next?daysTo(next):null;
   const nextTxt=next?(nd<=0?"happening now":nd===1?"next up tomorrow":"next up in "+nd+"d"):"none scheduled";
-  $("#meta").innerHTML=`<span>Updated <b>${pd(LAST_SCAN).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</b></span><span><b>${up.length}</b> upcoming</span><span>${nextTxt}</span>`;
+  const scanAge=Math.round((today-pd(LAST_SCAN))/864e5);
+  const staleTxt=scanAge>SCAN_STALE_DAYS?`<span class="stale">Scan is ${scanAge} days old - refresh overdue</span>`:"";
+  $("#meta").innerHTML=`<span>Updated <b>${pd(LAST_SCAN).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</b></span>${staleTxt}<span><b>${up.length}</b> upcoming</span><span>${nextTxt}</span>`;
 }
 $("#view").onchange=e=>{activeView=e.target.value;localStorage.setItem("ev_view",activeView);buildView();};
 $("#search").oninput=e=>{q=e.target.value.trim().toLowerCase();buildView();};

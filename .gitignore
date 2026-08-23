@@ -2,6 +2,14 @@ scan-sources.md
 .DS_Store
 outputs/
 
+# Private lifestyle content - belt and braces. These files are supposed to live
+# in C:\Users\Adam\Documents\Claude\Northwoods Events\ and never enter this repo
+# at all. If one ever shows up here, that is a mistake, and this stops it landing
+# in a public commit.
+lifestyle.html
+lifestyle-sources.md
+lifestyle*
+
 # Private music data (Adam's YT Music) - never publish to the public Pages repo
 concert-watchlist-artists.md
 concert-watchlist-bands.md

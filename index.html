@@ -617,7 +617,7 @@ function recRow(e){
 // Groups run in emitted order: anything already under way leads under "Happening now",
 // then the rest by start month. Sections are built as whole units so the card markup always balances.
 function monthGroup(list){
-  if(!list.length)return `<div class="empty">Nothing here right now. Check back after Sunday's scan.</div>`;
+  if(!list.length)return `<div class="empty">Nothing here right now. Check back after Thursday's scan.</div>`;
   const running=list.filter(e=>pd(e.start)<today).sort((a,b)=>endOf(a)-endOf(b)||pd(a.start)-pd(b.start));
   const ahead=list.filter(e=>pd(e.start)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
   const sections=[];

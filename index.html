@@ -3,130 +3,165 @@
 {
   "name": "Northwoods Area Events",
   "schemaVersion": 1,
-  "description": "Live, always-current list of events around Ashland/Bayfield, the Chequamegon Bay, Hayward, Duluth, and the Wisconsin Dells. Past events auto-hide on open; filter by region and category; weekly recurring section (bingo, open mic, farmers market, tabletop/Magic). Data refreshed by the weekly scheduled scan."
+  "description": "Live, always-current list of events around Ashland/Bayfield, the Chequamegon Bay, Hayward, Duluth, and the Wisconsin Dells. Past events auto-hide on open; sort by date or by drive distance from Ashland, filter by date range, category and distance; weekly recurring section (bingo, open mic, farmers market, tabletop/Magic). Data refreshed by the weekly scheduled scan."
 }
 </script>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Northwoods Area Events</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --primary:#2E5082; --primary-deep:#25406A;
-  --accent:#A07020; --accent-soft:#F2E5C9; --accent-line:#C99443;
-  --gold-bg:#FDF7E6; --gold-line:#E6CF8F;
-  --warn-bg:#F5E3BE; --warn-line:#D9B269; --warn-ink:#6B4A12;
+  --primary:#2E5082; --primary-deep:#25406A; --primary-soft:#E4EAF4;
+  --accent:#A07020; --accent-ink:#7A520F; --accent-soft:#F2E5C9;
   --neutral:#526070; --neutral-border:#B0BAC8; --neutral-soft:#DDE2EA;
-  --bg:#EFF2F7; --card:#FBFCFE; --card-body:#FFFFFF; --header-tint:#D5DEEC;
-  --surface:#FFFFFF; --desc:#3c4654;
-  --text:#1A1F2B; color-scheme:light;
+  --bg:#EFF2F7; --card:#FFFFFF; --surface:#FFFFFF; --desc:#3c4654;
+  --text:#1A1F2B; --link:#2E5082; --stale:#8A1C1C;
+  --bar-h:0px; color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --primary:#33598C; --primary-deep:#22344F;
-  --accent:#D6A24A; --accent-soft:#3A3320; --accent-line:#7A5E2C;
-  --gold-bg:#2A2614; --gold-line:#5C4A20;
-  --warn-bg:#43351A; --warn-line:#8A6A2E; --warn-ink:#F0C878;
+  --primary:#33598C; --primary-deep:#22344F; --primary-soft:#22344F;
+  --accent:#D6A24A; --accent-ink:#E2B462; --accent-soft:#3A3320;
   --neutral:#9AA6B6; --neutral-border:#3A4556; --neutral-soft:#2A3342;
-  --bg:#0F1420; --card:#161D2B; --card-body:#1B2330; --header-tint:#22344F;
-  --surface:#222C3C; --desc:#C2CAD6;
-  --text:#E7EBF1; color-scheme:dark;
+  --bg:#0F1420; --card:#1B2330; --surface:#222C3C; --desc:#C2CAD6;
+  --text:#E7EBF1; --link:#9CBBE8; --stale:#F2A7A7; color-scheme:dark;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:32px 16px 64px;}
-.container{max-width:780px;margin:0 auto;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 
-.page-header{background:var(--primary);color:#fff;border-radius:12px;padding:24px 28px;margin-bottom:14px;}
-.page-header h1{font-size:23px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px;}
-.page-header .subtitle{font-size:13px;opacity:.9;line-height:1.45;}
-.page-header .meta{margin-top:15px;display:flex;gap:9px;flex-wrap:wrap;font-size:12.5px;}
-.page-header .meta span{background:rgba(255,255,255,.18);padding:5px 11px;border-radius:6px;}
-.page-header .meta b{font-weight:600;}
-.page-header .meta .stale{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-line);font-weight:600;}
+.shell{max-width:1200px;margin:0 auto;padding:0 16px 56px}
+.top{display:flex;align-items:center;gap:12px;padding:14px 0 10px}
+.top .ttl{flex:1;min-width:0}
+.top h1{font-size:19px;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--primary-deep)}
+:root[data-theme="dark"] .top h1{color:var(--text)}
+.top .subtitle{display:none;font-size:13px;color:var(--neutral);margin-top:2px}
+.top .meta{font-size:12.5px;color:var(--neutral);margin-top:2px}
+.top .meta .stale{color:var(--stale);font-weight:600}
+.iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:10px;border:1px solid var(--neutral-border);background:var(--surface);color:var(--neutral);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.iconbtn svg{width:20px;height:20px}
 
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;position:sticky;top:0;background:var(--bg);z-index:5;padding:10px 0;}
-.vlabel{font-size:12px;font-weight:600;color:var(--neutral);}
-.viewsel{font-family:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid var(--neutral-border);border-radius:9px;padding:9px 36px 9px 13px;cursor:pointer;appearance:none;-webkit-appearance:none;}
-.viewsel:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
-.sw{position:relative;flex:1;min-width:190px;max-width:330px;margin-left:auto;}
-.sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--neutral);pointer-events:none;}
-.search{width:100%;padding:9px 13px 9px 37px;border:1px solid var(--neutral-border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);}
-.search:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
+/* sticky control bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 16px 10px;margin:0 -16px;border-bottom:1px solid var(--neutral-soft)}
+.row1{display:flex;gap:8px;align-items:center}
+.sw{position:relative;flex:1;min-width:0}
+.sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--neutral);pointer-events:none}
+.search{width:100%;height:44px;padding:0 12px 0 38px;border:1px solid var(--neutral-border);border-radius:10px;font-size:16px;background:var(--surface)}
+.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--neutral-border);border-radius:10px;background:var(--surface);padding:3px;height:44px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:0 12px;font-size:14px;font-weight:600;color:var(--neutral);cursor:pointer;min-width:52px}
+.seg button[aria-pressed="true"]{background:var(--primary);color:#fff}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:8px -16px 0;padding:2px 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);font-weight:700}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
+.chipsep{flex-shrink:0;width:1px;background:var(--neutral-border);margin:6px 2px}
+.chipsel{flex-shrink:0;height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
+.chipsel.on{background-color:var(--primary-soft);border-color:var(--primary);font-weight:700;color:var(--primary-deep)}
+:root[data-theme="dark"] .chipsel.on{color:#fff}
 
-.itile{flex-shrink:0;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
-.itile svg{width:22px;height:22px;}
-.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:500;color:var(--neutral);background:var(--surface);border:1px solid var(--neutral-border);padding:2px 9px;border-radius:999px;white-space:nowrap;}
-.pill svg{width:13px;height:13px;flex-shrink:0;}
-.pill.cat{border:none;font-weight:600;}
+/* results */
+.side{display:none}
+.count{font-size:13px;color:var(--neutral);margin:12px 2px 4px}
+.ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--bg);display:flex;align-items:baseline;gap:8px;padding:12px 2px 6px;font-size:13px;font-weight:700;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
+.ghead .n{color:var(--neutral);font-weight:600;letter-spacing:0}
+.ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--neutral);font-size:12.5px}
+.list{background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;overflow:hidden}
+.ev{display:flex;gap:12px;padding:13px 14px;border-top:1px solid var(--neutral-soft);min-width:0}
+.ev:first-child{border-top:0}
+.itile{flex-shrink:0;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.itile svg{width:19px;height:19px}
+.ev .body{flex:1;min-width:0}
+.ev .head{display:flex;gap:8px;align-items:flex-start}
+.ev .t{flex:1;min-width:0;font-size:15.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.ev .t a{text-decoration:none;padding:3px 0}
+.ev .t a:hover{text-decoration:underline;color:var(--link)}
+.when{flex-shrink:0;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--neutral-soft);color:var(--neutral);white-space:nowrap;margin-top:1px}
+.when.soon{background:var(--accent-soft);color:var(--accent-ink)}
+.ev .loc{font-size:13px;color:var(--neutral);margin-top:3px;overflow-wrap:anywhere}
+.ev .loc b{color:var(--text);font-weight:600}
+.ev .desc{font-size:14px;color:var(--desc);margin-top:5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev.open .desc{display:block;-webkit-line-clamp:unset}
+.ev .more{border:0;background:none;color:var(--link);font-size:13px;font-weight:600;padding:0 4px;cursor:pointer;min-height:24px;margin-left:auto}
+.ev .tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:7px}
+.tag{display:inline-block;max-width:100%;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;overflow-wrap:anywhere}
+.ongoing{margin-top:12px}
+.ongoing summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 14px;background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;font-size:14px;font-weight:600}
+.ongoing summary::-webkit-details-marker{display:none}
+.ongoing summary .n{color:var(--neutral);font-weight:500}
+.ongoing summary .chev{margin-left:auto;display:inline-flex;transition:transform .15s}
+.ongoing summary .chev svg{width:18px;height:18px}
+.ongoing[open] summary{border-radius:12px 12px 0 0;border-bottom-color:var(--neutral-soft)}
+.ongoing[open] summary .chev{transform:rotate(180deg)}
+.ongoing[open] .list{border-top:0;border-radius:0 0 12px 12px}
+.showmore{display:block;width:100%;height:48px;margin-top:12px;border:1px solid var(--link);border-radius:12px;background:var(--surface);color:var(--link);font-size:15px;font-weight:600;cursor:pointer}
+.empty{padding:20px 16px;background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;color:var(--neutral);font-size:14px;margin-top:12px}
+.footer-note{font-size:12.5px;color:var(--neutral);margin-top:24px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6}
+.footer-note a{color:var(--link)}
+.footer-note strong{color:var(--text)}
 
-.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:20px 0 9px 2px;display:flex;align-items:center;gap:8px;}
-.section-label:first-child{margin-top:2px;}
-.section-label::before{content:"";width:14px;height:2px;background:var(--accent);border-radius:1px;flex-shrink:0;}
-.section-label .sl-count{color:var(--neutral);font-weight:600;letter-spacing:.02em;}
-
-.card{background:var(--card);border-radius:12px;margin-bottom:12px;border:1px solid var(--neutral-border);overflow:hidden;box-shadow:0 1px 2px rgba(82,96,112,.06);}
-.card-body{background:var(--card-body);padding:2px 16px;}
-.ev{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--neutral-soft);}
-.ev:first-child{border-top:none;}
-.ev.gold{background:var(--gold-bg);margin:0 -16px;padding:13px 16px;border-top:1px solid var(--gold-line);}
-.ev.gold + .ev{border-top:1px solid var(--neutral-soft);}
-.ev .body{flex:1;min-width:0;}
-.ev .ttl{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:3px;}
-.ev .ttl a{color:var(--text);text-decoration:none;}
-.ev .ttl a:hover{text-decoration:underline;color:var(--primary);}
-.ev .desc{font-size:12.5px;color:var(--desc);line-height:1.5;margin:0 0 9px;}
-.themebtn{flex-shrink:0;width:38px;height:38px;border-radius:9px;border:1px solid var(--neutral-border);background:var(--surface);color:var(--neutral);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
-.themebtn:hover{color:var(--text);}
-.themebtn:focus-visible{outline:2px solid var(--primary);outline-offset:1px;}
-.themebtn svg{width:18px;height:18px;}
-.ev .note{font-size:12px;color:var(--neutral);font-style:italic;margin-top:5px;}
-.ev .dl{flex-shrink:0;font-size:11px;color:var(--neutral);white-space:nowrap;padding-top:14px;}
-.ev .dl.soon{color:var(--accent);font-weight:700;}
-
-.empty{color:var(--neutral);font-size:13.5px;font-style:italic;padding:18px;background:var(--card-body);border:1px solid var(--neutral-border);border-radius:12px;}
-.footer-note{font-size:12px;color:var(--neutral);margin-top:20px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6;}
-.footer-note a{color:var(--primary);}
-.footer-note strong{color:var(--text);}
-
-@media(max-width:560px){
-  body{padding:18px 10px 50px;}
-  .page-header{padding:20px 18px;}
-  .sw{margin-left:0;max-width:none;width:100%;}
-  .ev .dl{display:none;}
+/* desktop: sidebar filters + results */
+@media (min-width:960px){
+  .shell{padding:0 32px 64px}
+  .top{padding:22px 0 14px}
+  .top h1{font-size:24px}
+  .top .subtitle{display:block}
+  .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
+  .bar{margin:0;padding:0 4px 8px 0;border:0;background:none;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
+  .bar .chips{display:none}
+  .row1{flex-direction:column;align-items:stretch}
+  .seg{width:100%}
+  .seg button{flex:1}
+  .side{display:block;margin-top:14px}
+  .side h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--neutral);margin:16px 0 6px}
+  .side .opt{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:6px 10px;border:0;border-radius:8px;background:none;font-size:14px;text-align:left;cursor:pointer}
+  .side .opt:hover{background:var(--neutral-soft)}
+  .side .opt[aria-pressed="true"]{background:var(--primary-soft);color:var(--primary-deep);font-weight:700}
+  :root[data-theme="dark"] .side .opt[aria-pressed="true"]{color:#fff}
+  .side .opt .n{color:var(--neutral);font-size:12.5px;font-weight:500}
+  .ghead{top:0}
+  .ev{padding:14px 18px}
+  .itile{width:40px;height:40px}
+  .itile svg{width:21px;height:21px}
 }
 </style>
 </head>
 <body>
-<div class="container">
-
-  <div class="page-header">
-    <h1>Northwoods Area Events</h1>
-    <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
-    <div class="meta" id="meta"></div>
-  </div>
-
-  <div class="controls">
-    <span class="vlabel">Show</span>
-    <select class="viewsel" id="view" aria-label="Choose which events to show"></select>
-    <div class="sw">
-      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input class="search" id="search" type="search" placeholder="Search events, places, bands&hellip;" aria-label="Search events">
+<div class="shell">
+  <header class="top">
+    <div class="ttl">
+      <h1>Northwoods Area Events</h1>
+      <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
+      <div class="meta" id="meta"></div>
     </div>
-    <button class="themebtn" id="themeBtn" type="button" aria-label="Toggle dark mode"></button>
-  </div>
-
-  <div id="content"></div>
-
-  <div class="footer-note">
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch to dark mode"></button>
+  </header>
+  <div class="layout">
+    <div class="bar">
+      <div class="row1">
+        <div class="sw"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search events, places, bands" aria-label="Search events" autocomplete="off"></div>
+        <div class="seg" role="group" aria-label="Sort by"><button type="button" id="segDate" data-sort="date" aria-pressed="true">Date</button><button type="button" id="segPlace" data-sort="place" aria-pressed="false">Nearest</button></div>
+      </div>
+      <div class="chips" id="chips" role="toolbar" aria-label="Filters"></div>
+      <nav class="side" id="side" aria-label="Filters"></nav>
+    </div>
+    <main>
+      <div class="count" id="count" role="status" aria-live="polite"></div>
+      <div id="results"></div>
+      <div class="footer-note">
     <strong>Sources scanned:</strong> <a href="https://visitashland.com" target="_blank" rel="noopener">Visit Ashland</a> &middot; <a href="https://www.coawi.org/517/Ashland-Community-Events" target="_blank" rel="noopener">City of Ashland</a> &middot; <a href="https://www.bayfieldcounty.wi.gov/299/Events" target="_blank" rel="noopener">Bayfield County</a> &middot; <a href="https://www.bayfield.org/events/" target="_blank" rel="noopener">bayfield.org</a> &middot; <a href="https://www.bigtop.org/lineup.html" target="_blank" rel="noopener">Big Top Chautauqua</a> &middot; <a href="https://www.stagenorth.com" target="_blank" rel="noopener">StageNorth</a> &middot; <a href="https://www.duluthplayhouse.org/upcoming-season" target="_blank" rel="noopener">Duluth Playhouse / NorShor</a> &middot; <a href="https://renegadetheaterco.org" target="_blank" rel="noopener">Renegade</a> &middot; <a href="https://uwsuper.edu/program/theatre/" target="_blank" rel="noopener">UW-Superior Theatre</a> &middot; <a href="https://muskyfest.com" target="_blank" rel="noopener">Musky Fest</a> &middot; <a href="https://lumberjackworldchampionships.com" target="_blank" rel="noopener">Lumberjack Championships</a> &middot; <a href="https://www.bayfrontfestivalpark.com/events-calendar" target="_blank" rel="noopener">Bayfront Festival Park</a> &middot; <a href="https://visitduluth.com" target="_blank" rel="noopener">Visit Duluth</a> &middot; <a href="https://www.wisdells.com/wisconsin-dells-events-calendar" target="_blank" rel="noopener">WisDells</a> &middot; <a href="https://dnr.wisconsin.gov/topic/fishing" target="_blank" rel="noopener">WI DNR fishing</a> &middot; <a href="https://www.badriver.com/" target="_blank" rel="noopener">Bad River Casino</a> &middot; <a href="https://www.legendarywaters.com/events" target="_blank" rel="noopener">Legendary Waters</a> &middot; <a href="https://www.facebook.com/ashlandfunandgames" target="_blank" rel="noopener">Play Unplugged</a> &middot; <a href="https://www.levelupsuperior.com" target="_blank" rel="noopener">Level UP Superior</a> &middot; <a href="https://animecons.com/events/schedule.php?loc=us" target="_blank" rel="noopener">anime conventions (400 mi)</a>.
     <br><br>
     <strong>Concert watch-list</strong> tuned to your taste: metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers, mashups. Past events drop off automatically; rescanned every Thursday.
+      </div>
+    </main>
   </div>
-
 </div>
 <script>
 // ===== Northwoods Area Events - data refreshed by the weekly scan =====
@@ -1351,102 +1386,207 @@ const RECURRING = [
   {day:"Wed", title:"Wednesday Night Ski", place:"Copper Falls State Park, Mellen", town:"Mellen, WI", region:"Chequamegon Bay", cat:"Local", note:"Winter evenings 5-7pm on the Meadow Trail loop, lit only by stars and moonlight · bring a headlamp · treats and hot cocoa provided"}
 ];
 
-// ===== render logic =====
+// ===== render - not touched by the weekly scan =====
 const $=s=>document.querySelector(s);
-const today=(()=>{const d=new Date();d.setHours(0,0,0,0);return d;})();
+// Every scraped field goes through esc(); links only when the url parses as https.
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function safeUrl(u){try{const x=new URL(u);return x.protocol==="https:"?x.href:null;}catch(e){return null;}}
 const pd=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const MONF=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOWF=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const endOf=e=>pd(e.end||e.start);
-const daysTo=e=>Math.round((pd(e.start)-today)/864e5);
-function fmtRange(e){
-  const s=pd(e.start);
-  if(e.end){const en=pd(e.end);return en.getMonth()===s.getMonth()?`${MON[s.getMonth()]} ${s.getDate()}-${en.getDate()}`:`${MON[s.getMonth()]} ${s.getDate()} - ${MON[en.getMonth()]} ${en.getDate()}`;}
-  return `${DOW[s.getDay()]} ${MON[s.getMonth()]} ${s.getDate()}`;
+let today;
+function setToday(){const d=new Date();d.setHours(0,0,0,0);today=d;}
+setToday();
+
+// --- dates: dates[] (discrete days) wins over the start/end span when present ---
+const lastDay=e=>pd(e.dates&&e.dates.length?e.dates[e.dates.length-1]:(e.end||e.start));
+const isOngoing=e=>!e.dates&&pd(e.start)<today&&lastDay(e)>=today;
+const isUpcoming=e=>lastDay(e)>=today;
+// First day of the event inside [a,b], or null. Ongoing spans report today.
+function firstIn(e,[a,b]){
+  if(e.dates){for(const s of e.dates){const d=pd(s);if(d>=a&&d<=b)return d;}return null;}
+  const s=pd(e.start),en=lastDay(e);if(s>b||en<a)return null;return s<a?a:s;
 }
-const ICON={pin:'<path d="M12 21s6-5.3 6-10a6 6 0 10-12 0c0 4.7 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/>',cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/>'};
-function svg(p){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;}
-function catMeta(c){return CATMETA[c]||{fill:"#EDEFF3",ink:"#3A3F4A",icon:'<circle cx="12" cy="12" r="8"/>'};}
-function iconTile(c){const m=catMeta(c);return `<span class="itile" style="background:${m.fill};color:${m.ink}">${svg(m.icon)}</span>`;}
-function catPill(c){const m=catMeta(c);return `<span class="pill cat" style="background:${m.fill};color:${m.ink}">${c}</span>`;}
-function locPill(place,region){return `<span class="pill">${svg(ICON.pin)}${place}${region?" · "+region:""}</span>`;}
-function datePill(t){return `<span class="pill">${svg(ICON.cal)}${t}</span>`;}
-function linkTitle(e){return e.url?`<a href="${e.url}" target="_blank" rel="noopener">${e.title}</a>`:e.title;}
-function dlabel(e){const n=daysTo(e);if(n<=0)return{t:"now",soon:true};if(n===1)return{t:"tomorrow",soon:true};if(n<=14)return{t:"in "+n+"d",soon:true};return{t:"in "+n+"d",soon:false};}
-function evRow(e){
-  const dl=dlabel(e);
-  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="ttl">${linkTitle(e)}</div>${e.desc?`<div class="desc">${e.desc}</div>`:""}<div class="pills">${catPill(e.cat)}${locPill(e.place,e.region)}${datePill(fmtRange(e))}</div>${e.note?`<div class="note">${e.note}</div>`:""}</div><div class="dl${dl.soon?" soon":""}">${dl.t}</div></div>`;
+const daysFrom=d=>Math.round((d-today)/864e5);
+
+// --- place: town key -> TOWNS row (drive miles from Ashland); unknown towns sort last ---
+const townRow=e=>e.town&&TOWNS[e.town]?TOWNS[e.town]:null;
+const miOf=e=>{const t=townRow(e);return t&&t.mi!=null?t.mi:null;};
+function venue(e){
+  if(!e.town)return "";
+  const name=e.town.replace(/, [A-Z]{2}$/,"").replace(/\./g,"\\.?").replace(/'/g,"['\\s]?");
+  const re=new RegExp("(,\\s*)?\\b"+name+"\\b(,?\\s*(WI|MN|MI|IA|IL|ND|Wisconsin|Minnesota|Michigan))?\\s*$","i");
+  const v=e.place.replace(re,"").replace(/,\s*$/,"").trim();
+  return v&&v.toLowerCase()!==e.town.toLowerCase()?v:"";
 }
-function recRow(e){
-  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="ttl">${e.title}</div><div class="pills">${catPill(e.cat)}${locPill(e.place,e.region)}</div>${e.note?`<div class="note">${e.note}</div>`:""}</div></div>`;
-}
-// Groups run in emitted order: anything already under way leads under "Happening now",
-// then the rest by start month. Sections are built as whole units so the card markup always balances.
-function monthGroup(list){
-  if(!list.length)return `<div class="empty">Nothing here right now. Check back after Thursday's scan.</div>`;
-  const running=list.filter(e=>pd(e.start)<today).sort((a,b)=>endOf(a)-endOf(b)||pd(a.start)-pd(b.start));
-  const ahead=list.filter(e=>pd(e.start)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
-  const sections=[];
-  if(running.length)sections.push({key:"running",label:"Happening now",items:running});
-  ahead.forEach(e=>{const s=pd(e.start);const k=s.getFullYear()*100+s.getMonth();
-    const last=sections[sections.length-1];
-    if(last&&last.key===k)last.items.push(e);
-    else sections.push({key:k,label:`${MONF[s.getMonth()]} ${s.getFullYear()}`,items:[e]});
-  });
-  return sections.map(sec=>`<div class="section-label">${sec.label} <span class="sl-count">${sec.items.length}</span></div><div class="card"><div class="card-body">${sec.items.map(evRow).join("")}</div></div>`).join("");
-}
-function dayGroup(list){
-  if(!list.length)return `<div class="empty">No weekly events match.</div>`;
-  const idx=d=>{const i=DAYORDER.indexOf(d);return i<0?99:i;};
-  const arr=[...list].sort((a,b)=>idx(a.day)-idx(b.day));
-  let html="",cur=null;
-  arr.forEach(e=>{if(e.day!==cur){if(cur!==null)html+="</div></div>";html+=`<div class="section-label">${DAYLABEL[e.day]||e.day}</div><div class="card"><div class="card-body">`;cur=e.day;}html+=recRow(e);});
-  return html+"</div></div>";
+function locLine(e){
+  const mi=miOf(e);
+  if(!e.town)return esc(e.place);
+  const v=venue(e);
+  return `<b>${esc(e.town)}</b>${mi!=null&&mi>=3?` &middot; ${mi} mi`:""}${v?` &middot; ${esc(v)}`:""}`;
 }
 
-let q="";
-let activeView=localStorage.getItem("ev_view")||"__weekly";
-function matches(o){
-  if(!q)return true;
-  const h=(o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat).toLowerCase();
-  return h.includes(q);
+// --- icons ---
+function svg(p){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;}
+function catMeta(c){return CATMETA[c]||{fill:"#EDEFF3",ink:"#3A3F4A",icon:'<circle cx="12" cy="12" r="8"/>'};}
+const iconTile=c=>{const m=catMeta(c);return `<span class="itile" style="background:${m.fill};color:${m.ink}">${svg(m.icon)}</span>`;};
+const catTag=c=>{const m=catMeta(c);return `<span class="tag" style="background:${m.fill};color:${m.ink}">${esc(c)}</span>`;};
+const SUN_ICON=svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>');
+const MOON_ICON=svg('<path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/>');
+
+// --- state (URL-driven so every view is linkable) ---
+const P=new URLSearchParams(location.search);
+const S={mode:P.get("mode")==="weekly"?"weekly":"upcoming",sort:P.get("sort")==="place"?"place":"date",when:P.get("when")||"7",cat:P.get("cat")||"",dist:+(P.get("dist")||0)||0,q:"",limit:40};
+const WHENS=[["today","Today"],["weekend","This weekend"],["7","Next 7 days"],["30","Next 30 days"],["all","All dates"]];
+const WHEN=Object.fromEntries(WHENS);
+if(!WHEN[S.when])S.when="7";
+if(S.cat&&!CATMETA[S.cat])S.cat="";
+const DISTS=[25,60,120,250];
+if(!DISTS.includes(S.dist))S.dist=0;
+function range(){
+  if(S.when==="today")return[today,today];
+  if(S.when==="weekend"){const d=today.getDay();const fri=d===0?addDays(today,-2):d===6?addDays(today,-1):addDays(today,5-d);return[fri<today?today:fri,addDays(fri,2)];}
+  if(S.when==="all")return[today,new Date(2100,0,1)];
+  return[today,addDays(today,+S.when-1)];
 }
-function upcoming(){return EVENTS.filter(e=>endOf(e)>=today&&matches(e));}
-// A recurring entry with a seasonEnd stops rendering the day after its season closes.
-// Entries with no seasonEnd have no readable end date in their note and keep running.
-function inSeason(o){return !o.seasonEnd||pd(o.seasonEnd)>=today;}
-function weekly(){return RECURRING.filter(o=>inSeason(o)&&matches(o));}
-function buildView(){
-  const up=upcoming();
-  const present=Object.keys(CATMETA).filter(c=>c==="My Bands"||up.some(e=>e.cat===c));
-  const recF=weekly();
-  const views=[{id:"__weekly",label:"Weekly Events",count:recF.length}]
-    .concat(present.map(c=>({id:c,label:(VIEWLABEL[c]||c),count:up.filter(e=>e.cat===c).length})))
-    .concat([{id:"__all",label:"All Events",count:up.length}]);
-  if(!views.some(v=>v.id===activeView))activeView="__weekly";
-  $("#view").innerHTML=views.map(v=>`<option value="${v.id}"${v.id===activeView?" selected":""}>${v.label} (${v.count})</option>`).join("");
-  let inner;
-  if(activeView==="__weekly")inner=dayGroup(recF);
-  else if(activeView==="__all")inner=monthGroup(up);
-  else{const list=up.filter(e=>e.cat===activeView);inner=list.length?monthGroup(list):'<p style="padding:20px 4px;color:#6b7280;font-size:15px">'+(activeView==="My Bands"?"No upcoming shows from your watch-list yet - the weekly scan adds your bands when one books a show within driving range.":"Nothing upcoming here right now.")+'</p>';}
-  $("#content").innerHTML=inner;
+function hay(o){return (o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat+" "+(o.town||"")).toLowerCase();}
+const distOk=e=>!S.dist||(miOf(e)!=null&&miOf(e)<=S.dist);
+const qOk=e=>!S.q||hay(e).includes(S.q);
+function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&(!S.cat||e.cat===S.cat)&&distOk(e)&&qOk(e));}
+
+// --- rows ---
+function whenBadge(e,d){
+  if(isOngoing(e)){const en=lastDay(e);return `<span class="when">thru ${MON[en.getMonth()]} ${en.getDate()}</span>`;}
+  const n=daysFrom(d);
+  if(n===0)return `<span class="when soon">Today</span>`;
+  if(n===1)return `<span class="when soon">Tomorrow</span>`;
+  if(n<=6)return `<span class="when soon">${DOW[d.getDay()]}</span>`;
+  return `<span class="when">in ${n}d</span>`;
 }
+function dateTxt(e,d){
+  let t=`${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`;
+  if(e.dates){const rest=e.dates.filter(s=>pd(s)>d);if(rest.length)t+=`, then ${rest.slice(0,2).map(s=>{const x=pd(s);return MON[x.getMonth()]+" "+x.getDate();}).join(", ")}${rest.length>2?` +${rest.length-2} more`:""}`;}
+  else if(e.end){const s=pd(e.start),en=pd(e.end);t=`${DOW[s.getDay()]} ${MON[s.getMonth()]} ${s.getDate()} - ${en.getMonth()===s.getMonth()?"":MON[en.getMonth()]+" "}${en.getDate()}`;}
+  return t;
+}
+function titleHTML(o){const u=safeUrl(o.url);return u?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(o.title)}</a>`:esc(o.title);}
+function row(e,d,showDate){
+  const extra=e.dates&&!showDate?dateTxt(e,d).replace(/^[^,]*,? ?/,""):"";
+  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="head"><div class="t">${titleHTML(e)}</div>${whenBadge(e,d)}</div>`+
+    `<div class="loc">${showDate?esc(dateTxt(e,d))+" &middot; ":extra?esc(extra[0].toUpperCase()+extra.slice(1))+" &middot; ":""}${locLine(e)}</div>`+
+    `${e.desc?`<div class="desc">${esc(e.desc)}</div>`:""}<div class="tags">${catTag(e.cat)}${e.desc?`<button class="more" type="button" aria-expanded="false">More</button>`:""}</div></div></div>`;
+}
+function recRow(o){
+  return `<div class="ev">${iconTile(o.cat)}<div class="body"><div class="head"><div class="t">${titleHTML(o)}</div></div><div class="loc">${locLine(o)}</div>`+
+    `${o.note?`<div class="desc">${esc(o.note)}</div>`:""}<div class="tags">${catTag(o.cat)}${o.note?`<button class="more" type="button" aria-expanded="false">More</button>`:""}</div></div></div>`;
+}
+const group=(label,n,items,sub)=>`<div class="ghead">${esc(label)} <span class="n">${n}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</div><div class="list">${items}</div>`;
+const chev=svg('<path d="M6 9l6 6 6-6"/>');
+
+// --- views ---
+function viewDate(list){
+  const r=range();
+  const ongoing=list.filter(isOngoing).sort((a,b)=>lastDay(a)-lastDay(b));
+  const ahead=list.filter(e=>!isOngoing(e)).map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>a.d-b.d||(miOf(a.e)??9999)-(miOf(b.e)??9999));
+  let html="";
+  if(ongoing.length)html+=`<details class="ongoing"><summary>Ongoing now <span class="n">${ongoing.length} exhibits, runs and series</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,true)).join("")}</div></details>`;
+  const shown=ahead.slice(0,S.limit);const days=[];
+  shown.forEach(x=>{const k=iso(x.d);const l=days[days.length-1];if(l&&l.k===k)l.items.push(x);else days.push({k,d:x.d,items:[x]});});
+  html+=days.map(g=>{const n=daysFrom(g.d);const lbl=n===0?"Today":n===1?"Tomorrow":DOWF[g.d.getDay()];
+    return group(lbl,g.items.length,g.items.map(x=>row(x.e,x.d,false)).join(""),`${DOW[g.d.getDay()]}, ${MON[g.d.getMonth()]} ${g.d.getDate()}`);}).join("");
+  return {html,total:ahead.length,shown:shown.length,ongoing:ongoing.length};
+}
+function viewPlace(list){
+  const r=range();
+  const arr=list.map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>(miOf(a.e)??9999)-(miOf(b.e)??9999)||(a.e.town||"~").localeCompare(b.e.town||"~")||(isOngoing(a.e)?1:0)-(isOngoing(b.e)?1:0)||a.d-b.d);
+  const shown=arr.slice(0,S.limit);const gs=[];
+  shown.forEach(x=>{const k=miOf(x.e)!=null?x.e.town:(x.e.town||"Distance unknown");const l=gs[gs.length-1];if(l&&l.k===k)l.items.push(x);else gs.push({k,mi:miOf(x.e),items:[x]});});
+  const html=gs.map(g=>group(g.k,g.items.length,g.items.map(x=>row(x.e,x.d,true)).join(""),g.mi!=null?(g.mi<3?"in town":`${g.mi} mi from Ashland`):"distance unknown")).join("");
+  return {html,total:arr.length,shown:shown.length,ongoing:0};
+}
+function inSeason(o){return (!o.seasonStart||pd(o.seasonStart)<=today)&&(!o.seasonEnd||pd(o.seasonEnd)>=today);}
+function viewWeekly(){
+  const list=RECURRING.filter(o=>inSeason(o)&&qOk(o)&&(!S.cat||o.cat===S.cat)&&distOk(o));
+  const order=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];const td=DOW[today.getDay()];
+  const rot=order.slice(order.indexOf(td)).concat(order.slice(0,order.indexOf(td)));
+  const idx=d=>{const i=rot.indexOf(d);return i<0?7+Math.max(0,DAYORDER.indexOf(d)):i;};
+  const arr=[...list].sort((a,b)=>idx(a.day)-idx(b.day)||(miOf(a)??9999)-(miOf(b)??9999));
+  const gs=[];arr.forEach(o=>{const l=gs[gs.length-1];if(l&&l.k===o.day)l.items.push(o);else gs.push({k:o.day,items:[o]});});
+  const html=gs.map(g=>group(DAYLABEL[g.k]||g.k,g.items.length,g.items.map(recRow).join(""),g.k===td?"today":"")).join("");
+  return {html,total:arr.length,shown:arr.length,ongoing:0};
+}
+
+// --- controls ---
+const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
+function catSelect(){return `<select class="chipsel${S.cat?" on":""}" data-k="cat" aria-label="Category"><option value="">All categories</option>${CATS.map(c=>`<option value="${esc(c)}"${S.cat===c?" selected":""}>${esc(VIEWLABEL[c]||c)}</option>`).join("")}</select>`;}
+function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="Drive distance from Ashland"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m} mi</option>`).join("")}</select>`;}
+function chipsHTML(){
+  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming">&larr; Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${distSelect()}`;
+  return WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${v}</button>`).join("")+
+    `<span class="chipsep" aria-hidden="true"></span><button class="chip" type="button" data-mode="weekly">Weekly</button>${catSelect()}${distSelect()}`;
+}
+function sideHTML(){
+  const r=range();
+  const base=S.mode==="weekly"?RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o)):EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));
+  const opt=(attr,val,label,on,n)=>`<button class="opt" type="button" ${attr}="${esc(val)}" aria-pressed="${on}"><span>${label}</span>${n!=null?`<span class="n">${n}</span>`:""}</button>`;
+  return `<h2>Show</h2>${opt("data-mode","upcoming","Upcoming events",S.mode==="upcoming")}${opt("data-mode","weekly","Weekly events",S.mode==="weekly")}`+
+    (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}`:"")+
+    `<h2>Drive distance from Ashland</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m} mi`:"Any distance",S.dist===m)).join("")}`+
+    `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),S.cat===c,base.filter(e=>e.cat===c).length)).join("")}`;
+}
+function emptyMsg(){
+  if(S.cat==="My Bands"&&!S.q)return "No upcoming shows from your watch-list in this range - the weekly scan adds your bands when one books a show within driving range.";
+  return "Nothing matches. Try a wider date range, another category or clear the search.";
+}
+function render(){
+  $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
+  $("#chips").innerHTML=chipsHTML();$("#side").innerHTML=sideHTML();
+  const res=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
+  const what=S.mode==="weekly"?"weekly events":`events · ${WHEN[S.when].toLowerCase()}${S.sort==="place"?" · nearest first":""}`;
+  $("#count").textContent=`${res.total+res.ongoing} ${what}`;
+  $("#results").innerHTML=(res.html||`<div class="empty">${esc(emptyMsg())}</div>`)+
+    (res.shown<res.total?`<button class="showmore" type="button" id="more">Show ${Math.min(40,res.total-res.shown)} more (${res.total-res.shown} left)</button>`:"");
+  const u=new URLSearchParams({mode:S.mode,sort:S.sort,when:S.when});if(S.cat)u.set("cat",S.cat);if(S.dist)u.set("dist",S.dist);
+  try{history.replaceState(null,"","?"+u);}catch(e){}
+  setBarH();pruneMore(document);
+}
+// Show "More" only where the 2-line clamp actually hides text.
+function pruneMore(root){requestAnimationFrame(()=>root.querySelectorAll(".ev:not(.open)").forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
+function setBarH(){const mob=matchMedia("(max-width:959px)").matches;document.documentElement.style.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");}
 function setMeta(){
-  const up=EVENTS.filter(e=>endOf(e)>=today).sort((a,b)=>pd(a.start)-pd(b.start));
-  const next=up[0];const nd=next?daysTo(next):null;
-  const nextTxt=next?(nd<=0?"happening now":nd===1?"next up tomorrow":"next up in "+nd+"d"):"none scheduled";
-  const scanAge=Math.round((today-pd(LAST_SCAN))/864e5);
-  const staleTxt=scanAge>SCAN_STALE_DAYS?`<span class="stale">Scan is ${scanAge} days old - refresh overdue</span>`:"";
-  $("#meta").innerHTML=`<span>Updated <b>${pd(LAST_SCAN).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}</b></span>${staleTxt}<span><b>${up.length}</b> upcoming</span><span>${nextTxt}</span>`;
+  const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
+  $("#meta").innerHTML=`Updated ${MON[ls.getMonth()]} ${ls.getDate()} &middot; ${up.toLocaleString()} upcoming${age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:""}`;
 }
-$("#view").onchange=e=>{activeView=e.target.value;localStorage.setItem("ev_view",activeView);buildView();};
-$("#search").oninput=e=>{q=e.target.value.trim().toLowerCase();buildView();};
-const SUN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg>';
-const MOON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg>';
-function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const b=$("#themeBtn");if(b){b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}}
-function initTheme(){let t=localStorage.getItem("ev_theme");if(t!=="dark"&&t!=="light")t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";applyTheme(t);$("#themeBtn").onclick=()=>{const n=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";localStorage.setItem("ev_theme",n);applyTheme(n);};}
-initTheme();setMeta();buildView();
+document.addEventListener("toggle",ev=>{if(ev.target.open)pruneMore(ev.target);},true);
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest("button");if(!b)return;
+  if(b.classList.contains("more")){const r=b.closest(".ev");const o=r.classList.toggle("open");b.textContent=o?"Less":"More";b.setAttribute("aria-expanded",o);return;}
+  if(b.id==="more"){S.limit+=40;render();return;}
+  if(b.id==="themeBtn")return;
+  if(b.dataset.when){S.when=b.dataset.when;S.mode="upcoming";}
+  else if(b.dataset.mode){S.mode=b.dataset.mode;}
+  else if(b.dataset.cat!==undefined){S.cat=b.dataset.cat;}
+  else if(b.dataset.dist!==undefined){S.dist=+b.dataset.dist;}
+  else if(b.dataset.sort){S.sort=b.dataset.sort;S.mode="upcoming";}
+  else return;
+  S.limit=40;render();
+});
+document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="cat")S.cat=ev.target.value;if(k==="dist")S.dist=+ev.target.value;S.limit=40;render();});
+let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=ev.target.value.trim().toLowerCase();S.limit=40;render();},150);});
+addEventListener("resize",setBarH);
+// A tab left open overnight: recompute "today" when it comes back.
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;const was=iso(today);setToday();if(iso(today)!==was){setMeta();render();}});
+
+// Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const b=$("#themeBtn");b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}
+let theme="light";try{if(localStorage.getItem("ev_theme")==="dark")theme="dark";}catch(e){}
+applyTheme(theme);
+$("#themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();});
+
+setMeta();render();
 </script>
 </body>
 </html>

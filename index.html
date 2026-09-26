@@ -16,6 +16,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://buildwithbaker.github.io/northwoods-area-events/">
 <meta property="og:title" content="Northwoods Area Events">
@@ -45,15 +46,19 @@
   --text:#E7EBF1; --link:#9CBBE8; --stale:#F2A7A7; color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* --sl/--sr: side gutters that clear a notch in landscape (viewport-fit=cover) */
+:root{--sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
+/* keep a focused item clear of the sticky bar plus one day header */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + 60px)}
 body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+:root[data-theme="dark"] :focus-visible{outline-color:var(--link)}
 .vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
-.shell{max-width:1200px;margin:0 auto;padding:0 16px 56px}
-.top{display:flex;align-items:center;gap:12px;padding:14px 0 10px}
+.shell{max-width:1200px;margin:0 auto;padding:0 var(--sr) calc(56px + env(safe-area-inset-bottom)) var(--sl)}
+.top{display:flex;align-items:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 0 10px}
 .top .ttl{flex:1;min-width:0}
 .top h1{font-size:19px;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--primary-deep)}
 :root[data-theme="dark"] .top h1{color:var(--text)}
@@ -64,21 +69,24 @@ a{color:inherit}
 .iconbtn svg{width:20px;height:20px}
 
 /* sticky control bar */
-.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 16px 10px;margin:0 -16px;border-bottom:1px solid var(--neutral-soft)}
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px var(--sr) 10px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--neutral-soft)}
 .row1{display:flex;gap:8px;align-items:center}
 .sw{position:relative;flex:1;min-width:0}
 .sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--neutral);pointer-events:none}
-.search{width:100%;height:44px;padding:0 12px 0 38px;border:1px solid var(--neutral-border);border-radius:10px;font-size:16px;background:var(--surface)}
-.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--neutral-border);border-radius:10px;background:var(--surface);padding:3px;height:44px}
+.search{width:100%;min-height:44px;padding:0 12px 0 38px;border:1px solid var(--neutral-border);border-radius:10px;font-size:16px;background:var(--surface)}
+.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--neutral-border);border-radius:10px;background:var(--surface);padding:3px;min-height:44px}
 .seg button{border:0;background:transparent;border-radius:7px;padding:0 12px;font-size:14px;font-weight:600;color:var(--neutral);cursor:pointer;min-width:52px}
 .seg button[aria-pressed="true"]{background:var(--primary);color:#fff}
-.chips{display:flex;gap:6px;overflow-x:auto;margin:8px -16px 0;padding:2px 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.search::placeholder{color:var(--neutral)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:6px -16px 0;padding:4px 16px;scroll-padding-inline:16px 40px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+/* right-edge fade says the row scrolls; .end (set in script) drops it once the row is scrolled to its end */
+.chips:not(.end){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent)}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
+.chip{flex-shrink:0;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);font-weight:700}
 :root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
 .chipsep{flex-shrink:0;width:1px;background:var(--neutral-border);margin:6px 2px}
-.chipsel{flex-shrink:0;height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
+.chipsel{flex-shrink:0;min-height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
 .chipsel.on{background-color:var(--primary-soft);border-color:var(--primary);font-weight:700;color:var(--primary-deep)}
 :root[data-theme="dark"] .chipsel.on{color:#fff}
 
@@ -123,6 +131,9 @@ a{color:inherit}
 .footer-note{font-size:12.5px;color:var(--neutral);margin-top:24px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6}
 .footer-note a{color:var(--link)}
 .footer-note strong{color:var(--text)}
+
+/* short screens (landscape phones, big zoom): the bar scrolls away instead of sticking */
+@media (max-height:500px){.bar{position:static} .ghead{top:0} html{scroll-padding-top:60px}}
 
 /* desktop: sidebar filters + results */
 @media (min-width:960px){
@@ -1618,7 +1629,10 @@ function showMore(){
 }
 // Show "More" only where the 2-line clamp actually hides text. root: an element to search, or a list of rows.
 function pruneMore(root){requestAnimationFrame(()=>(root.querySelectorAll?root.querySelectorAll(".ev:not(.open)"):root).forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
-function setBarH(){const mob=matchMedia("(max-width:959px)").matches;document.documentElement.style.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");}
+// Chip-row fade: on until the row is scrolled to its end.
+function chipsEnd(){const c=$("#chips");c.classList.toggle("end",c.scrollLeft+c.clientWidth>=c.scrollWidth-2);}
+$("#chips").addEventListener("scroll",chipsEnd,{passive:true});
+function setBarH(){chipsEnd();const mob=matchMedia("(max-width:959px)").matches;document.documentElement.style.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");}
 function setMeta(){
   const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
   $("#meta").innerHTML=`Updated ${MON[ls.getMonth()]} ${ls.getDate()} &middot; ${up.toLocaleString()} upcoming${age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:""}`;
@@ -1672,6 +1686,10 @@ applyTheme(theme);
 $("#themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();});
 
 setMeta();render();
+
+// Service worker (installable app + offline copy). GitHub Pages only: the same file also runs as a Cowork artifact.
+// sw.js is network-first for the page - see CLAUDE.md before changing it.
+if("serviceWorker" in navigator&&location.hostname.endsWith("github.io"))navigator.serviceWorker.register("sw.js").catch(e=>console.warn("Service worker registration failed:",e));
 </script>
 </body>
 </html>

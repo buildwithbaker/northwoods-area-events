@@ -53,6 +53,28 @@ For what used to be one big "Local" bucket:
   never guess a town, coordinates or miles.
 - No `</script` and no `<!--` anywhere in the data - either one ends the page's script.
 
+## Installable app (manifest + service worker)
+- `manifest.webmanifest` (linked in the head) and `icon-192.png`, `icon-512.png`,
+  `icon-maskable-512.png` (rendered from `favicon.svg`) let Android Chrome install the site as an app.
+- `sw.js` is the service worker. It is registered at the bottom of the script, only when the host
+  ends in `github.io` (the same `index.html` also runs as a Cowork artifact).
+- **`sw.js` must stay NETWORK-FIRST for the page.** The weekly scan rewrites `index.html`; a
+  cache-first page would keep showing friends last week's events. The cached page is only an
+  offline fallback. Google Fonts are cache-first; nothing else is intercepted. Bump `VERSION` in
+  `sw.js` when its logic changes (old caches are deleted on activate).
+- A service worker stays on phones after a bad deploy, so changes to `sw.js` need sign-off.
+- **Kill switch** if a bad worker ships: replace `sw.js` with the version below and merge. Each phone
+  picks it up on its next visit, and the worker deletes its caches and unregisters itself.
+  ```js
+  self.addEventListener("install", () => self.skipWaiting());
+  self.addEventListener("activate", (e) => e.waitUntil((async () => {
+    for (const k of await caches.keys()) await caches.delete(k);
+    await self.registration.unregister();
+    for (const c of await self.clients.matchAll({ type: "window" })) c.navigate(c.url);
+  })()));
+  ```
+- The weekly scan never touches any of these files.
+
 ## Deploy
 GitHub Pages serves this repo as a project site at
 https://buildwithbaker.github.io/northwoods-area-events/. No build step - merging a PR

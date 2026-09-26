@@ -15,11 +15,32 @@ Hayward, Duluth, and the Wisconsin Dells. Anchor town: Ashland, WI.
 ## The weekly scan
 The weekly scheduled task re-fetches every source in `scan-sources.md`, drops past events,
 refreshes the arrays, sets `LAST_SCAN`, and updates the Cowork artifact from `index.html`.
-**Edit `index.html` in place - preserve the structure exactly**: dropdown views, the
-category set (including Conventions and Theater), the 1-2 sentence description on every
-event, day-grouped Weekly Events, icon and pill rows, and the specific event URL on each
-entry. Do not redesign it during a scan. `My Bands` (touring acts from Adam's watch-list)
-is a distinct category from `Concert` (local venue shows).
+**A scan edits data only**: `LAST_SCAN`, `EVENTS`, `RECURRING` and `TOWNS`. It never touches
+the page head, the CSS, the markup or anything below the `// ===== render` line, and it keeps
+the category set (including Conventions and Theater) and `CATMETA` as they are. Do not
+redesign the page during a scan. `My Bands` (touring acts from Adam's watch-list) is a
+distinct category from `Concert` (local venue shows).
+
+### Data shape (names and shape are fixed; the render code depends on them)
+- `LAST_SCAN = "YYYY-MM-DD"` - the scan date.
+- `EVENTS` - one object per line: `start`, optional `end`, optional `dates`, `title`, `place`,
+  optional `town`, `region`, `cat`, `url`, `desc`.
+  - `dates:["YYYY-MM-DD", ...]` - for an event that happens on separate days (a monthly group,
+    a weekly class). Sorted, past days trimmed each scan, and `start` must equal `dates[0]` and
+    `end` must equal the last date. A continuous run (an exhibit, a festival) has no `dates`.
+    Only list dates read off the source; never compute them from "first Friday" prose.
+  - `desc` - 1-2 sentences for readers. No scan bookkeeping ("Recurring listing: ...",
+    "after four blank scans") and no mileage - distance comes from `TOWNS`.
+  - `url` - the event's own page, `https:` only. The page renders any other scheme without a
+    link. A monthly calendar page is a fallback; roll it to the current month each scan.
+- `RECURRING` - weekly rows: `day`, `title`, `place`, optional `town`, `region`, `cat`,
+  optional `url`, optional `seasonStart` / `seasonEnd`, `note`.
+- `TOWNS` - keyed `"Town, ST"`: `{lat, lon, mi, src}`. `lat`/`lon` from the US Census Gazetteer
+  (USGS GNIS populated place where Census has none), `mi` = OSRM driving miles from Ashland, WI,
+  `src` names both and says when the route uses a ferry or a seasonal ice road. `town` on a row must be a key
+  here. A town that cannot be sourced is left off the row (it sorts last as "distance unknown");
+  never guess a town, coordinates or miles.
+- No `</script` and no `<!--` anywhere in the data - either one ends the page's script.
 
 ## Deploy
 GitHub Pages serves this repo as a project site at

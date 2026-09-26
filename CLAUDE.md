@@ -35,8 +35,9 @@ distinct category from `Concert` (local venue shows).
     link. A monthly calendar page is a fallback; roll it to the current month each scan.
 - `RECURRING` - weekly rows: `day`, `title`, `place`, optional `town`, `region`, `cat`,
   optional `url`, optional `seasonStart` / `seasonEnd`, `note`.
-- `TOWNS` - keyed `"Town, ST"`: `{lat, lon, mi, src}`. `lat`/`lon` from the US Census Gazetteer,
-  `mi` = OSRM driving miles from Ashland, WI, `src` names both. `town` on a row must be a key
+- `TOWNS` - keyed `"Town, ST"`: `{lat, lon, mi, src}`. `lat`/`lon` from the US Census Gazetteer
+  (USGS GNIS populated place where Census has none), `mi` = OSRM driving miles from Ashland, WI,
+  `src` names both and says when the route uses a ferry or a seasonal ice road. `town` on a row must be a key
   here. A town that cannot be sourced is left off the row (it sorts last as "distance unknown");
   never guess a town, coordinates or miles.
 - No `</script` and no `<!--` anywhere in the data - either one ends the page's script.

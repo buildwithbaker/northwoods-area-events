@@ -197,6 +197,7 @@ const TOWNS = {
   "Mellen, WI":{lat:46.323977,lon:-90.660454,mi:23,src:"Census 2024 Gazetteer place 5550700; OSRM 2026-09-25"},
   "Bayfield, WI":{lat:46.816135,lon:-90.824838,mi:24,src:"Census 2024 Gazetteer place 5505350; OSRM 2026-09-25"},
   "Delta, WI":{lat:46.453414,lon:-91.294325,mi:28,src:"Census 2024 Gazetteer cousub 5500719662; OSRM 2026-09-25"},
+  "La Pointe, WI":{lat:46.7791011,lon:-90.7865723,mi:28,src:"USGS GNIS populated place 1567683; OSRM 2026-09-26 (route crosses on the mapped Madeline Island winter ice road; the open-water crossing is the Bayfield ferry)"},
   "Iron River, WI":{lat:46.579326,lon:-91.39985,mi:29,src:"Census 2024 Gazetteer place 5537175; OSRM 2026-09-25"},
   "Cornucopia, WI":{lat:46.856681,lon:-91.108144,mi:31,src:"Census 2024 Gazetteer place 5517150; OSRM 2026-09-25"},
   "Red Cliff, WI":{lat:46.91006,lon:-90.787441,mi:31,src:"Census 2024 Gazetteer place aiannh 3085; OSRM 2026-09-25"},
@@ -278,10 +279,7 @@ const TOWNS = {
   "Milwaukee, WI":{lat:43.063348,lon:-87.966695,mi:339,src:"Census 2024 Gazetteer place 5553000; OSRM 2026-09-25"},
   "West Allis, WI":{lat:43.007186,lon:-88.028986,mi:342,src:"Census 2024 Gazetteer place 5585300; OSRM 2026-09-25"},
   "Lake Geneva, WI":{lat:42.583346,lon:-88.428454,mi:368,src:"Census 2024 Gazetteer place 5541450; OSRM 2026-09-25"},
-  "Cedar Rapids, IA":{lat:41.96419,lon:-91.67917,mi:403,src:"Census 2024 Gazetteer place 1912000; OSRM 2026-09-25"},
-  "Rosemont, IL":{lat:41.988978,lon:-87.871739,mi:425,src:"Census 2024 Gazetteer place 1765819; OSRM 2026-09-25"},
-  "Coralville, IA":{lat:41.698795,lon:-91.5968,mi:438,src:"Census 2024 Gazetteer place 1916230; OSRM 2026-09-25"},
-  "La Pointe, WI":{lat:46.940645,lon:-90.57083,mi:null,src:"Census 2024 Gazetteer cousub 5500342562; OSRM 2026-09-25; mi withheld: town centroid snaps 8 km to a road"}
+  "Cedar Rapids, IA":{lat:41.96419,lon:-91.67917,mi:403,src:"Census 2024 Gazetteer place 1912000; OSRM 2026-09-25"}
 };
 
 // One-time / dated events. start/end = YYYY-MM-DD. Past ones auto-hide on load.
@@ -1265,7 +1263,6 @@ const EVENTS = [
   {start:"2027-05-05", title:"That 70's Show Starring Jim Witter", place:"Lakeland Union High School Theater, Minocqua WI", town:"Minocqua, WI", region:"Northwoods", cat:"Concert", url:"https://www.minocqua.org/event/that-70s-show-starring-jim-witter-presented-by-lakeland-performing-arts/40232/", desc:"Jim Witter performs a 1970s themed music show presented by Lakeland Performing Arts."},
   {start:"2027-05-07", end:"2027-05-09", title:"AniMinneapolis", place:"Hyatt Regency, Minneapolis", town:"Minneapolis, MN", region:"Twin Cities", cat:"Convention", url:"https://animinneapolis.com/", desc:"Spring Minneapolis anime convention with Japanese guests, concerts, gaming, and cosplay."},
   {start:"2027-05-08", title:"Hungry Bear Gravel", place:"13460 Spruce St, Cable", town:"Cable, WI", region:"Northwoods", cat:"Local", url:"https://www.cambatrails.org/events/hungrybeargravel", desc:"Northwoods gravel race 8am-4pm with the Hungry Bear 100, Snacking Bear 60, and Climbing Cub routes."},
-  {start:"2027-05-14", end:"2027-05-16", title:"Anime Central (ACen)", place:"Rosemont, IL (Chicago)", town:"Rosemont, IL", region:"Chicago area", cat:"Convention", url:"https://www.acen.org/", desc:"The Midwest's biggest anime convention, drawing tens of thousands to Rosemont each May. Just past the 400-mi range line but tracked as an outlier."},
   {start:"2027-05-14", end:"2027-05-16", title:"Milwaukee Horror Con", place:"Baird Center, Milwaukee", town:"Milwaukee, WI", region:"Milwaukee", cat:"Convention", url:"https://fancons.com/events/schedule.php?loc=usWI", desc:"Horror film and pop-culture convention with genre celebrity guests."},
   {start:"2027-05-15", end:"2027-05-16", title:"Anime Bemidji", place:"Sanford Center, Bemidji MN", town:"Bemidji, MN", region:"Northwoods", cat:"Convention", url:"https://fancons.com/events/schedule.php?loc=usMN", desc:"Northern Minnesota anime convention at the Sanford Center. One of the closest anime cons to Ashland."},
   {start:"2027-05-15", title:"Ashland House to House Garage Sale", place:"Ashland", town:"Ashland, WI", region:"Chequamegon Bay", cat:"Local", url:"https://www.visitashland.com/", desc:"Citywide garage sale day coordinated by the Ashland Area Chamber, with a printed map of participating homes."},
@@ -1291,7 +1288,6 @@ const EVENTS = [
   {start:"2027-07-04", title:"4th of July Celebration", place:"Downtown Minocqua, Minocqua WI", town:"Minocqua, WI", region:"Northwoods", cat:"Festival", url:"https://www.minocqua.org/event/4th-of-july-celebration/29456/", desc:"Celebrate Independence Day in downtown Minocqua. The kiddie parade starts at 3:45 pm and pre-registration is not required."},
   {start:"2027-07-09", end:"2027-07-11", title:"Kitsune Kon", place:"KI Convention Center, Green Bay", town:"Green Bay, WI", region:"Green Bay", cat:"Convention", url:"https://kitsunekon.com/", desc:"Green Bay's anime convention with guests, artist alley, cosplay, and gaming."},
   {start:"2027-07-09", end:"2027-07-25", title:"Sister Act", place:"NorShor Theatre, Duluth", town:"Duluth, MN", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/shows/sister-act", desc:"Duluth Playhouse's feel-good summer musical about a lounge singer who hides out in a convent and shakes up the choir."},
-  {start:"2027-07-30", end:"2027-08-01", title:"AnimeIowa", place:"Hyatt Regency Coralville, Coralville IA", town:"Coralville, IA", region:"Iowa", cat:"Convention", url:"https://animeiowa.com/", desc:"Iowa's largest and longest running anime convention. Sits at the far edge of the tracked radius at roughly 440 mi."},
   {start:"2027-08-05", title:"After Loon Delight Art and Craft Show", place:"Torpy Park, Minocqua WI", town:"Minocqua, WI", region:"Northwoods", cat:"Festival", url:"https://www.minocqua.org/event/after-loon-delight-art-%26-craft-show/36141/", desc:"Continue the celebration after Mercer's Loon Day with the After Loon Delight Craft Show, held at Torpy Park on Lake Minocqua."},
   {start:"2027-08-06", end:"2027-08-07", title:"Point to La Pointe Open Water Swim", place:"Bayfield to Madeline Island, WI", town:"La Pointe, WI", region:"Chequamegon Bay", cat:"Local", url:"https://www.bayfieldrec.org/point-to-la-pointe.html", desc:"A 2.1 mile point to point swim across Lake Superior, with packet pickup Friday 2:00-8:00 PM at the Lakeside Pavilion and a 7:10am race start Saturday. The race is the largest fundraiser for the Bayfield Rec Center."},
   {start:"2027-08-06", end:"2027-08-08", title:"The Prom (School Edition)", place:"NorShor Theatre, Duluth", town:"Duluth, MN", region:"Duluth / Superior", cat:"Theater", url:"https://www.duluthplayhouse.org/shows/the-prom-school-edition", desc:"Duluth Playhouse Youth Theatre production of the big-hearted musical about acceptance and visibility."},

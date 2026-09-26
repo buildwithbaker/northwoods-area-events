@@ -17,9 +17,20 @@ The weekly scheduled task re-fetches every source in `scan-sources.md`, drops pa
 refreshes the arrays, sets `LAST_SCAN`, and updates the Cowork artifact from `index.html`.
 **A scan edits data only**: `LAST_SCAN`, `EVENTS`, `RECURRING` and `TOWNS`. It never touches
 the page head, the CSS, the markup or anything below the `// ===== render` line, and it keeps
-the category set (including Conventions and Theater) and `CATMETA` as they are. Do not
-redesign the page during a scan. `My Bands` (touring acts from Adam's watch-list) is a
-distinct category from `Concert` (local venue shows).
+the category set and `CATMETA` as they are. Do not redesign the page during a scan. `My Bands`
+(touring acts from Adam's watch-list) is a distinct category from `Concert` (local venue shows).
+
+Categories: Festival, Concert, My Bands, Theater, Convention, Local, Classes & Talks,
+Outdoors & Fitness, Family & Kids, Community, Water Park, Gaming, Fishing, Zoo, Beach, Casino.
+For what used to be one big "Local" bucket:
+- `Classes & Talks` - classes, workshops, lectures, author events, book clubs, Science on Tap.
+- `Outdoors & Fitness` - hikes, runs and walks, bike and ATV rides, ski and fat-bike events, yoga
+  and exercise classes, open skate, trap shooting.
+- `Family & Kids` - story times, kids' and teen programs, trunk-or-treats, family days.
+- `Community` - farmers markets and craft markets, community meals and fundraiser dinners,
+  support groups, public meetings, blood drives, clinics and food pantries.
+- `Local` - only what fits none of these (exhibits, parades, haunted attractions, spectator
+  sports, parties). When a row fits two, it stays `Local`.
 
 ### Data shape (names and shape are fixed; the render code depends on them)
 - `LAST_SCAN = "YYYY-MM-DD"` - the scan date.

@@ -70,6 +70,8 @@ a{color:inherit}
 /* results */
 .side{display:none}
 .count{font-size:13px;color:var(--neutral);margin:12px 2px 4px}
+.geonote{font-size:13.5px;color:var(--text);background:var(--primary-soft);border:1px solid var(--primary);border-radius:10px;padding:8px 12px;margin-top:12px}
+.geonote[hidden]{display:none}
 .ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--bg);display:flex;align-items:baseline;gap:8px;padding:12px 2px 6px;font-size:13px;font-weight:700;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
 .ghead .n{color:var(--neutral);font-weight:600;letter-spacing:0}
 .ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--neutral);font-size:12.5px}
@@ -153,6 +155,7 @@ a{color:inherit}
       <nav class="side" id="side" aria-label="Filters"></nav>
     </div>
     <main>
+      <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
       <div id="results"></div>
       <div class="footer-note">
@@ -1404,7 +1407,13 @@ const daysFrom=d=>Math.round((d-today)/864e5);
 
 // --- place: town key -> TOWNS row (drive miles from Ashland); unknown towns sort last ---
 const townRow=e=>e.town&&TOWNS[e.town]?TOWNS[e.town]:null;
-const miOf=e=>{const t=townRow(e);return t&&t.mi!=null?t.mi:null;};
+// "From": Ashland = OSRM driving miles from TOWNS; My location = straight-line miles from the phone.
+// The position lives in memory only - never stored, never put in the URL.
+const GEO={pos:null,note:""};
+const fromMe=()=>S.from==="me"&&!!GEO.pos;
+function crow(a,b,c,d){const R=3958.8,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b);const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+const miOf=e=>{const t=townRow(e);if(!t)return null;if(fromMe())return Math.round(crow(GEO.pos.lat,GEO.pos.lon,t.lat,t.lon));return t.mi!=null?t.mi:null;};
+const miUnit=()=>fromMe()?" mi straight-line":" mi";
 function venue(e){
   if(!e.town)return "";
   const name=e.town.replace(/, [A-Z]{2}$/,"").replace(/\./g,"\\.?").replace(/'/g,"['\\s]?");
@@ -1416,7 +1425,7 @@ function locLine(e){
   const mi=miOf(e);
   if(!e.town)return esc(e.place);
   const v=venue(e);
-  return `<b>${esc(e.town)}</b>${mi!=null&&mi>=3?` &middot; ${mi} mi`:""}${v?` &middot; ${esc(v)}`:""}`;
+  return `<b>${esc(e.town)}</b>${mi!=null&&mi>=3?` &middot; ${mi}${miUnit()}`:""}${v?` &middot; ${esc(v)}`:""}`;
 }
 
 // --- icons ---
@@ -1429,7 +1438,7 @@ const MOON_ICON=svg('<path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/>');
 
 // --- state (URL-driven so every view is linkable) ---
 const P=new URLSearchParams(location.search);
-const S={mode:P.get("mode")==="weekly"?"weekly":"upcoming",sort:P.get("sort")==="place"?"place":"date",when:P.get("when")||"7",cat:P.get("cat")||"",dist:+(P.get("dist")||0)||0,q:"",limit:40};
+const S={mode:P.get("mode")==="weekly"?"weekly":"upcoming",sort:P.get("sort")==="place"?"place":"date",when:P.get("when")||"7",cat:P.get("cat")||"",dist:+(P.get("dist")||0)||0,from:"ashland",q:"",limit:40};
 const WHENS=[["today","Today"],["weekend","This weekend"],["7","Next 7 days"],["30","Next 30 days"],["all","All dates"]];
 const WHEN=Object.fromEntries(WHENS);
 if(!WHEN[S.when])S.when="7";
@@ -1494,7 +1503,7 @@ function viewPlace(list){
   const arr=list.map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>(miOf(a.e)??9999)-(miOf(b.e)??9999)||(a.e.town||"~").localeCompare(b.e.town||"~")||(isOngoing(a.e)?1:0)-(isOngoing(b.e)?1:0)||a.d-b.d);
   const shown=arr.slice(0,S.limit);const gs=[];
   shown.forEach(x=>{const k=miOf(x.e)!=null?x.e.town:(x.e.town||"Distance unknown");const l=gs[gs.length-1];if(l&&l.k===k)l.items.push(x);else gs.push({k,mi:miOf(x.e),items:[x]});});
-  const html=gs.map(g=>group(g.k,g.items.length,g.items.map(x=>row(x.e,x.d,true)).join(""),g.mi!=null?(g.mi<3?"in town":`${g.mi} mi from Ashland`):"distance unknown")).join("");
+  const html=gs.map(g=>group(g.k,g.items.length,g.items.map(x=>row(x.e,x.d,true)).join(""),g.mi!=null?(fromMe()?(g.mi<3?"near you":`${g.mi} mi straight-line from you`):(g.mi<3?"in town":`${g.mi} mi from Ashland`)):"distance unknown")).join("");
   return {html,total:arr.length,shown:shown.length,ongoing:0};
 }
 function inSeason(o){return (!o.seasonStart||pd(o.seasonStart)<=today)&&(!o.seasonEnd||pd(o.seasonEnd)>=today);}
@@ -1512,11 +1521,13 @@ function viewWeekly(){
 // --- controls ---
 const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
 function catSelect(){return `<select class="chipsel${S.cat?" on":""}" data-k="cat" aria-label="Category"><option value="">All categories</option>${CATS.map(c=>`<option value="${esc(c)}"${S.cat===c?" selected":""}>${esc(VIEWLABEL[c]||c)}</option>`).join("")}</select>`;}
-function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="Drive distance from Ashland"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m} mi</option>`).join("")}</select>`;}
+const distLabel=()=>fromMe()?"Straight-line distance from you":"Drive distance from Ashland";
+function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="${distLabel()}"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m}${miUnit()}</option>`).join("")}</select>`;}
+function fromSelect(){return `<select class="chipsel${S.from==="me"?" on":""}" data-k="from" aria-label="Measure distance from"><option value="ashland"${S.from!=="me"?" selected":""}>From: Ashland</option><option value="me"${S.from==="me"?" selected":""}>From: My location</option></select>`;}
 function chipsHTML(){
-  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming">&larr; Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${distSelect()}`;
+  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming">&larr; Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${fromSelect()}${distSelect()}`;
   return WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${v}</button>`).join("")+
-    `<span class="chipsep" aria-hidden="true"></span><button class="chip" type="button" data-mode="weekly">Weekly</button>${catSelect()}${distSelect()}`;
+    `<span class="chipsep" aria-hidden="true"></span><button class="chip" type="button" data-mode="weekly">Weekly</button>${catSelect()}${fromSelect()}${distSelect()}`;
 }
 function sideHTML(){
   const r=range();
@@ -1524,7 +1535,8 @@ function sideHTML(){
   const opt=(attr,val,label,on,n)=>`<button class="opt" type="button" ${attr}="${esc(val)}" aria-pressed="${on}"><span>${label}</span>${n!=null?`<span class="n">${n}</span>`:""}</button>`;
   return `<h2>Show</h2>${opt("data-mode","upcoming","Upcoming events",S.mode==="upcoming")}${opt("data-mode","weekly","Weekly events",S.mode==="weekly")}`+
     (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}`:"")+
-    `<h2>Drive distance from Ashland</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m} mi`:"Any distance",S.dist===m)).join("")}`+
+    `<h2>Distance from</h2>${opt("data-from","ashland","Ashland (driving)",S.from!=="me")}${opt("data-from","me","My location (straight-line)",S.from==="me")}`+
+    `<h2>${distLabel()}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m}${miUnit()}`:"Any distance",S.dist===m)).join("")}`+
     `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),S.cat===c,base.filter(e=>e.cat===c).length)).join("")}`;
 }
 function emptyMsg(){
@@ -1535,8 +1547,9 @@ function render(){
   $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
   $("#chips").innerHTML=chipsHTML();$("#side").innerHTML=sideHTML();
   const res=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
-  const what=S.mode==="weekly"?"weekly events":`events · ${WHEN[S.when].toLowerCase()}${S.sort==="place"?" · nearest first":""}`;
+  const what=S.mode==="weekly"?"weekly events":`events · ${WHEN[S.when].toLowerCase()}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
   $("#count").textContent=`${res.total+res.ongoing} ${what}`;
+  const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
   $("#results").innerHTML=(res.html||`<div class="empty">${esc(emptyMsg())}</div>`)+
     (res.shown<res.total?`<button class="showmore" type="button" id="more">Show ${Math.min(40,res.total-res.shown)} more (${res.total-res.shown} left)</button>`:"");
   const u=new URLSearchParams({mode:S.mode,sort:S.sort,when:S.when});if(S.cat)u.set("cat",S.cat);if(S.dist)u.set("dist",S.dist);
@@ -1560,11 +1573,30 @@ document.addEventListener("click",ev=>{
   else if(b.dataset.mode){S.mode=b.dataset.mode;}
   else if(b.dataset.cat!==undefined){S.cat=b.dataset.cat;}
   else if(b.dataset.dist!==undefined){S.dist=+b.dataset.dist;}
+  else if(b.dataset.from){setFrom(b.dataset.from);return;}
   else if(b.dataset.sort){S.sort=b.dataset.sort;S.mode="upcoming";}
   else return;
   S.limit=40;render();
 });
-document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="cat")S.cat=ev.target.value;if(k==="dist")S.dist=+ev.target.value;S.limit=40;render();});
+document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="from"){setFrom(ev.target.value);return;}if(k==="cat")S.cat=ev.target.value;if(k==="dist")S.dist=+ev.target.value;S.limit=40;render();});
+// Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
+const FALLBACK=" - showing driving miles from Ashland instead.";
+function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;S.limit=40;render();}
+function setFrom(v){
+  if(v!=="me"){S.from="ashland";GEO.pos=null;GEO.note="";S.limit=40;render();return;}
+  if(!("geolocation" in navigator)||!navigator.geolocation){geoFail("This browser cannot share its location");return;}
+  S.from="me";GEO.note="Finding your location...";render();
+  try{
+    navigator.geolocation.getCurrentPosition(p=>{
+      if(S.from!=="me")return;
+      GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude};
+      GEO.note="Distances are straight-line miles from your location, not driving miles.";S.limit=40;render();
+    },err=>{
+      if(S.from!=="me")return;
+      geoFail(err&&err.code===1?"Location permission was denied":err&&err.code===3?"Finding your location timed out":"Your location is not available");
+    },{enableHighAccuracy:false,timeout:15000,maximumAge:600000});
+  }catch(e){geoFail("Your location is not available");}
+}
 let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=ev.target.value.trim().toLowerCase();S.limit=40;render();},150);});
 addEventListener("resize",setBarH);
 // A tab left open overnight: recompute "today" when it comes back.

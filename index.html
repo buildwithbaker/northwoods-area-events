@@ -50,6 +50,7 @@ body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Ari
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 .shell{max-width:1200px;margin:0 auto;padding:0 16px 56px}
 .top{display:flex;align-items:center;gap:12px;padding:14px 0 10px}
@@ -165,12 +166,13 @@ a{color:inherit}
         <div class="sw"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
         <div class="seg" role="group" aria-label="Sort by"><button type="button" id="segDate" data-sort="date" aria-pressed="true">Date</button><button type="button" id="segPlace" data-sort="place" aria-pressed="false">Nearest</button></div>
       </div>
-      <div class="chips" id="chips" role="toolbar" aria-label="Filters"></div>
+      <div class="chips" id="chips" role="group" aria-label="Filters"></div>
       <nav class="side" id="side" aria-label="Filters"></nav>
     </div>
     <main>
       <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
+      <div class="vh" id="announce" role="status" aria-live="polite"></div>
       <div id="results"></div>
       <div class="footer-note">
     <strong>Sources scanned:</strong> <a href="https://visitashland.com" target="_blank" rel="noopener">Visit Ashland</a> &middot; <a href="https://www.coawi.org/517/Ashland-Community-Events" target="_blank" rel="noopener">City of Ashland</a> &middot; <a href="https://www.bayfieldcounty.wi.gov/299/Events" target="_blank" rel="noopener">Bayfield County</a> &middot; <a href="https://www.bayfield.org/events/" target="_blank" rel="noopener">bayfield.org</a> &middot; <a href="https://www.bigtop.org/lineup.html" target="_blank" rel="noopener">Big Top Chautauqua</a> &middot; <a href="https://www.stagenorth.com" target="_blank" rel="noopener">StageNorth</a> &middot; <a href="https://www.duluthplayhouse.org/upcoming-season" target="_blank" rel="noopener">Duluth Playhouse / NorShor</a> &middot; <a href="https://renegadetheaterco.org" target="_blank" rel="noopener">Renegade</a> &middot; <a href="https://uwsuper.edu/program/theatre/" target="_blank" rel="noopener">UW-Superior Theatre</a> &middot; <a href="https://muskyfest.com" target="_blank" rel="noopener">Musky Fest</a> &middot; <a href="https://lumberjackworldchampionships.com" target="_blank" rel="noopener">Lumberjack Championships</a> &middot; <a href="https://www.bayfrontfestivalpark.com/events-calendar" target="_blank" rel="noopener">Bayfront Festival Park</a> &middot; <a href="https://visitduluth.com" target="_blank" rel="noopener">Visit Duluth</a> &middot; <a href="https://www.wisdells.com/wisconsin-dells-events-calendar" target="_blank" rel="noopener">WisDells</a> &middot; <a href="https://dnr.wisconsin.gov/topic/fishing" target="_blank" rel="noopener">WI DNR fishing</a> &middot; <a href="https://www.badriver.com/" target="_blank" rel="noopener">Bad River Casino</a> &middot; <a href="https://www.legendarywaters.com/events" target="_blank" rel="noopener">Legendary Waters</a> &middot; <a href="https://www.facebook.com/ashlandfunandgames" target="_blank" rel="noopener">Play Unplugged</a> &middot; <a href="https://www.levelupsuperior.com" target="_blank" rel="noopener">Level UP Superior</a> &middot; <a href="https://animecons.com/events/schedule.php?loc=us" target="_blank" rel="noopener">anime conventions (400 mi)</a>.
@@ -1500,29 +1502,26 @@ function recRow(o){
   return `<div class="ev">${iconTile(o.cat)}<div class="body"><div class="head"><div class="t">${titleHTML(o)}</div></div><div class="loc">${locLine(o)}</div>`+
     `${o.note?`<div class="desc">${esc(o.note)}</div>`:""}<div class="tags">${catTag(o.cat)}${o.note?`<button class="more" type="button" aria-expanded="false">More</button>`:""}</div></div></div>`;
 }
-const group=(label,n,items,sub)=>`<div class="ghead">${esc(label)} <span class="n">${n}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</div><div class="list">${items}</div>`;
+// n = the whole group's count, not just the rows in the current batch.
+const group=(label,n,items,sub)=>`<h2 class="ghead">${esc(label)} <span class="n">${n} event${n===1?"":"s"}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</h2><div class="list">${items}</div>`;
 const chev=svg('<path d="M6 9l6 6 6-6"/>');
 
-// --- views ---
+// --- views: each returns the full sorted list and how to group it; rows go out in batches of S.limit ---
 function viewDate(list){
   const r=range();
   const ongoing=list.filter(isOngoing).sort((a,b)=>lastDay(a)-lastDay(b));
   const ahead=list.filter(e=>!isOngoing(e)).map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>a.d-b.d||(miOf(a.e)??9999)-(miOf(b.e)??9999));
-  let html="";
-  if(ongoing.length)html+=`<details class="ongoing"><summary>Ongoing now <span class="n">${ongoing.length} exhibits, runs and series</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,true)).join("")}</div></details>`;
-  const shown=ahead.slice(0,S.limit);const days=[];
-  shown.forEach(x=>{const k=iso(x.d);const l=days[days.length-1];if(l&&l.k===k)l.items.push(x);else days.push({k,d:x.d,items:[x]});});
-  html+=days.map(g=>{const n=daysFrom(g.d);const lbl=n===0?"Today":n===1?"Tomorrow":DOWF[g.d.getDay()];
-    return group(lbl,g.items.length,g.items.map(x=>row(x.e,x.d,false)).join(""),`${DOW[g.d.getDay()]}, ${MON[g.d.getMonth()]} ${g.d.getDate()}`);}).join("");
-  return {html,total:ahead.length,shown:shown.length,ongoing:ongoing.length};
+  const pre=ongoing.length?`<details class="ongoing"><summary>Ongoing now <span class="n">${ongoing.length} exhibits, runs and series</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,true)).join("")}</div></details>`:"";
+  return {pre,items:ahead,ongoing:ongoing.length,key:x=>iso(x.d),row:x=>row(x.e,x.d,false),
+    label:x=>{const n=daysFrom(x.d);return n===0?"Today":n===1?"Tomorrow":DOWF[x.d.getDay()];},
+    sub:x=>`${DOW[x.d.getDay()]}, ${MON[x.d.getMonth()]} ${x.d.getDate()}`};
 }
 function viewPlace(list){
   const r=range();
   const arr=list.map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>(miOf(a.e)??9999)-(miOf(b.e)??9999)||(a.e.town||"~").localeCompare(b.e.town||"~")||(isOngoing(a.e)?1:0)-(isOngoing(b.e)?1:0)||a.d-b.d);
-  const shown=arr.slice(0,S.limit);const gs=[];
-  shown.forEach(x=>{const k=miOf(x.e)!=null?x.e.town:(x.e.town||"Distance unknown");const l=gs[gs.length-1];if(l&&l.k===k)l.items.push(x);else gs.push({k,mi:miOf(x.e),items:[x]});});
-  const html=gs.map(g=>group(g.k,g.items.length,g.items.map(x=>row(x.e,x.d,true)).join(""),g.mi!=null?(fromMe()?(g.mi<3?"near you":`${g.mi} mi straight-line from you`):(g.mi<3?"in town":`${g.mi} mi from Ashland`)):"distance unknown")).join("");
-  return {html,total:arr.length,shown:shown.length,ongoing:0};
+  const key=x=>miOf(x.e)!=null?x.e.town:(x.e.town||"Distance unknown");
+  return {pre:"",items:arr,ongoing:0,key,label:key,row:x=>row(x.e,x.d,true),
+    sub:x=>{const mi=miOf(x.e);return mi!=null?(fromMe()?(mi<3?"near you":`${mi} mi straight-line from you`):(mi<3?"in town":`${mi} mi from Ashland`)):"distance unknown";}};
 }
 function inSeason(o){return (!o.seasonStart||pd(o.seasonStart)<=today)&&(!o.seasonEnd||pd(o.seasonEnd)>=today);}
 function viewWeekly(){
@@ -1531,10 +1530,15 @@ function viewWeekly(){
   const rot=order.slice(order.indexOf(td)).concat(order.slice(0,order.indexOf(td)));
   const idx=d=>{const i=rot.indexOf(d);return i<0?7+Math.max(0,DAYORDER.indexOf(d)):i;};
   const arr=[...list].sort((a,b)=>idx(a.day)-idx(b.day)||(miOf(a)??9999)-(miOf(b)??9999));
-  const gs=[];arr.forEach(o=>{const l=gs[gs.length-1];if(l&&l.k===o.day)l.items.push(o);else gs.push({k:o.day,items:[o]});});
-  const html=gs.map(g=>group(DAYLABEL[g.k]||g.k,g.items.length,g.items.map(recRow).join(""),g.k===td?"today":"")).join("");
-  return {html,total:arr.length,shown:arr.length,ongoing:0};
+  return {pre:"",items:arr,ongoing:0,all:true,key:o=>o.day,label:o=>DAYLABEL[o.day]||o.day,row:recRow,sub:o=>o.day===td?"today":""};
 }
+// The current view (set by render) and its batching.
+let V=null;
+function groupsHTML(items){
+  const gs=[];items.forEach(x=>{const k=V.key(x);const l=gs[gs.length-1];if(l&&l.k===k)l.items.push(x);else gs.push({k,items:[x]});});
+  return gs.map(g=>group(V.label(g.items[0]),V.count[g.k],g.items.map(V.row).join(""),V.sub(g.items[0]))).join("");
+}
+const moreLabel=()=>{const left=V.items.length-V.shown;return `Show ${Math.min(40,left)} more (${left} left)`;};
 
 // --- controls ---
 const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
@@ -1543,7 +1547,7 @@ const distLabel=()=>fromMe()?"Straight-line distance from you":"Drive distance f
 function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="${distLabel()}"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m}${miUnit()}</option>`).join("")}</select>`;}
 function fromSelect(){return `<select class="chipsel${S.from==="me"?" on":""}" data-k="from" aria-label="Measure distance from"><option value="ashland"${S.from!=="me"?" selected":""}>From: Ashland</option><option value="me"${S.from==="me"?" selected":""}>From: My location</option></select>`;}
 function chipsHTML(){
-  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming">&larr; Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${fromSelect()}${distSelect()}`;
+  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming"><span aria-hidden="true">&larr; </span>Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${fromSelect()}${distSelect()}`;
   return WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${v}</button>`).join("")+
     `<span class="chipsep" aria-hidden="true"></span><button class="chip" type="button" data-mode="weekly">Weekly</button>${catSelect()}${fromSelect()}${distSelect()}`;
 }
@@ -1561,21 +1565,59 @@ function emptyMsg(){
   if(S.cat==="My Bands"&&!S.q)return "No upcoming shows from your watch-list in this range - the weekly scan adds your bands when one books a show within driving range.";
   return "Nothing matches. Try a wider date range, another category or clear the search.";
 }
+// The sidebar is display:none below 960px, so it is only built on wide screens.
+const WIDE=matchMedia("(min-width:960px)");
+function renderSide(){$("#side").innerHTML=WIDE.matches?sideHTML():"";}
+if(WIDE.addEventListener)WIDE.addEventListener("change",renderSide);else if(WIDE.addListener)WIDE.addListener(renderSide);
+// Chips are rebuilt on every render: remember which one had focus and focus its replacement.
+// The Weekly / Upcoming chip swaps its data-mode value, so any [data-mode] chip counts as the same control.
+function chipKey(el){
+  if(!el||!$("#chips").contains(el))return null;
+  if(el.dataset.when)return `[data-when="${CSS.escape(el.dataset.when)}"]`;
+  if(el.dataset.mode)return "[data-mode]";
+  if(el.dataset.k)return `[data-k="${CSS.escape(el.dataset.k)}"]`;
+  return null;
+}
 function render(){
+  const fk=chipKey(document.activeElement);
   $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
-  $("#chips").innerHTML=chipsHTML();$("#side").innerHTML=sideHTML();
-  const res=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
+  $("#chips").innerHTML=chipsHTML();renderSide();
+  if(fk){const n=$("#chips").querySelector(fk);if(n)n.focus();}
+  V=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
+  V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
+  V.shown=V.all?V.items.length:Math.min(S.limit,V.items.length);
   const what=S.mode==="weekly"?"weekly events":`events · ${WHEN[S.when].toLowerCase()}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
-  $("#count").textContent=`${res.total+res.ongoing} ${what}`;
+  $("#count").textContent=`${V.items.length+V.ongoing} ${what}`;
+  $("#announce").textContent="";
   const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
-  $("#results").innerHTML=(res.html||`<div class="empty">${esc(emptyMsg())}</div>`)+
-    (res.shown<res.total?`<button class="showmore" type="button" id="more">Show ${Math.min(40,res.total-res.shown)} more (${res.total-res.shown} left)</button>`:"");
+  const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
+  $("#results").innerHTML=(html||`<div class="empty">${esc(emptyMsg())}</div>`)+
+    (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"");
   const u=new URLSearchParams({mode:S.mode,sort:S.sort,when:S.when});if(S.cat)u.set("cat",S.cat);if(S.dist)u.set("dist",S.dist);
   try{history.replaceState(null,"","?"+u);}catch(e){}
   setBarH();pruneMore(document);
 }
-// Show "More" only where the 2-line clamp actually hides text.
-function pruneMore(root){requestAnimationFrame(()=>root.querySelectorAll(".ev:not(.open)").forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
+// Show more appends the next batch; rows already on the page are left alone.
+function showMore(){
+  const from=V.shown;S.limit+=40;V.shown=Math.min(S.limit,V.items.length);
+  const add=V.items.slice(from,V.shown);if(!add.length)return;
+  const res=$("#results"),btn=$("#more"),tpl=document.createElement("template"),rows=[];
+  let i=0;
+  // The last group on the page may continue into this batch: add to it, no second header.
+  if(from>0&&V.key(add[0])===V.key(V.items[from-1])){
+    const k=V.key(add[0]);while(i<add.length&&V.key(add[i])===k)i++;
+    tpl.innerHTML=add.slice(0,i).map(V.row).join("");rows.push(...tpl.content.children);
+    const lists=res.querySelectorAll(":scope > .list");lists[lists.length-1].append(tpl.content);
+  }
+  if(i<add.length){tpl.innerHTML=groupsHTML(add.slice(i));rows.push(...tpl.content.querySelectorAll(".ev"));res.insertBefore(tpl.content,btn);}
+  if(V.shown<V.items.length)btn.textContent=moreLabel();
+  const a=rows[0].querySelector(".t a");if(a)a.focus();else{rows[0].tabIndex=-1;rows[0].focus();}
+  if(V.shown>=V.items.length)btn.remove();
+  $("#announce").textContent=`Showing ${V.shown} of ${V.items.length} events`;
+  pruneMore(rows);
+}
+// Show "More" only where the 2-line clamp actually hides text. root: an element to search, or a list of rows.
+function pruneMore(root){requestAnimationFrame(()=>(root.querySelectorAll?root.querySelectorAll(".ev:not(.open)"):root).forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
 function setBarH(){const mob=matchMedia("(max-width:959px)").matches;document.documentElement.style.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");}
 function setMeta(){
   const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
@@ -1585,7 +1627,7 @@ document.addEventListener("toggle",ev=>{if(ev.target.open)pruneMore(ev.target);}
 document.addEventListener("click",ev=>{
   const b=ev.target.closest("button");if(!b)return;
   if(b.classList.contains("more")){const r=b.closest(".ev");const o=r.classList.toggle("open");b.textContent=o?"Less":"More";b.setAttribute("aria-expanded",o);return;}
-  if(b.id==="more"){S.limit+=40;render();return;}
+  if(b.id==="more"){showMore();return;}
   if(b.id==="themeBtn")return;
   if(b.dataset.when){S.when=b.dataset.when;S.mode="upcoming";}
   else if(b.dataset.mode){S.mode=b.dataset.mode;}
@@ -1617,8 +1659,11 @@ function setFrom(v){
 }
 let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=ev.target.value.trim().toLowerCase();S.limit=40;render();},150);});
 addEventListener("resize",setBarH);
-// A tab left open overnight: recompute "today" when it comes back.
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;const was=iso(today);setToday();if(iso(today)!==was){setMeta();render();}});
+// A tab left open overnight: recompute "today" when it comes back, and at local midnight while it stays open.
+function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render();}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;refreshDay();});
+function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,1);setTimeout(()=>{refreshDay();armMidnight();},m-n);}
+armMidnight();
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
 function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const b=$("#themeBtn");b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}

@@ -36,7 +36,7 @@
   --neutral:#526070; --neutral-border:#B0BAC8; --neutral-soft:#DDE2EA;
   --bg:#EFF2F7; --card:#FFFFFF; --surface:#FFFFFF; --desc:#3c4654;
   --text:#1A1F2B; --link:#2E5082; --stale:#8A1C1C;
-  --bar-h:0px; color-scheme:light;
+  --bar-h:0px; --gh-h:0px; color-scheme:light;
 }
 :root[data-theme="dark"]{
   --primary:#33598C; --primary-deep:#22344F; --primary-soft:#22344F;
@@ -49,7 +49,7 @@
 /* --sl/--sr: side gutters that clear a notch in landscape (viewport-fit=cover) */
 :root{--sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
 /* keep a focused item clear of the sticky bar plus one day header */
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + 60px)}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
 body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
@@ -133,7 +133,7 @@ a{color:inherit}
 .footer-note strong{color:var(--text)}
 
 /* short screens (landscape phones, big zoom): the bar scrolls away instead of sticking */
-@media (max-height:500px){.bar{position:static} .ghead{top:0} html{scroll-padding-top:60px}}
+@media (max-height:500px){.bar{position:static} .ghead{top:0} html{scroll-padding-top:max(60px, var(--gh-h) + 12px)}}
 
 /* desktop: sidebar filters + results */
 @media (min-width:960px){
@@ -1523,7 +1523,7 @@ function viewDate(list){
   const ongoing=list.filter(isOngoing).sort((a,b)=>lastDay(a)-lastDay(b));
   const ahead=list.filter(e=>!isOngoing(e)).map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>a.d-b.d||(miOf(a.e)??9999)-(miOf(b.e)??9999));
   const pre=ongoing.length?`<details class="ongoing"><summary>Ongoing now <span class="n">${ongoing.length} exhibits, runs and series</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,true)).join("")}</div></details>`:"";
-  return {pre,items:ahead,ongoing:ongoing.length,key:x=>iso(x.d),row:x=>row(x.e,x.d,false),
+  return {pre,items:ahead,ongoing:ongoing.length,dated:true,key:x=>iso(x.d),row:x=>row(x.e,x.d,false),
     label:x=>{const n=daysFrom(x.d);return n===0?"Today":n===1?"Tomorrow":DOWF[x.d.getDay()];},
     sub:x=>`${DOW[x.d.getDay()]}, ${MON[x.d.getMonth()]} ${x.d.getDate()}`};
 }
@@ -1624,15 +1624,26 @@ function showMore(){
   if(V.shown<V.items.length)btn.textContent=moreLabel();
   const a=rows[0].querySelector(".t a");if(a)a.focus();else{rows[0].tabIndex=-1;rows[0].focus();}
   if(V.shown>=V.items.length)btn.remove();
-  $("#announce").textContent=`Showing ${V.shown} of ${V.items.length} events`;
-  pruneMore(rows);
+  // Date view pages through dated events only (ongoing sit apart); Nearest pages through all of them, as #count does.
+  $("#announce").textContent=`Showing ${V.shown} of ${V.items.length} ${V.dated?"dated ":""}events`;
+  setBarH();pruneMore(rows);
 }
 // Show "More" only where the 2-line clamp actually hides text. root: an element to search, or a list of rows.
 function pruneMore(root){requestAnimationFrame(()=>(root.querySelectorAll?root.querySelectorAll(".ev:not(.open)"):root).forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
 // Chip-row fade: on until the row is scrolled to its end.
 function chipsEnd(){const c=$("#chips");c.classList.toggle("end",c.scrollLeft+c.clientWidth>=c.scrollWidth-2);}
 $("#chips").addEventListener("scroll",chipsEnd,{passive:true});
-function setBarH(){chipsEnd();const mob=matchMedia("(max-width:959px)").matches;document.documentElement.style.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");}
+// --bar-h: sticky bar height (phones). --gh-h: tallest rendered day/town header, so scroll-padding
+// clears a header that wraps at large text sizes (the CSS never goes below the old 60px allowance).
+function setBarH(){chipsEnd();const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
+  st.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");
+  st.setProperty("--gh-h",Math.max(0,...[...document.querySelectorAll("#results .ghead")].map(g=>g.offsetHeight))+"px");
+  watchSizes();}
+// Text-only zoom changes these heights without a resize event, so watch them directly.
+const sizeRO="ResizeObserver" in window?new ResizeObserver(()=>setBarH()):null;let watched=[];
+function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),...document.querySelectorAll("#results .ghead")];
+  if(els.length===watched.length&&els.every((e,i)=>e===watched[i]))return;
+  sizeRO.disconnect();els.forEach(e=>sizeRO.observe(e));watched=els;}
 function setMeta(){
   const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
   $("#meta").innerHTML=`Updated ${MON[ls.getMonth()]} ${ls.getDate()} &middot; ${up.toLocaleString()} upcoming${age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:""}`;

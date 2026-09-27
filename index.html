@@ -67,6 +67,11 @@ a{color:inherit}
 .top .meta .stale{color:var(--stale);font-weight:600}
 .iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:10px;border:1px solid var(--neutral-border);background:var(--surface);color:var(--neutral);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .iconbtn svg{width:20px;height:20px}
+.installbtn{flex-shrink:0;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--primary);background:var(--primary-soft);color:var(--primary-deep);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer}
+.installbtn[hidden]{display:none}
+.installbtn svg{width:16px;height:16px;flex-shrink:0}
+@media (max-width:359px){.installbtn{padding:0 10px}.installbtn svg{display:none}}
+:root[data-theme="dark"] .installbtn{border-color:var(--link);color:#fff}
 
 /* sticky control bar */
 .bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px var(--sr) 10px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--neutral-soft)}
@@ -169,6 +174,7 @@ a{color:inherit}
       <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
       <div class="meta" id="meta"></div>
     </div>
+    <button class="installbtn" id="installBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Install app</button>
     <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch to dark mode"></button>
   </header>
   <div class="layout">
@@ -1701,6 +1707,19 @@ setMeta();render();
 // Service worker (installable app + offline copy). GitHub Pages only: the same file also runs as a Cowork artifact.
 // sw.js is network-first for the page - see CLAUDE.md before changing it.
 if("serviceWorker" in navigator&&location.hostname.endsWith("github.io"))navigator.serviceWorker.register("sw.js").catch(e=>console.warn("Service worker registration failed:",e));
+
+// Install button (Chrome/Edge): shown only when the browser offers an install via beforeinstallprompt.
+// A prompt can be used once; the browser fires the event again later if the site is still installable.
+let installEvt=null;const installBtn=$("#installBtn");
+function hideInstall(){if(document.activeElement===installBtn)$("#themeBtn").focus();installBtn.hidden=true;}
+addEventListener("beforeinstallprompt",e=>{
+  if(matchMedia("(display-mode: standalone)").matches)return;
+  e.preventDefault();installEvt=e;installBtn.hidden=false;});
+installBtn.addEventListener("click",async()=>{
+  if(!installEvt)return;const e=installEvt;
+  try{await e.prompt();await e.userChoice;}catch(err){console.warn("Install prompt failed:",err);}
+  installEvt=null;$("#themeBtn").focus();installBtn.hidden=true;});
+addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
 </script>
 </body>
 </html>

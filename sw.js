@@ -2,7 +2,7 @@
 // The page is NETWORK-FIRST: the weekly scan rewrites index.html, so a cached page is only
 // ever the offline fallback, never served ahead of the network. Keep it that way (see CLAUDE.md).
 // Google Fonts: cache-first. Everything else is not intercepted.
-const VERSION = "nwe-v1";
+const VERSION = "nwe-v2";
 const PAGE = VERSION + "-page";
 const FONTS = VERSION + "-fonts";
 
@@ -10,8 +10,9 @@ self.addEventListener("install", () => self.skipWaiting());
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
+    // Cache Storage is shared by every app on this origin, so only ever touch our own nwe- caches.
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => !k.startsWith(VERSION + "-")).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("nwe-") && !k.startsWith(VERSION + "-")).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -26,7 +27,8 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req.url, { cache: "no-cache", credentials: "same-origin" })
         .then((res) => {
-          if (res.ok) {
+          // Only a real HTML page may become the offline copy (not an icon or manifest opened in a tab).
+          if (res.ok && (res.headers.get("content-type") || "").includes("text/html")) {
             const copy = res.clone();
             event.waitUntil(caches.open(PAGE).then((c) => c.put(key, copy)));
           }

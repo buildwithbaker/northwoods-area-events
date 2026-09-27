@@ -61,14 +61,16 @@ For what used to be one big "Local" bucket:
 - **`sw.js` must stay NETWORK-FIRST for the page.** The weekly scan rewrites `index.html`; a
   cache-first page would keep showing friends last week's events. The cached page is only an
   offline fallback. Google Fonts are cache-first; nothing else is intercepted. Bump `VERSION` in
-  `sw.js` when its logic changes (old caches are deleted on activate).
+  `sw.js` when its logic changes (on activate, only this site's old `nwe-` caches are deleted).
+- Cache Storage is shared by every app on `buildwithbaker.github.io` (Baker's Recipe List, the old
+  Wren copy), so this worker and its kill switch must never touch a cache that does not start with `nwe-`.
 - A service worker stays on phones after a bad deploy, so changes to `sw.js` need sign-off.
 - **Kill switch** if a bad worker ships: replace `sw.js` with the version below and merge. Each phone
-  picks it up on its next visit, and the worker deletes its caches and unregisters itself.
+  picks it up on its next visit, and the worker deletes its own `nwe-` caches and unregisters itself.
   ```js
   self.addEventListener("install", () => self.skipWaiting());
   self.addEventListener("activate", (e) => e.waitUntil((async () => {
-    for (const k of await caches.keys()) await caches.delete(k);
+    for (const k of await caches.keys()) if (k.startsWith("nwe-")) await caches.delete(k);
     await self.registration.unregister();
     for (const c of await self.clients.matchAll({ type: "window" })) c.navigate(c.url);
   })()));

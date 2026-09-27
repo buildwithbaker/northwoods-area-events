@@ -83,15 +83,18 @@ a{color:inherit}
 .seg button{border:0;background:transparent;border-radius:7px;padding:0 12px;font-size:14px;font-weight:600;color:var(--neutral);cursor:pointer;min-width:52px}
 .seg button[aria-pressed="true"]{background:var(--primary);color:#fff}
 .search::placeholder{color:var(--neutral)}
-.chips{display:flex;gap:6px;overflow-x:auto;margin:6px -16px 0;padding:4px 16px;scroll-padding-inline:16px 40px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-/* right-edge fade says the row scrolls; .end (set in script) drops it once the row is scrolled to its end */
-.chips:not(.end){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 32px),transparent)}
-.chips::-webkit-scrollbar{display:none}
+/* phone filters: below the sticky search row and scroll away with the page; nothing scrolls sideways */
+.chips{display:flex;flex-direction:column;gap:8px;padding:10px 0 2px}
+.selrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.selrow [data-k="cat"]{grid-column:1 / -1}
+.selrow.gps{grid-template-columns:minmax(0,1fr)}
+@media (max-width:359px){.selrow{grid-template-columns:minmax(0,1fr)}}
+.daterow{display:flex;flex-wrap:wrap;gap:6px}
 .chip{flex-shrink:0;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);font-weight:700}
 :root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
-.chipsep{flex-shrink:0;width:1px;background:var(--neutral-border);margin:6px 2px}
 .chipsel{flex-shrink:0;min-height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
+.selrow .chipsel{min-width:0;width:100%;padding:0 22px 0 8px;background-position:right 7px center;text-overflow:ellipsis}
 .chipsel.on{background-color:var(--primary-soft);border-color:var(--primary);font-weight:700;color:var(--primary-deep)}
 :root[data-theme="dark"] .chipsel.on{color:#fff}
 
@@ -148,7 +151,7 @@ a{color:inherit}
   .top .subtitle{display:block}
   .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
   .bar{margin:0;padding:0 4px 8px 0;border:0;background:none;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
-  .bar .chips{display:none}
+  .chips{display:none}
   .row1{flex-direction:column;align-items:stretch}
   .seg{width:100%}
   .seg button{flex:1}
@@ -183,9 +186,9 @@ a{color:inherit}
         <div class="sw"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
         <div class="seg" role="group" aria-label="Sort by"><button type="button" id="segDate" data-sort="date" aria-pressed="true">Date</button><button type="button" id="segPlace" data-sort="place" aria-pressed="false">Nearest</button></div>
       </div>
-      <div class="chips" id="chips" role="group" aria-label="Filters"></div>
       <nav class="side" id="side" aria-label="Filters"></nav>
     </div>
+    <div class="chips" id="chips" role="group" aria-label="Filters"></div>
     <main>
       <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
@@ -1563,10 +1566,12 @@ function catSelect(){return `<select class="chipsel${S.cat?" on":""}" data-k="ca
 const distLabel=()=>fromMe()?"Straight-line distance from you":"Drive distance from Ashland";
 function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="${distLabel()}"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m}${miUnit()}</option>`).join("")}</select>`;}
 function fromSelect(){return `<select class="chipsel${S.from==="me"?" on":""}" data-k="from" aria-label="Measure distance from"><option value="ashland"${S.from!=="me"?" selected":""}>From: Ashland</option><option value="me"${S.from==="me"?" selected":""}>From: My location</option></select>`;}
+// Phone chips use short labels so the date row fits in two rows; the sidebar and #count keep WHEN.
+const CHIPLABEL={weekend:"Weekend","7":"7 days","30":"30 days"};
 function chipsHTML(){
-  if(S.mode==="weekly")return `<button class="chip" type="button" data-mode="upcoming"><span aria-hidden="true">&larr; </span>Upcoming</button><span class="chipsep" aria-hidden="true"></span>${catSelect()}${fromSelect()}${distSelect()}`;
-  return WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${v}</button>`).join("")+
-    `<span class="chipsep" aria-hidden="true"></span><button class="chip" type="button" data-mode="weekly">Weekly</button>${catSelect()}${fromSelect()}${distSelect()}`;
+  const sel=`<div class="selrow${S.from==="me"?" gps":""}">${catSelect()}${fromSelect()}${distSelect()}</div>`;
+  if(S.mode==="weekly")return sel+`<div class="daterow"><button class="chip" type="button" data-mode="upcoming"><span aria-hidden="true">&larr; </span>Upcoming</button></div>`;
+  return sel+`<div class="daterow">${WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${CHIPLABEL[k]||v}</button>`).join("")}<button class="chip" type="button" data-mode="weekly">Weekly</button></div>`;
 }
 function sideHTML(){
   const r=range();
@@ -1636,12 +1641,9 @@ function showMore(){
 }
 // Show "More" only where the 2-line clamp actually hides text. root: an element to search, or a list of rows.
 function pruneMore(root){requestAnimationFrame(()=>(root.querySelectorAll?root.querySelectorAll(".ev:not(.open)"):root).forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
-// Chip-row fade: on until the row is scrolled to its end.
-function chipsEnd(){const c=$("#chips");c.classList.toggle("end",c.scrollLeft+c.clientWidth>=c.scrollWidth-2);}
-$("#chips").addEventListener("scroll",chipsEnd,{passive:true});
 // --bar-h: sticky bar height (phones). --gh-h: tallest rendered day/town header, so scroll-padding
 // clears a header that wraps at large text sizes (the CSS never goes below the old 60px allowance).
-function setBarH(){chipsEnd();const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
+function setBarH(){const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
   st.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");
   st.setProperty("--gh-h",Math.max(0,...[...document.querySelectorAll("#results .ghead")].map(g=>g.offsetHeight))+"px");
   watchSizes();}

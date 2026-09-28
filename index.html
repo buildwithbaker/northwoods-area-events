@@ -55,7 +55,7 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
   --on-surface:#1A1F2B; --link:#2E5082; --error:#8A1C1C;
   --bar-shadow:0 2px 8px rgba(8,12,20,.12); --sheet-shadow:0 -4px 24px rgba(8,12,20,.2);
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
-  --bar-h:0px; --gh-h:0px; color-scheme:light;
+  --bar-h:0px; --gh-h:0px; --tabs-h:0px; color-scheme:light;
 }
 :root[data-theme="dark"]{
   --primary:#33598C; --on-primary:#FFFFFF; --on-primary-container:#22344F; --primary-container:#22344F;
@@ -75,7 +75,7 @@ html{font:-apple-system-body;font-family:'Inter',system-ui,-apple-system,"Segoe 
 /* macOS Safari also knows -apple-system-body: keep the browser default there */
 @supports (font: -apple-system-body) and (not (-webkit-touch-callout: default)){:root{font-size:100%}}
 /* keep a focused item clear of the sticky bar plus one day header */
-html{background:var(--surface);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
+html{background:var(--surface);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px));scroll-padding-bottom:calc(var(--tabs-h) + 8px)}
 body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--surface);color:var(--on-surface);line-height:1.5;font-size:1rem;overflow-x:hidden;overflow-x:clip}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
@@ -83,7 +83,8 @@ a{color:inherit}
 :root[data-theme="dark"] :focus-visible{outline-color:var(--link)}
 .vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
-.shell{max-width:1200px;margin:0 auto;padding:0 var(--sr) calc(56px + env(safe-area-inset-bottom)) var(--sl)}
+/* phones: room for the bottom tab bar (--tabs-h, measured, includes the safe area) */
+.shell{max-width:1200px;margin:0 auto;padding:0 var(--sr) calc(var(--tabs-h) + 24px) var(--sl)}
 /* large title: scrolls away; the bar then shows the short title */
 .top{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;padding:max(16px,env(safe-area-inset-top)) 0 12px}
 /* the title keeps at least 1.25rem per its longest word; below that the buttons wrap under it */
@@ -184,6 +185,21 @@ a{color:inherit}
 .eacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .eact{min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;cursor:pointer}
 
+/* views: Weekly has no date sort or date chips; Saved ignores search and filters */
+[data-view="weekly"] .seg,[data-view="saved"] .row1,[data-view="saved"] #chips{display:none}
+.savednote{font-size:.875rem;color:var(--on-surface-variant);margin:12px 2px 0}
+.past{margin-top:12px}
+/* bottom tab bar: phones only, three destinations, no actions */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--surface-container);border-top:1px solid var(--outline-variant);padding:0 var(--sr) env(safe-area-inset-bottom) var(--sl)}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 4px;color:var(--on-surface-variant);text-decoration:none;font-size:.75rem;font-weight:600;line-height:1.25;text-align:center;cursor:pointer;min-width:0}
+.tab .ic{display:grid;place-items:center;width:56px;max-width:100%;height:28px;border-radius:var(--r-pill)}
+.tab .ic svg{width:22px;height:22px}
+.tab .tl{max-width:100%;overflow-wrap:anywhere}
+.tab[aria-current="page"]{color:var(--on-surface)}
+.tab[aria-current="page"] .ic{background:var(--primary-container);color:var(--on-primary-container)}
+:root[data-theme="dark"] .tab[aria-current="page"] .ic{color:#fff}
+.tab:focus-visible{outline-offset:-2px}
+
 /* short screens (landscape phones, big zoom): the bar scrolls away instead of sticking */
 @media (max-height:500px){.bar{position:static} .ghead{top:0} html{scroll-padding-top:max(60px, var(--gh-h) + 12px)}}
 
@@ -194,6 +210,7 @@ a{color:inherit}
   .top .subtitle{display:block}
   .top .meta{display:block}
   .row0{display:none}
+  .tabs{display:none}
   .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;align-items:start}
   .bar{margin:0;padding:0 4px 8px 0;border:0;background:none;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
   .bar.under{box-shadow:none}
@@ -215,12 +232,12 @@ a{color:inherit}
 }
 
 /* touch: no grey tap flash, and an instant press state (no transition) on every control and event link */
-button,.chipsel,summary,.sh-btn,.ab-row{-webkit-tap-highlight-color:transparent}
+button,.chipsel,summary,.sh-btn,.ab-row,.tab{-webkit-tap-highlight-color:transparent}
 /* controls only: no double-tap zoom delay, no text selection; event text stays selectable in the sheet */
-button,.chipsel,summary,.sh-btn,.ab-row{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button,.chipsel,summary,.sh-btn,.ab-row,.tab{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 button:active,.chip:active,.chipsel:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
 .showmore:active,.side .opt:active,.ev:active,.ab-switch:active{transform:none;background:var(--outline-variant)}
-summary:active,.ab-row:active{background:var(--outline-variant)}
+summary:active,.ab-row:active,.tab:active{background:var(--outline-variant)}
 @media (hover: hover){.ev:hover{background:var(--surface)}}
 /* the list clips its corners, so draw the row's focus ring inside it */
 .ev:focus-visible,.ab-row:focus-visible,.ab-switch:focus-visible{outline-offset:-2px}
@@ -243,6 +260,11 @@ html.sheet-open{overflow:hidden}
 .sh-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
 .sh-btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.sh-btn svg{width:18px;height:18px;margin-right:8px;flex-shrink:0}
+.sh-btn[aria-pressed="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
+:root[data-theme="dark"] .sh-btn[aria-pressed="true"]{color:#fff}
+.sh-acts+.sh-acts{margin-top:8px}
+.sh-gone{margin-bottom:4px;font-weight:600;color:var(--error)}
 .sh-live{margin-top:12px;font-size:.875rem;font-weight:600}
 .sh-live:empty{margin:0}
 .sh-link{display:block;margin-top:12px;font-size:.875rem;color:var(--on-surface-variant)}
@@ -304,6 +326,11 @@ html.sheet-open{overflow:hidden}
     </main>
   </div>
 </div>
+<nav class="tabs" aria-label="Views">
+  <a class="tab" href="./" data-tab="upcoming"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span class="tl">Events</span></a>
+  <a class="tab" href="?mode=weekly" data-tab="weekly"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 014-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 01-4 4H4"/></svg></span><span class="tl">Weekly</span></a>
+  <a class="tab" href="?mode=saved" data-tab="saved"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span><span class="tl">Saved</span></a>
+</nav>
 <dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
   <div class="sh-in">
     <div class="sh-top"><span class="grab" aria-hidden="true"></span><button class="sh-close" id="sheetClose" type="button">Close</button></div>
@@ -1598,7 +1625,8 @@ const own=(o,k)=>k!=null&&Object.prototype.hasOwnProperty.call(o,k);
 // URL keys mode, sort, when, cat, dist, q, ev; defaults are left out. Never "from": a shared My location link would ask for location on load.
 function readURL(search){
   const p=new URLSearchParams(search),w=p.get("when"),c=p.get("cat"),d=+(p.get("dist")||0);
-  return {mode:p.get("mode")==="weekly"?"weekly":"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)?w:"7",
+  const md=p.get("mode");
+  return {mode:md==="weekly"||md==="saved"?md:"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)?w:"7",
     cat:own(CATMETA,c)?c:"",dist:DISTS.includes(d)?d:0,q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
 }
 const U0=readURL(location.search);
@@ -1692,14 +1720,16 @@ function fromSelect(){return `<select class="chipsel${S.from==="me"?" on":""}" d
 const CHIPLABEL={weekend:"Weekend","7":"7 days","30":"30 days"};
 function chipsHTML(){
   const sel=`<div class="selrow${S.from==="me"?" gps":""}">${catSelect()}${fromSelect()}${distSelect()}</div>`;
-  if(S.mode==="weekly")return sel+`<div class="daterow"><button class="chip" type="button" data-mode="upcoming"><span aria-hidden="true">&larr; </span>Upcoming</button></div>`;
-  return sel+`<div class="daterow">${WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${CHIPLABEL[k]||v}</button>`).join("")}<button class="chip" type="button" data-mode="weekly">Weekly</button></div>`;
+  if(S.mode!=="upcoming")return sel;
+  return sel+`<div class="daterow">${WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${CHIPLABEL[k]||v}</button>`).join("")}</div>`;
 }
 function sideHTML(){
   const r=range();
   const base=S.mode==="weekly"?RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o)):EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));
   const opt=(attr,val,label,on,n)=>`<button class="opt" type="button" ${attr}="${esc(val)}" aria-pressed="${on}"><span>${label}</span>${n!=null?`<span class="n">${n}</span>`:""}</button>`;
-  return `<h2>Show</h2>${opt("data-mode","upcoming","Upcoming events",S.mode==="upcoming")}${opt("data-mode","weekly","Weekly events",S.mode==="weekly")}`+
+  const show=`<h2>Show</h2>${opt("data-mode","upcoming","Upcoming events",S.mode==="upcoming")}${opt("data-mode","weekly","Weekly events",S.mode==="weekly")}${opt("data-mode","saved","Saved",S.mode==="saved")}`;
+  if(S.mode==="saved")return show;
+  return show+
     (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}`:"")+
     `<h2>Distance from</h2>${opt("data-from","ashland","Ashland (driving)",S.from!=="me")}${opt("data-from","me","My location (straight-line)",S.from==="me")}`+
     `<h2>${distLabel()}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m}${miUnit()}`:"Any distance",S.dist===m)).join("")}`+
@@ -1738,11 +1768,14 @@ function chipKey(el){
   if(el.dataset.k)return `[data-k="${CSS.escape(el.dataset.k)}"]`;
   return null;
 }
+function setTabs(m){document.querySelectorAll(".tab").forEach(t=>{if(t.dataset.tab===m)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});}
 function render(){
+  document.documentElement.dataset.view=S.mode;setTabs(S.mode);
   const fk=chipKey(document.activeElement);
   $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
   $("#chips").innerHTML=chipsHTML();renderSide();
   if(fk){const n=$("#chips").querySelector(fk);if(n)n.focus();}
+  if(S.mode==="saved"){renderSaved();return;}
   V=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
   V.shown=V.all?V.items.length:Math.min(S.limit,V.items.length);
@@ -1781,11 +1814,12 @@ function showMore(){
 // clears a header that wraps at large text sizes (the CSS never goes below the old 60px allowance).
 function setBarH(){const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
   st.setProperty("--bar-h",mob?$(".bar").offsetHeight+"px":"0px");
+  st.setProperty("--tabs-h",mob?$(".tabs").offsetHeight+"px":"0px");
   st.setProperty("--gh-h",Math.max(0,...[...document.querySelectorAll("#results .ghead")].map(g=>g.offsetHeight))+"px");
   watchSizes();}
 // Text-only zoom changes these heights without a resize event, so watch them directly.
 const sizeRO="ResizeObserver" in window?new ResizeObserver(()=>setBarH()):null;let watched=[];
-function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),...document.querySelectorAll("#results .ghead")];
+function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),$(".tabs"),...document.querySelectorAll("#results .ghead")];
   if(els.length===watched.length&&els.every((e,i)=>e===watched[i]))return;
   sizeRO.disconnect();els.forEach(e=>sizeRO.observe(e));watched=els;}
 // The freshness line: in the bar on phones, under the title on wide screens (only one is displayed).
@@ -1796,6 +1830,8 @@ function setMeta(){
   $("#meta").innerHTML=$("#metaTop").innerHTML=`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming${staleHTML()}`;
 }
 document.addEventListener("click",ev=>{
+  const tab=ev.target.closest("a[data-tab]");
+  if(tab){if(ev.button||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;ev.preventDefault();setTabs(tab.dataset.tab);if(go({mode:tab.dataset.tab}))renderSoon();return;}
   const b=ev.target.closest("button");if(!b)return;
   if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
   if(b.id==="more"){showMore();return;}
@@ -1898,7 +1934,7 @@ const sheet=$("#sheet");
 const MONF=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const longDate=d=>`${DOWF[d.getDay()]}, ${MONF[d.getMonth()]} ${d.getDate()}`;
 const shortDate=d=>`${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`;
-const isWeekly=o=>IDOF.get(o)[0]==="w";
+const isWeekly=o=>o.kind?o.kind==="w":IDOF.get(o)[0]==="w";
 function dateLine(o){
   if(isWeekly(o))return (DAYLABEL[o.day]||o.day)+(o.seasonEnd?` · Through ${longDate(pd(o.seasonEnd))}`:"");
   if(isOngoing(o))return `Runs through ${longDate(lastDay(o))}`;
@@ -1917,24 +1953,27 @@ function distLine(o){
   return t+`${mi} mi ${fromMe()?"straight-line from you":"driving from Ashland"}`;
 }
 function shareURL(id){try{const u=new URL(location.href);u.search="?ev="+encodeURIComponent(id);u.hash="";return u.href;}catch(e){return "?ev="+encodeURIComponent(id);}}
-function sheetHTML(o,id){
-  const town=o.town?o.town.replace(/, [A-Z]{2}$/,""):"";
-  const dest=o.place+(o.town&&!o.place.toLowerCase().includes(town.toLowerCase())?", "+o.town:"");
+// place, plus the town when the place name lacks it (Directions, calendar LOCATION)
+function placeFull(o){const town=o.town?o.town.replace(/, [A-Z]{2}$/,""):"";return (o.place||"")+(o.town&&!(o.place||"").toLowerCase().includes(town.toLowerCase())?", "+o.town:"");}
+// gone: a saved event no longer in the data, drawn from its snapshot (no Share, no calendar)
+function sheetHTML(o,id,gone){
+  const dest=placeFull(o);
   const src=safeUrl(o.url);let host="";if(src){try{host=new URL(src).hostname.replace(/^www\./,"");}catch(e){}}
-  const text=isWeekly(o)?o.note:o.desc;
-  return `<h2 class="sh-title" id="sheetTitle">${esc(o.title)}</h2><p class="sh-date">${esc(dateLine(o))}</p><p class="sh-venue">${esc(o.place)}</p><p class="sh-dist">${distLine(o)}</p>`+
+  const text=isWeekly(o)?o.note:o.desc,cal=!gone&&calModel(o);
+  return `<h2 class="sh-title" id="sheetTitle">${esc(o.title)}</h2>${gone?`<p class="sh-gone">No longer listed</p>`:""}<p class="sh-date">${esc(dateLine(o))}</p><p class="sh-venue">${esc(o.place)}</p><p class="sh-dist">${distLine(o)}</p>`+
     `${text?`<p class="sh-desc">${esc(text)}</p>`:""}<p class="sh-tags">${catTag(o.cat)}</p>`+
-    `<div class="sh-acts"><a class="sh-btn pri" href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(dest)}" target="_blank" rel="noopener">Directions</a>`+
-    `<button class="sh-btn" type="button" data-sh="share" data-id="${id}">Share</button>`+
-    `${src&&host?`<a class="sh-btn" href="${esc(src)}" target="_blank" rel="noopener">Open on ${esc(host)}</a>`:""}</div>`+
+    `<div class="sh-acts">${dest?`<a class="sh-btn pri" href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(dest)}" target="_blank" rel="noopener">Directions</a>`:""}`+
+    `${gone?"":`<button class="sh-btn" type="button" data-sh="share" data-id="${id}">Share</button>`}`+
+    `${src&&host&&!gone?`<a class="sh-btn" href="${esc(src)}" target="_blank" rel="noopener">Open on ${esc(host)}</a>`:""}</div>`+
+    `<div class="sh-acts">${saveBtn(id)}${cal?`<button class="sh-btn" type="button" data-sh="ics" data-id="${id}">Add to calendar</button><a class="sh-btn" href="${esc(gcalURL(o,id))}" target="_blank" rel="noopener">Google Calendar</a>`:""}</div>`+
     `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p><label class="sh-link" id="sheetLink" hidden>Link to this event<input type="text" readonly></label>`;
 }
 const GONE=`<h2 class="sh-title" id="sheetTitle">This event is no longer listed</h2><p>It may have ended or been removed in the weekly update.</p><div class="sh-acts"><button class="sh-btn pri" type="button" data-sh="close">See upcoming events</button></div>`;
 // While the sheet is open the page behind cannot scroll; pad for a classic scrollbar so nothing shifts sideways.
 function lockPage(on){const de=document.documentElement,sb=on?innerWidth-de.clientWidth:0;de.classList.toggle("sheet-open",on);de.style.paddingRight=sb>0?sb+"px":"";}
 function openSheet(id){
-  const o=BYID.get(id);OPEN=id;
-  $("#sheetBody").innerHTML=id==="about"?aboutHTML():o?sheetHTML(o,id):GONE;
+  const o=BYID.get(id),snap=!o&&id!=="about"?savedSnap(id):null;OPEN=id;
+  $("#sheetBody").innerHTML=id==="about"?aboutHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
   if(!sheet.open){
     lockPage(true);
     try{if(typeof sheet.showModal!=="function")throw 0;sheet.showModal();}
@@ -1969,6 +2008,8 @@ sheet.addEventListener("click",ev=>{
   const b=ev.target.closest("button");if(!b)return;
   if(b.id==="sheetClose"||b.dataset.sh==="close")closeSheet();
   else if(b.dataset.sh==="share")shareEvent(b.dataset.id);
+  else if(b.dataset.sh==="save")toggleSave(b.dataset.id,b);
+  else if(b.dataset.sh==="ics")downloadICS(b.dataset.id);
   else if(b.id==="themeSwitch")setTheme(theme==="dark"?"light":"dark");
 });
 // About: sources, credit, the watch-list note, freshness, dark mode and the iPhone install hint.
@@ -1989,6 +2030,140 @@ async function shareEvent(id){
   if(navigator.share){try{await navigator.share({title:o.title,text:`${o.title} - ${dateLine(o)}`,url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
   try{await navigator.clipboard.writeText(url);live.textContent="Link copied";return;}catch(e){}
   const lab=$("#sheetLink"),f=lab.querySelector("input");lab.hidden=false;f.value=url;f.focus();f.select();
+}
+
+// --- Saved: on this device only. localStorage ev_saved = [{id, savedAt, snap}] ---
+const SAVE_KEY="ev_saved",ID_RE=/^[ew][0-9a-z]+(-\d+)?$/;
+let SAVED=[];
+try{const a=JSON.parse(localStorage.getItem(SAVE_KEY)||"[]");if(Array.isArray(a))SAVED=a.filter(x=>x&&typeof x.id==="string"&&ID_RE.test(x.id)&&x.snap&&typeof x.snap==="object"&&typeof x.snap.title==="string");}catch(e){}
+const isSaved=id=>SAVED.some(x=>x.id===id);
+const savedSnap=id=>{const x=SAVED.find(x=>x.id===id);return x?x.snap:null;};
+// the fields a row and the sheet need, so a saved event survives being dropped from the data
+function snapOf(o){
+  const w=isWeekly(o),k=w?["title","day","place","town","cat","url","note","seasonStart","seasonEnd","time"]:["title","start","end","dates","place","town","cat","url","desc","time"];
+  const s={kind:w?"w":"e"};k.forEach(f=>{if(o[f]!==undefined)s[f]=o[f];});return s;
+}
+const BOOKMARK='<path d="M6 3.5h12v17l-6-4-6 4z"/>';
+function saveBtn(id){const on=isSaved(id);return `<button class="sh-btn" type="button" data-sh="save" data-id="${id}" aria-pressed="${on}"><svg viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">${BOOKMARK}</svg><span>${on?"Saved":"Save"}</span></button>`;}
+let persistAsked=false;
+function toggleSave(id,btn){
+  const live=$("#sheetLive"),on=isSaved(id),o=BYID.get(id);
+  const next=on?SAVED.filter(x=>x.id!==id):o?[...SAVED,{id,savedAt:new Date().toISOString(),snap:snapOf(o)}]:SAVED;
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(next));}catch(e){if(live)live.textContent="Can't save on this device";return;}
+  SAVED=next;
+  const now=isSaved(id);btn.setAttribute("aria-pressed",now);btn.querySelector("span").textContent=now?"Saved":"Save";btn.querySelector("svg").setAttribute("fill",now?"currentColor":"none");
+  if(live)live.textContent=now?"Saved on this device":"Removed from Saved";
+  // Ask once, after the first save, for storage the browser will not clear under pressure.
+  if(now&&!persistAsked){persistAsked=true;try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
+  if(S.mode==="saved")render();
+}
+// A saved row whose event is over or no longer listed, drawn from the event or its snapshot.
+function savedRow(x,id,badge){
+  const w=isWeekly(x),when=w?(DAYLABEL[x.day]||x.day):dateTxt(x,pd(x.dates&&x.dates.length?x.dates[0]:x.start)),text=w?x.note:x.desc;
+  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${id}-t ${id}-w ${id}-l">${iconTile(x.cat)}<span class="body"><span class="head"><span class="t" id="${id}-t">${esc(x.title)}</span><span class="when" id="${id}-w">${esc(badge)}</span></span>`+
+    `<span class="loc" id="${id}-l">${esc(when)} &middot; ${locLine(x)}</span>${text?`<span class="desc">${esc(text)}</span>`:""}<span class="tags">${catTag(x.cat)}</span></span></button>`;
+}
+function renderSaved(){
+  const up=[],wk=[],gone=[],past=[],far=new Date(2100,0,1);
+  SAVED.forEach(s=>{
+    const o=BYID.get(s.id),x=o||s.snap,w=isWeekly(x);
+    const over=w?!!(x.seasonEnd&&pd(x.seasonEnd)<today):lastDay(x)<today;
+    if(over)past.push([x,s.id]);else if(!o)gone.push([x,s.id]);else if(w)wk.push(o);else up.push({e:o,d:firstIn(o,[today,far])});
+  });
+  up.sort((a,b)=>a.d-b.d);
+  const gs=[];up.forEach(u=>{const k=iso(u.d),l=gs[gs.length-1];if(l&&l.k===k)l.items.push(u);else gs.push({k,d:u.d,items:[u]});});
+  const dayLabel=d=>{const n=daysFrom(d);return n===0?"Today":n===1?"Tomorrow":DOWF[d.getDay()];};
+  let html=gs.map(g=>group(dayLabel(g.d),g.items.length,g.items.map(u=>row(u.e,u.d,false)).join(""),`${DOW[g.d.getDay()]}, ${MON[g.d.getMonth()]} ${g.d.getDate()}`)).join("");
+  if(wk.length)html+=group("Weekly",wk.length,wk.map(recRow).join(""),"");
+  if(gone.length)html+=group("No longer listed",gone.length,gone.map(([x,id])=>savedRow(x,id,"No longer listed")).join(""),"");
+  if(past.length)html+=`<details class="ongoing past"><summary>Past (${past.length})<span class="chev">${chev}</span></summary><div class="list">${past.map(([x,id])=>savedRow(x,id,"Past")).join("")}</div></details>`;
+  V={items:[],shown:0,count:{},ongoing:0,key:()=>""};
+  $("#count").textContent=`${SAVED.length} saved event${SAVED.length===1?"":"s"}`;
+  $("#announce").textContent="";const gn=$("#geoNote");gn.hidden=true;
+  $("#results").innerHTML=SAVED.length?`<p class="savednote">Saved on this device. Installing the app keeps them longer.</p>`+html
+    :`<div class="empty"><p class="emsg">No saved events yet. Tap Save on any event to keep it here.</p></div>`;
+  replaceURL();setBarH();
+}
+
+// --- Add to calendar: an RFC 5545 .ics (Blob download) and a Google Calendar link ---
+// time: "HH:MM" or "HH:MM-HH:MM", 24-hour Central; absent means all-day. Never guessed.
+const BYDAY={Mon:"MO",Tue:"TU",Wed:"WE",Thu:"TH",Fri:"FR",Sat:"SA",Sun:"SU"};
+function parseTime(t){const m=/^(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?$/.exec(t||"");if(!m)return null;const a=[+m[1],+m[2]],b=m[3]?[+m[3],+m[4]]:null;
+  return a[0]>23||a[1]>59||(b&&(b[0]>23||b[1]>59))?null:{a,b};}
+const p2=n=>String(n).padStart(2,"0");
+// wall-clock values carried in UTC fields, so date arithmetic never meets the device's time zone
+const WC=(d,h=0,mi=0)=>new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),h,mi));
+const fD=x=>`${x.getUTCFullYear()}${p2(x.getUTCMonth()+1)}${p2(x.getUTCDate())}`;
+const fDT=x=>`${fD(x)}T${p2(x.getUTCHours())}${p2(x.getUTCMinutes())}00`;
+// US rules: CDT from the 2nd Sunday of March to the 1st Sunday of November
+function isCDT(d){const y=d.getFullYear(),m=d.getMonth();if(m<2||m>10)return false;if(m>2&&m<10)return true;
+  const first=new Date(y,m,1).getDay(),sun=m===2?1+((7-first)%7)+7:1+((7-first)%7);return m===2?d.getDate()>=sun:d.getDate()<sun;}
+// null when there is no single calendar entry to make (a Weekly row that is not one weekday)
+function calModel(o){
+  let first,last,rrule="";
+  if(isWeekly(o)){
+    const bd=BYDAY[o.day];if(!bd)return null;
+    let d=today;if(o.seasonStart&&pd(o.seasonStart)>d)d=pd(o.seasonStart);
+    d=addDays(d,(DOW.indexOf(o.day)-d.getDay()+7)%7);first=last=d;
+    rrule=`FREQ=WEEKLY;BYDAY=${bd}`;
+  }else if(o.dates&&o.dates.length){const up=o.dates.map(pd).filter(d=>d>=today);first=last=up.length?up[0]:lastDay(o);}
+  else{first=pd(o.start);last=lastDay(o);}
+  const t=parseTime(o.time);let c;
+  if(!t)c={allDay:true,start:WC(first),end:WC(addDays(last,1))};
+  else{
+    const start=WC(first,t.a[0],t.a[1]);let end;
+    if(t.b){end=WC(last,t.b[0],t.b[1]);if(end<=WC(last,t.a[0],t.a[1]))end=new Date(end.getTime()+864e5);}
+    else end=new Date(WC(last,t.a[0],t.a[1]).getTime()+72e5);
+    c={allDay:false,start,end};
+  }
+  if(rrule&&o.seasonEnd){const u=pd(o.seasonEnd);
+    // UNTIL is a DATE for all-day entries, and UTC for zoned ones (end of the last day, Central)
+    rrule+=";UNTIL="+(c.allDay?fD(WC(u)):untilUTC(u));}
+  c.rrule=rrule;return c;
+}
+function untilUTC(u){const x=new Date(Date.UTC(u.getFullYear(),u.getMonth(),u.getDate(),23+(isCDT(u)?5:6),59,59));return `${fD(x)}T${p2(x.getUTCHours())}${p2(x.getUTCMinutes())}${p2(x.getUTCSeconds())}Z`;}
+const descFull=o=>{const t=(isWeekly(o)?o.note:o.desc)||"",u=safeUrl(o.url);return t+(u?(t?"\n\n":"")+u:"");};
+const icsEsc=v=>String(v).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
+// fold at 75 octets (UTF-8), continuation lines start with a space
+function fold(line){
+  const enc=new TextEncoder();if(enc.encode(line).length<=75)return line;
+  const out=[];let cur="",n=0;
+  for(const ch of line){const b=enc.encode(ch).length;if(n+b>75){out.push(cur);cur=" ";n=1;}cur+=ch;n+=b;}
+  out.push(cur);return out.join("\r\n");
+}
+const VTZ=["BEGIN:VTIMEZONE","TZID:America/Chicago",
+  "BEGIN:DAYLIGHT","TZOFFSETFROM:-0600","TZOFFSETTO:-0500","TZNAME:CDT","DTSTART:19700308T020000","RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU","END:DAYLIGHT",
+  "BEGIN:STANDARD","TZOFFSETFROM:-0500","TZOFFSETTO:-0600","TZNAME:CST","DTSTART:19701101T020000","RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU","END:STANDARD",
+  "END:VTIMEZONE"];
+function icsText(o,id){
+  const c=calModel(o),n=new Date();
+  const stamp=`${n.getUTCFullYear()}${p2(n.getUTCMonth()+1)}${p2(n.getUTCDate())}T${p2(n.getUTCHours())}${p2(n.getUTCMinutes())}${p2(n.getUTCSeconds())}Z`;
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Northwoods Area Events//EN","CALSCALE:GREGORIAN",...(c.allDay?[]:VTZ),
+    "BEGIN:VEVENT",`UID:${id}@northwoods-area-events`,`DTSTAMP:${stamp}`,
+    c.allDay?`DTSTART;VALUE=DATE:${fD(c.start)}`:`DTSTART;TZID=America/Chicago:${fDT(c.start)}`,
+    c.allDay?`DTEND;VALUE=DATE:${fD(c.end)}`:`DTEND;TZID=America/Chicago:${fDT(c.end)}`,
+    ...(c.rrule?["RRULE:"+c.rrule]:[]),
+    "SUMMARY:"+icsEsc(o.title),"LOCATION:"+icsEsc(placeFull(o)),"DESCRIPTION:"+icsEsc(descFull(o)),"URL:"+shareURL(id),
+    "BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:-PT2H","DESCRIPTION:"+icsEsc(o.title),"END:VALARM",
+    "END:VEVENT","END:VCALENDAR"];
+  return L.map(fold).join("\r\n")+"\r\n";
+}
+function gcalURL(o,id){
+  const c=calModel(o);
+  const q=[["action","TEMPLATE"],["text",o.title],["dates",c.allDay?`${fD(c.start)}/${fD(c.end)}`:`${fDT(c.start)}/${fDT(c.end)}`]];
+  if(!c.allDay)q.push(["ctz","America/Chicago"]);
+  q.push(["details",descFull(o)],["location",placeFull(o)]);
+  if(c.rrule)q.push(["recur","RRULE:"+c.rrule]);
+  return "https://calendar.google.com/calendar/render?"+q.map(([k,v])=>k+"="+encodeURIComponent(v)).join("&");
+}
+function downloadICS(id){
+  const o=BYID.get(id),live=$("#sheetLive");if(!o)return;
+  try{
+    const blob=new Blob([icsText(o,id)],{type:"text/calendar;charset=utf-8"}),u=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=u;a.download=(o.title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40).replace(/-+$/,"")||"event")+".ics";
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+    if(live)live.textContent="Calendar file downloaded";
+  }catch(e){if(live)live.textContent="Could not make the calendar file on this device";}
 }
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.

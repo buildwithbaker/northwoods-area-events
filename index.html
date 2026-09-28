@@ -117,7 +117,7 @@ a{color:inherit}
 .bar.collapsed .row0 .meta{visibility:hidden}
 .row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 /* the field keeps room for its placeholder; when it cannot, Date / Nearest wraps under it */
-.sw{position:relative;flex:1 1 calc(56px + 4em);min-width:0}
+.sw{position:relative;flex:1 1 calc(52px + 3.5em);min-width:0}
 .sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--on-surface-variant);pointer-events:none}
 /* the one px font size: iPhone zooms on focus below 16px */
 .search{width:100%;min-height:44px;padding:0 12px 0 40px;border:1px solid var(--outline);border-radius:var(--r-md);font-size:max(16px,1rem);background:var(--surface-container-high)}
@@ -127,23 +127,34 @@ a{color:inherit}
 .search::placeholder{color:var(--on-surface-variant)}
 /* phone filters: below the sticky search row and scroll away with the page; nothing scrolls sideways */
 .chips{display:flex;flex-direction:column;gap:8px;padding:12px 0 4px}
-.selrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.selrow [data-k="cat"]{grid-column:1 / -1}
-.selrow.gps{grid-template-columns:minmax(0,1fr)}
-@media (max-width:359px){.selrow{grid-template-columns:minmax(0,1fr)}}
+.chips:empty{display:none}
+/* the four date chips: one row from 360px, wrapping (never scrolling) below that */
 .daterow{display:flex;flex-wrap:wrap;gap:8px}
-.chip{flex-shrink:0;min-height:40px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high);font-size:.9375rem;font-weight:500;color:var(--on-surface);cursor:pointer;white-space:nowrap}
+/* about 36px to the eye, with a 48px hit area */
+.chip{position:relative;flex-shrink:0;min-height:36px;padding:0 10px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high);font-size:.875rem;font-weight:500;color:var(--on-surface);cursor:pointer;white-space:nowrap}
+.chip::after,.achip::after,.aclear::after{content:"";position:absolute;left:0;right:0;top:50%;height:48px;transform:translateY(-50%)}
 .chip[aria-pressed="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
 :root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
-/* selects stay at 1rem: iPhone zooms on focusing a control below 16px */
-.chipsel{flex-shrink:0;min-height:40px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 12px;font-size:1rem;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
-.selrow .chipsel{min-width:0;width:100%;padding:0 24px 0 8px;background-position:right 8px center;text-overflow:ellipsis}
-.chipsel.on{background-color:var(--primary-container);border-color:var(--primary);font-weight:700;color:var(--on-primary-container)}
-:root[data-theme="dark"] .chipsel.on{color:#fff}
+/* Filters: an icon button with a badge counting the active sheet settings */
+.fbtn{position:relative;flex:0 0 auto;width:44px;height:44px;border-radius:var(--r-md);border:1px solid var(--outline);background:var(--surface-container-high);color:var(--on-surface-variant);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.fbtn svg{width:20px;height:20px}
+.fbtn.on{border-color:var(--primary);background:var(--primary-container);color:var(--on-primary-container)}
+:root[data-theme="dark"] .fbtn.on{color:#fff}
+/* sized in em so it grows with the text size; it overhangs the corner by design */
+.fbtn .badge{position:absolute;top:-.5em;right:-.5em;min-width:1.6em;height:1.6em;padding:0 4px;border-radius:var(--r-pill);background:var(--primary);color:var(--on-primary);font-size:.6875rem;font-weight:700;line-height:1.6em;text-align:center}
+.fbtn .badge[hidden]{display:none}
+/* applied filters: one removable chip per setting, then Clear all */
+.applied{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.applied[hidden]{display:none}
+.achip{position:relative;display:inline-flex;align-items:center;gap:4px;min-height:32px;max-width:100%;padding:0 8px 0 12px;border-radius:var(--r-pill);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container);font-size:.875rem;font-weight:500;text-align:left;overflow-wrap:anywhere;cursor:pointer}
+:root[data-theme="dark"] .achip{color:#fff}
+.achip svg{width:16px;height:16px;flex-shrink:0}
+.aclear{position:relative;min-height:32px;padding:0 8px;border:0;background:none;color:var(--link);font-size:.875rem;font-weight:600;text-decoration:underline;cursor:pointer}
 
 /* results: flat cards, no shadows */
 .side{display:none}
-.count{font-size:.875rem;color:var(--on-surface-variant);margin:12px 2px 4px}
+/* the count line keeps one height (two lines reserved), so the list never jumps as the count changes */
+.count{font-size:.875rem;line-height:1.5;height:3em;color:var(--on-surface-variant);margin:8px 2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .geonote{font-size:.875rem;color:var(--on-surface);background:var(--primary-container);border:1px solid var(--primary);border-radius:var(--r-md);padding:8px 12px;margin-top:12px}
 .geonote[hidden]{display:none}
 .ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--surface);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:12px 2px 8px;font-size:.8125rem;font-weight:600;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
@@ -214,7 +225,7 @@ a{color:inherit}
   .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;align-items:start}
   .bar{margin:0;padding:0 4px 8px 0;border:0;background:none;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
   .bar.under{box-shadow:none}
-  .chips{display:none}
+  .chips,.fbtn{display:none}
   .row1{flex-direction:column;align-items:stretch}
   .sw{flex:none}
   .seg{width:100%}
@@ -226,18 +237,22 @@ a{color:inherit}
   .side .opt[aria-pressed="true"]{background:var(--primary-container);color:var(--on-primary-container);font-weight:700}
   :root[data-theme="dark"] .side .opt[aria-pressed="true"]{color:#fff}
   .side .opt .n{color:var(--on-surface-variant);font-size:.75rem;font-weight:500}
+  .side .optdate{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:36px;padding:8px 12px;border-radius:var(--r-sm);font-size:.9375rem;cursor:pointer}
+  .side .optdate.on{background:var(--primary-container);color:var(--on-primary-container);font-weight:700}
+  :root[data-theme="dark"] .side .optdate.on{color:#fff}
+  .side .optdate input{min-height:32px;padding:0 8px;border:1px solid var(--outline);border-radius:var(--r-sm);background:var(--surface-container-high);font-size:1rem;color:var(--on-surface);font-weight:400;max-width:100%}
   .ghead{top:0}
   .ev{padding:16px 20px}
   .itile{width:40px;height:40px}
 }
 
 /* touch: no grey tap flash, and an instant press state (no transition) on every control and event link */
-button,.chipsel,summary,.sh-btn,.ab-row,.tab{-webkit-tap-highlight-color:transparent}
+button,.fo,.optdate,summary,.sh-btn,.ab-row,.tab{-webkit-tap-highlight-color:transparent}
 /* controls only: no double-tap zoom delay, no text selection; event text stays selectable in the sheet */
-button,.chipsel,summary,.sh-btn,.ab-row,.tab{touch-action:manipulation;-webkit-user-select:none;user-select:none}
-button:active,.chip:active,.chipsel:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
+button,.fo,.optdate,summary,.sh-btn,.ab-row,.tab{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:active,.chip:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
 .showmore:active,.side .opt:active,.ev:active,.ab-switch:active{transform:none;background:var(--outline-variant)}
-summary:active,.ab-row:active,.tab:active{background:var(--outline-variant)}
+summary:active,.ab-row:active,.tab:active,.fo:not(.off):active{background:var(--outline-variant)}
 @media (hover: hover){.ev:hover{background:var(--surface)}}
 /* the list clips its corners, so draw the row's focus ring inside it */
 .ev:focus-visible,.ab-row:focus-visible,.ab-switch:focus-visible{outline-offset:-2px}
@@ -270,6 +285,20 @@ html.sheet-open{overflow:hidden}
 .sh-link{display:block;margin-top:12px;font-size:.875rem;color:var(--on-surface-variant)}
 .sh-link[hidden]{display:none}
 .sh-link input{display:block;width:100%;min-height:44px;margin-top:4px;padding:0 12px;border:1px solid var(--outline);border-radius:var(--r-sm);background:var(--surface-container-high);font-size:1rem}
+/* Filters sheet */
+.fs{border:0;margin-top:20px;min-width:0}
+.fs legend{padding:0;margin-bottom:8px;font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--on-surface-variant)}
+.fl{list-style:none;background:var(--surface-container-high);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
+.fl li+li{border-top:1px solid var(--outline-variant)}
+.fo{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 16px;font-size:.9375rem;cursor:pointer}
+.fo input{flex-shrink:0;width:20px;height:20px;margin:0;accent-color:var(--primary)}
+.fo .n{margin-left:auto;padding-left:8px;font-size:.875rem;color:var(--on-surface-variant)}
+.fo.off{color:var(--on-surface-variant);cursor:default}
+.fdate{display:flex;flex-wrap:wrap;align-items:center;gap:0 8px;padding-right:16px}
+.fdate .fo{flex:1 1 auto}
+.fdate input[type="date"]{flex:1 1 9em;min-height:40px;margin:0 0 8px 48px;padding:0 8px;border:1px solid var(--outline);border-radius:var(--r-sm);background:var(--surface-container);font-size:1rem;color:var(--on-surface);min-width:0}
+.fs-foot{position:sticky;bottom:0;margin-top:16px;padding:12px 0 4px;background:var(--surface-container)}
+.fs-foot .sh-btn{width:100%}
 /* About */
 .ab-sec{margin-top:20px}
 .ab-sec h3{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--on-surface-variant);margin-bottom:8px}
@@ -313,6 +342,7 @@ html.sheet-open{overflow:hidden}
       <div class="row0"><p class="meta" id="meta"></p><span class="short" aria-hidden="true">NW Events</span></div>
       <div class="row1">
         <div class="sw" role="search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
+        <button class="fbtn" id="filtersBtn" type="button" aria-haspopup="dialog" aria-label="Filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span class="badge" id="filtersBadge" aria-hidden="true" hidden></span></button>
         <div class="seg" role="group" aria-label="Sort by"><button type="button" id="segDate" data-sort="date" aria-pressed="true">Date</button><button type="button" id="segPlace" data-sort="place" aria-pressed="false">Nearest</button></div>
       </div>
       <nav class="side" id="side" aria-label="Sidebar filters"></nav>
@@ -320,6 +350,7 @@ html.sheet-open{overflow:hidden}
     <div class="chips" id="chips" role="region" aria-label="Filters"></div>
     <main>
       <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
+      <div class="applied" id="applied" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
       <div class="vh" id="announce" role="status" aria-live="polite"></div>
       <div id="results"></div>
@@ -1623,16 +1654,26 @@ const WHEN=Object.fromEntries(WHENS);
 const DISTS=[25,60,120,250];
 const own=(o,k)=>k!=null&&Object.prototype.hasOwnProperty.call(o,k);
 // URL keys mode, sort, when, cat, dist, q, ev; defaults are left out. Never "from": a shared My location link would ask for location on load.
+// Categories: S.cat holds the ticked ones as one string (CATMETA order, newline-joined), so views compare as values.
+const CATORDER=Object.keys(CATMETA);
+const catKey=a=>CATORDER.filter(c=>a.includes(c)).join("\n");
+const cats=()=>S.cat?S.cat.split("\n"):[];
+const catOk=o=>!S.cat||cats().includes(o.cat);
+// when: a WHENS key, or one day as YYYY-MM-DD (from the Filters sheet)
+const isDate=w=>/^\d{4}-\d{2}-\d{2}$/.test(w||"")&&iso(pd(w))===w;
+const dayLabel2=w=>{const d=pd(w);return `${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`;};
+const whenText=w=>isDate(w)?"on "+dayLabel2(w):WHEN[w].toLowerCase();
 function readURL(search){
-  const p=new URLSearchParams(search),w=p.get("when"),c=p.get("cat"),d=+(p.get("dist")||0);
+  const p=new URLSearchParams(search),w=p.get("when"),d=+(p.get("dist")||0);
   const md=p.get("mode");
-  return {mode:md==="weekly"||md==="saved"?md:"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)?w:"7",
-    cat:own(CATMETA,c)?c:"",dist:DISTS.includes(d)?d:0,q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
+  return {mode:md==="weekly"||md==="saved"?md:"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)||isDate(w)?w:"7",
+    cat:catKey(p.getAll("cat").filter(c=>own(CATMETA,c))),dist:DISTS.includes(d)?d:0,q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
 }
 const U0=readURL(location.search);
 // q: lower-cased for matching; qt: the text as typed, for the URL and the search box.
 const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,from:"ashland",q:U0.q.toLowerCase(),qt:U0.q,limit:40};
 function range(){
+  if(isDate(S.when)){const d=pd(S.when);return[d,d];}
   if(S.when==="today")return[today,today];
   if(S.when==="weekend"){const d=today.getDay();const fri=d===0?addDays(today,-2):d===6?addDays(today,-1):addDays(today,5-d);return[fri<today?today:fri,addDays(fri,2)];}
   if(S.when==="all")return[today,new Date(2100,0,1)];
@@ -1641,7 +1682,9 @@ function range(){
 function hay(o){return (o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat+" "+(o.town||"")).toLowerCase();}
 const distOk=e=>!S.dist||(miOf(e)!=null&&miOf(e)<=S.dist);
 const qOk=e=>!S.q||hay(e).includes(S.q);
-function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&(!S.cat||e.cat===S.cat)&&distOk(e)&&qOk(e));}
+// every active filter except category (category counts are taken over this)
+function baseItems(){if(S.mode==="weekly")return RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o));const r=range();return EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));}
+function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&catOk(e)&&distOk(e)&&qOk(e));}
 
 // --- rows ---
 // id: the row's id, so the badge can be part of the row's accessible name.
@@ -1695,7 +1738,7 @@ function viewPlace(list){
 }
 function inSeason(o){return (!o.seasonStart||pd(o.seasonStart)<=today)&&(!o.seasonEnd||pd(o.seasonEnd)>=today);}
 function viewWeekly(){
-  const list=RECURRING.filter(o=>inSeason(o)&&qOk(o)&&(!S.cat||o.cat===S.cat)&&distOk(o));
+  const list=RECURRING.filter(o=>inSeason(o)&&qOk(o)&&catOk(o)&&distOk(o));
   const order=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];const td=DOW[today.getDay()];
   const rot=order.slice(order.indexOf(td)).concat(order.slice(0,order.indexOf(td)));
   const idx=d=>{const i=rot.indexOf(d);return i<0?7+Math.max(0,DAYORDER.indexOf(d)):i;};
@@ -1712,43 +1755,39 @@ const moreLabel=()=>{const left=V.items.length-V.shown;return `Show ${Math.min(4
 
 // --- controls ---
 const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
-function catSelect(){return `<select class="chipsel${S.cat?" on":""}" data-k="cat" aria-label="Category"><option value="">All categories</option>${CATS.map(c=>`<option value="${esc(c)}"${S.cat===c?" selected":""}>${esc(VIEWLABEL[c]||c)}</option>`).join("")}</select>`;}
 const distLabel=()=>fromMe()?"Straight-line distance from you":"Drive distance from Ashland";
-function distSelect(){return `<select class="chipsel${S.dist?" on":""}" data-k="dist" aria-label="${distLabel()}"><option value="0">Any distance</option>${DISTS.map(m=>`<option value="${m}"${S.dist===m?" selected":""}>Within ${m}${miUnit()}</option>`).join("")}</select>`;}
-function fromSelect(){return `<select class="chipsel${S.from==="me"?" on":""}" data-k="from" aria-label="Measure distance from"><option value="ashland"${S.from!=="me"?" selected":""}>From: Ashland</option><option value="me"${S.from==="me"?" selected":""}>From: My location</option></select>`;}
 // Phone chips use short labels so the date row fits in two rows; the sidebar and #count keep WHEN.
 const CHIPLABEL={weekend:"Weekend","7":"7 days","30":"30 days"};
+// Phone: the four date chips only; category, From, distance, All dates and one day live in the Filters sheet.
 function chipsHTML(){
-  const sel=`<div class="selrow${S.from==="me"?" gps":""}">${catSelect()}${fromSelect()}${distSelect()}</div>`;
-  if(S.mode!=="upcoming")return sel;
-  return sel+`<div class="daterow">${WHENS.map(([k,v])=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}">${CHIPLABEL[k]||v}</button>`).join("")}</div>`;
+  if(S.mode!=="upcoming")return "";
+  return `<div class="daterow">${["today","weekend","7","30"].map(k=>`<button class="chip" type="button" data-when="${k}" aria-pressed="${S.when===k}"${k==="weekend"?' aria-label="This weekend"':""}>${CHIPLABEL[k]||WHEN[k]}</button>`).join("")}</div>`;
 }
 function sideHTML(){
-  const r=range();
-  const base=S.mode==="weekly"?RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o)):EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));
+  const base=baseItems(),sel=cats();
   const opt=(attr,val,label,on,n)=>`<button class="opt" type="button" ${attr}="${esc(val)}" aria-pressed="${on}"><span>${label}</span>${n!=null?`<span class="n">${n}</span>`:""}</button>`;
   const show=`<h2>Show</h2>${opt("data-mode","upcoming","Upcoming events",S.mode==="upcoming")}${opt("data-mode","weekly","Weekly events",S.mode==="weekly")}${opt("data-mode","saved","Saved",S.mode==="saved")}`;
   if(S.mode==="saved")return show;
   return show+
-    (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}`:"")+
+    (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}<label class="optdate${isDate(S.when)?" on":""}"><span>On a date...</span><input type="date" data-k="date" aria-label="On a date" min="${iso(today)}" value="${isDate(S.when)?S.when:""}"></label>`:"")+
     `<h2>Distance from</h2>${opt("data-from","ashland","Ashland (driving)",S.from!=="me")}${opt("data-from","me","My location (straight-line)",S.from==="me")}`+
     `<h2>${distLabel()}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m}${miUnit()}`:"Any distance",S.dist===m)).join("")}`+
-    `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),S.cat===c,base.filter(e=>e.cat===c).length)).join("")}`;
+    `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),sel.includes(c),base.filter(e=>e.cat===c).length)).join("")}`;
 }
 // Empty results: say what was searched and over which dates, then offer only the ways out that apply.
 const RANGETXT={today:" today",weekend:" this weekend","7":" in the next 7 days","30":" in the next 30 days",all:" on any date"};
 function emptyHTML(){
   const q=$("#search").value.trim(),wk=S.mode==="weekly";
-  const msg=(wk?"No weekly events":"No events")+(S.q?` for "${q}"`:"")+(wk?"":RANGETXT[S.when]);
+  const msg=(wk?"No weekly events":"No events")+(S.q?` for "${q}"`:"")+(wk?"":RANGETXT[S.when]||" "+whenText(S.when));
   const note=S.cat==="My Bands"&&!S.q&&!wk?"The weekly scan adds your bands when one books a show within driving range.":"";
   const act=(k,l)=>`<button class="eact" type="button" data-act="${k}">${l}</button>`;
-  const acts=(S.q?act("q","Clear search"):"")+(S.cat||S.dist?act("filters","Clear all filters"):"")+(!wk&&S.when!=="all"?act("when","Search all dates"):"");
+  const acts=(S.q?act("q","Clear search"):"")+(S.cat||S.dist||S.from==="me"?act("filters","Clear all filters"):"")+(!wk&&S.when!=="all"?act("when","Search all dates"):"");
   return `<div class="empty"><p class="emsg">${esc(msg)}</p>${note?`<p class="enote">${esc(note)}</p>`:""}${acts?`<div class="eacts">${acts}</div>`:""}</div>`;
 }
 // After an empty-state button: its button is gone, so focus the first control in the new results.
 function emptyAct(k){
   if(k==="q"){$("#search").value="";S.q="";S.qt="";}
-  else if(k==="filters"){S.cat="";S.dist=0;}
+  else if(k==="filters"){clearAll();const f=$("#results").querySelector("a,button,summary");if(f)f.focus();return;}
   else if(k==="when"){S.when="all";}
   S.limit=40;render();
   const f=$("#results").querySelector("a,button,summary");if(f)f.focus();
@@ -1775,18 +1814,19 @@ function render(){
   $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
   $("#chips").innerHTML=chipsHTML();renderSide();
   if(fk){const n=$("#chips").querySelector(fk);if(n)n.focus();}
+  renderApplied();
   if(S.mode==="saved"){renderSaved();return;}
   V=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
   V.shown=V.all?V.items.length:Math.min(S.limit,V.items.length);
-  const what=S.mode==="weekly"?"weekly events":`events · ${WHEN[S.when].toLowerCase()}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
+  const what=S.mode==="weekly"?"weekly events":`events · ${whenText(S.when)}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
   $("#count").textContent=`${V.items.length+V.ongoing} ${what}`;
   $("#announce").textContent="";
   const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
   $("#results").innerHTML=(html||emptyHTML())+
     (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"")+
-    (S.mode==="upcoming"&&S.cat==="My Bands"?MBNOTE:"");
+    (S.mode==="upcoming"&&cats().includes("My Bands")?MBNOTE:"");
   replaceURL();
   setBarH();
 }
@@ -1826,8 +1866,10 @@ function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),$(".tabs"),...docum
 const scanDay=()=>{const ls=pd(LAST_SCAN);return `${MON[ls.getMonth()]} ${ls.getDate()}`;};
 function staleHTML(){const age=-daysFrom(pd(LAST_SCAN));return age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:"";}
 function setMeta(){
-  const up=EVENTS.filter(isUpcoming).length;
-  $("#meta").innerHTML=$("#metaTop").innerHTML=`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming${staleHTML()}`;
+  const up=EVENTS.filter(isUpcoming).length,stale=-daysFrom(pd(LAST_SCAN))>SCAN_STALE_DAYS;
+  $("#metaTop").innerHTML=`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming${staleHTML()}`;
+  // The bar keeps an overdue scan short and loud; the full wording stays under the title and in About.
+  $("#meta").innerHTML=stale?`Updated ${scanDay()} &middot; <span class="stale">overdue</span>`:`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming`;
 }
 document.addEventListener("click",ev=>{
   const tab=ev.target.closest("a[data-tab]");
@@ -1836,14 +1878,18 @@ document.addEventListener("click",ev=>{
   if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
   if(b.id==="more"){showMore();return;}
   if(b.id==="aboutBtn"){go({open:"about"});openSheet("about");return;}
+  if(b.id==="filtersBtn"){go({open:"filters"});openSheet("filters");return;}
+  if(b.dataset.rm){removeApplied(b.dataset.rm);return;}
   if(b.closest("#sheet"))return;
   if(b.dataset.act){emptyAct(b.dataset.act);return;}
   // Destinations push a history entry (Back undoes them); refinements replace the current one.
   if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))renderSoon();return;}
   if(b.dataset.sort){pressNow(b);if(go({sort:b.dataset.sort,mode:"upcoming"}))renderSoon();return;}
   if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
+  // Sidebar categories toggle independently; All categories clears them.
+  if(b.dataset.cat!==undefined){const c=b.dataset.cat,a=c?(cats().includes(c)?cats().filter(x=>x!==c):[...cats(),c]):[];refine({cat:catKey(a)});
+    document.querySelectorAll("#side [data-cat]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat?a.includes(x.dataset.cat):!a.length));renderSoon();return;}
   if(b.dataset.when)refine({when:b.dataset.when,mode:"upcoming"});
-  else if(b.dataset.cat!==undefined)refine({cat:b.dataset.cat});
   else if(b.dataset.dist!==undefined)refine({dist:+b.dataset.dist});
   else return;
   pressNow(b);renderSoon();
@@ -1859,7 +1905,8 @@ let renderSeq=0;
 function renderSoon(){const n=++renderSeq;requestAnimationFrame(()=>setTimeout(()=>{if(n===renderSeq)render();},0));}
 // An empty passive touchstart listener lets iOS Safari apply :active press states.
 document.addEventListener("touchstart",()=>{},{passive:true});
-document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="from"){setFrom(ev.target.value);return;}if(k==="cat")refine({cat:ev.target.value});if(k==="dist")refine({dist:+ev.target.value});render();});
+// Sidebar "On a date...": a valid day from today on.
+document.addEventListener("change",ev=>{if(ev.target.dataset.k!=="date")return;const v=ev.target.value;if(!isDate(v)||pd(v)<today)return;refine({when:v,mode:"upcoming"});render();});
 // Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
 const FALLBACK=" - showing driving miles from Ashland instead.";
 function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;S.limit=40;render();}
@@ -1893,18 +1940,19 @@ const DEF={mode:"upcoming",sort:"date",when:"7",cat:"",dist:0,q:""};
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 // OPEN: the open sheet, an event id or "about". Only an event id goes in the URL; About is marked in history.state.
 let OPEN=null;
-const evOf=o=>o&&o!=="about"?o:"";
+const evOf=o=>o&&o!=="about"&&o!=="filters"?o:"";
 try{history.scrollRestoration="manual";}catch(e){}
 const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,q:S.qt});
 function urlFor(v,ev){
-  const u=new URLSearchParams();VIEWKEYS.forEach(k=>{if(v[k]!==DEF[k])u.set(k,v[k]);});if(ev)u.set("ev",ev);
+  // categories as repeated keys: cat=Concert&cat=Festival
+  const u=new URLSearchParams();VIEWKEYS.forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(v[k]!==DEF[k])u.set(k,v[k]);});if(ev)u.set("ev",ev);
   const qs=u.toString();return location.pathname+(qs?"?"+qs:"");
 }
 function curState(){try{return history.state&&typeof history.state==="object"?history.state:{};}catch(e){return {};}}
 // Rewrite the current entry for the current view, keeping its scroll position and sheet mark.
 function replaceURL(){
   const c=curState();
-  try{history.replaceState({...viewOf(),ev:evOf(OPEN),about:OPEN==="about",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
+  try{history.replaceState({...viewOf(),ev:evOf(OPEN),about:OPEN==="about",filters:OPEN==="filters",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
 }
 function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.qt=v.q;S.q=v.q.toLowerCase();}
 // Destinations: call from a tap or key handler only (Chrome skips entries pushed without a user gesture).
@@ -1913,7 +1961,7 @@ function go(patch){
   if(Object.keys(next).every(k=>next[k]===cur[k]))return false;
   try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}
   if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);S.limit=40;}
-  try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
+  try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",filters:next.open==="filters",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
   return true;
 }
 // Refinements: the caller renders, and render() replaces the entry.
@@ -1921,7 +1969,9 @@ function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();d
 addEventListener("pagehide",()=>{try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}});
 addEventListener("popstate",e=>{
   const st=e.state&&typeof e.state==="object"&&e.state.mode?e.state:{...readURL(location.search),y:null};
-  const want=st.about?"about":st.ev||"";
+  // our own step back after "Show N events": keep the applied filters on this entry
+  if(pendingApply&&!OPEN){flushApply();return;}
+  const want=st.about?"about":st.filters?"filters":st.ev||"";
   if(OPEN&&!want)closeSheet(true);
   const cur=viewOf();
   if(VIEWKEYS.some(k=>cur[k]!==st[k])){applyView(st);$("#search").value=S.qt;S.limit=40;render();}
@@ -1973,7 +2023,9 @@ const GONE=`<h2 class="sh-title" id="sheetTitle">This event is no longer listed<
 function lockPage(on){const de=document.documentElement,sb=on?innerWidth-de.clientWidth:0;de.classList.toggle("sheet-open",on);de.style.paddingRight=sb>0?sb+"px":"";}
 function openSheet(id){
   const o=BYID.get(id),snap=!o&&id!=="about"?savedSnap(id):null;OPEN=id;
-  $("#sheetBody").innerHTML=id==="about"?aboutHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
+  if(id==="filters")FD={cats:cats(),from:S.from,dist:S.dist,when:S.when==="all"||isDate(S.when)?S.when:null};
+  $("#sheetBody").innerHTML=id==="about"?aboutHTML():id==="filters"?filtersHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
+  $("#sheetClose").textContent=id==="filters"?"Done":"Close";
   if(!sheet.open){
     lockPage(true);
     try{if(typeof sheet.showModal!=="function")throw 0;sheet.showModal();}
@@ -1995,10 +2047,11 @@ sheet.addEventListener("close",()=>{
   else{
     OPEN=null;const c=curState();
     // The entry this page pushed for the sheet: step back once. A ?ev= link opened directly: drop ev in place.
-    if((c.ev||c.about)&&c.sheet===PL){try{history.back();}catch(e){replaceURL();}}
-    else replaceURL();
+    if((c.ev||c.about||c.filters)&&c.sheet===PL){try{history.back();}catch(e){replaceURL();flushApply();}}
+    else{replaceURL();flushApply();}
   }
   if(id==="about"){$("#aboutBtn").focus({preventScroll:true});return;}
+  if(id==="filters"){$("#filtersBtn").focus({preventScroll:true});return;}
   const r=id&&$("#results").querySelector(`.ev[data-ev="${CSS.escape(id)}"]`);
   if(r)r.focus({preventScroll:true});
   if(!r||document.activeElement!==r){const res=$("#results");res.tabIndex=-1;res.focus({preventScroll:true});}
@@ -2006,7 +2059,8 @@ sheet.addEventListener("close",()=>{
 sheet.addEventListener("click",ev=>{
   if(ev.target===sheet){closeSheet();return;}
   const b=ev.target.closest("button");if(!b)return;
-  if(b.id==="sheetClose"||b.dataset.sh==="close")closeSheet();
+  if(b.id==="sheetClose"&&OPEN==="filters"||b.dataset.f==="apply")applyFilters();
+  else if(b.id==="sheetClose"||b.dataset.sh==="close")closeSheet();
   else if(b.dataset.sh==="share")shareEvent(b.dataset.id);
   else if(b.dataset.sh==="save")toggleSave(b.dataset.id,b);
   else if(b.dataset.sh==="ics")downloadICS(b.dataset.id);
@@ -2030,6 +2084,95 @@ async function shareEvent(id){
   if(navigator.share){try{await navigator.share({title:o.title,text:`${o.title} - ${dateLine(o)}`,url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
   try{await navigator.clipboard.writeText(url);live.textContent="Link copied";return;}catch(e){}
   const lab=$("#sheetLink"),f=lab.querySelector("input");lab.hidden=false;f.value=url;f.focus();f.select();
+}
+
+// --- Filters sheet: a draft (FD) that "Show N events" or Done applies; Back, Esc and the scrim discard it ---
+let FD=null,pendingApply=null;
+// run fn with the draft's date, distance and From in place of the applied ones
+function withDraft(fn){const keep={when:S.when,dist:S.dist,from:S.from};S.dist=FD.dist;S.from=FD.from;if(FD.when)S.when=FD.when;try{return fn();}finally{Object.assign(S,keep);}}
+function filtersHTML(){
+  const wk=S.mode==="weekly";
+  const c=withDraft(()=>{const base=baseItems(),m={};base.forEach(o=>{m[o.cat]=(m[o.cat]||0)+1;});return {m,total:base.length,n:base.filter(o=>!FD.cats.length||FD.cats.includes(o.cat)).length};});
+  const order=CATS.slice().sort((a,b)=>(c.m[b]||0)-(c.m[a]||0)||CATS.indexOf(a)-CATS.indexOf(b));
+  const me=FD.from==="me",unit=me?" mi straight-line":" mi";
+  const chk=k=>{const n=c.m[k]||0,on=FD.cats.includes(k),off=!n&&!on;return `<li><label class="fo${off?" off":""}"><input type="checkbox" name="fcat" value="${esc(k)}"${on?" checked":""}${off?" disabled":""}><span>${esc(VIEWLABEL[k]||k)}</span><span class="n">${n}</span></label></li>`;};
+  const rad=(name,val,label,on)=>`<li><label class="fo"><input type="radio" name="${name}" value="${val}"${on?" checked":""}><span>${label}</span></label></li>`;
+  return `<h2 class="sh-title" id="sheetTitle">Filters</h2>`+
+    `<fieldset class="fs"><legend>Category</legend><ul class="fl"><li><label class="fo"><input type="checkbox" name="fall"${FD.cats.length?"":" checked"}><span>All categories</span><span class="n">${c.total}</span></label></li>${order.map(chk).join("")}</ul></fieldset>`+
+    `<fieldset class="fs"><legend>Distance from</legend><ul class="fl">${rad("ffrom","ashland","Ashland (driving)",!me)}${rad("ffrom","me","My location (straight-line)",me)}</ul></fieldset>`+
+    `<fieldset class="fs"><legend>${me?"Straight-line distance from you":"Drive distance from Ashland"}</legend><ul class="fl">${[0,...DISTS].map(m=>rad("fdist",m,m?`Within ${m}${unit}`:"Any distance",FD.dist===m)).join("")}</ul></fieldset>`+
+    (wk?"":`<fieldset class="fs"><legend>Date</legend><ul class="fl">${rad("fwhen","all","All dates",FD.when==="all")}<li class="fdate"><label class="fo"><input type="radio" name="fwhen" value="date"${isDate(FD.when)?" checked":""}><span>On a date...</span></label><input type="date" id="fdateIn" aria-label="On a date" min="${iso(today)}" value="${isDate(FD.when)?FD.when:""}"></li></ul></fieldset>`)+
+    `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p>`+
+    `<div class="fs-foot"><button class="sh-btn pri" type="button" data-f="apply">Show ${c.n} ${wk?"weekly ":""}event${c.n===1?"":"s"}</button></div>`;
+}
+// Rebuild with fresh counts, keeping the sheet's scroll and the focused control.
+function refreshFilters(el){
+  const key=el?(el.id?"#"+el.id:`[name="${el.name}"]${el.type==="radio"||el.name==="fcat"?`[value="${CSS.escape(el.value)}"]`:""}`):null;
+  const live=$("#sheetLive"),msg=live?live.textContent:"",y=sheet.scrollTop;
+  $("#sheetBody").innerHTML=filtersHTML();sheet.scrollTop=y;$("#sheetLive").textContent=msg;
+  const f=key&&$("#sheetBody").querySelector(key);if(f)f.focus({preventScroll:true});
+}
+sheet.addEventListener("change",ev=>{
+  if(OPEN!=="filters")return;const t=ev.target;
+  if(t.name==="fcat")FD.cats=t.checked?[...FD.cats,t.value]:FD.cats.filter(x=>x!==t.value);
+  else if(t.name==="fall")FD.cats=[];
+  else if(t.name==="fdist")FD.dist=+t.value;
+  else if(t.name==="ffrom"){if(t.value==="me"){sheetLocate(t);return;}FD.from="ashland";}
+  else if(t.name==="fwhen"){const v=$("#fdateIn").value;FD.when=t.value==="all"?"all":isDate(v)&&pd(v)>=today?v:iso(today);}
+  else if(t.id==="fdateIn"){if(!isDate(t.value)||pd(t.value)<today)return;FD.when=t.value;}
+  else return;
+  refreshFilters(t);
+});
+// From: My location in the sheet asks for the position right away, so the counts can use it.
+function sheetLocate(el){
+  const say=m=>{const l=$("#sheetLive");if(l)l.textContent=m;};
+  const fail=why=>{FD.from="ashland";if(OPEN!=="filters")return;refreshFilters($('#sheetBody [name="ffrom"][value="ashland"]'));say(why+FALLBACK);};
+  FD.from="me";
+  if(GEO.pos){refreshFilters(el);return;}
+  if(!("geolocation" in navigator)||!navigator.geolocation){fail("This browser cannot share its location");return;}
+  refreshFilters(el);say("Finding your location...");
+  try{navigator.geolocation.getCurrentPosition(p=>{
+      GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude};
+      if(OPEN==="filters"&&FD.from==="me"){refreshFilters(document.activeElement);say("Distances are straight-line miles from your location.");}
+    },err=>fail(err&&err.code===1?"Location permission was denied":err&&err.code===3?"Finding your location timed out":"Your location is not available"),
+    {enableHighAccuracy:false,timeout:15000,maximumAge:600000});
+  }catch(e){fail("Your location is not available");}
+}
+function applyFilters(){pendingApply={cat:catKey(FD.cats),dist:FD.dist,from:FD.from,when:FD.when};closeSheet();}
+// after the sheet's entry is gone: apply as a refinement of the list entry (no new history entry)
+function flushApply(){
+  const d=pendingApply;if(!d)return;pendingApply=null;
+  S.cat=d.cat;S.dist=d.dist;if(d.when&&S.mode==="upcoming")S.when=d.when;S.limit=40;
+  if(d.from!==S.from)setFrom(d.from);else render();
+}
+// --- applied filters: one removable chip per non-default sheet setting ---
+function appliedList(){
+  if(S.mode==="saved")return [];
+  const a=cats().map(c=>["cat:"+c,VIEWLABEL[c]||c]);
+  if(S.dist)a.push(["dist",`Within ${S.dist}${miUnit()}`]);
+  if(S.from==="me")a.push(["from","From my location"]);
+  if(S.mode==="upcoming"&&(S.when==="all"||isDate(S.when)))a.push(["when",S.when==="all"?"All dates":dayLabel2(S.when)]);
+  return a;
+}
+const XICON=svg('<path d="M7 7l10 10M17 7L7 17"/>');
+function renderApplied(){
+  const a=appliedList(),el=$("#applied");el.hidden=!a.length;
+  el.innerHTML=a.map(([k,l])=>`<button type="button" class="achip" data-rm="${esc(k)}" aria-label="Remove ${esc(l)}"><span>${esc(l)}</span>${XICON}</button>`).join("")+(a.length?`<button type="button" class="aclear" data-rm="all">Clear all</button>`:"");
+  const fb=$("#filtersBtn"),bd=$("#filtersBadge");fb.setAttribute("aria-label",a.length?`Filters, ${a.length} active`:"Filters");fb.classList.toggle("on",!!a.length);bd.textContent=a.length;bd.hidden=!a.length;
+}
+// Clear all: categories, distance, From (back to Ashland) and the sheet date (back to 7 days). Search stays.
+function clearAll(){S.cat="";S.dist=0;if(S.when==="all"||isDate(S.when))S.when="7";S.limit=40;if(S.from==="me")setFrom("ashland");else render();}
+function removeApplied(k){
+  const idx=[...document.querySelectorAll("#applied [data-rm]")].findIndex(x=>x.dataset.rm===k);
+  if(k==="all")clearAll();
+  else if(k.startsWith("cat:")){refine({cat:catKey(cats().filter(c=>c!==k.slice(4)))});render();}
+  else if(k==="dist"){refine({dist:0});render();}
+  else if(k==="when"){refine({when:"7"});render();}
+  else if(k==="from")setFrom("ashland");
+  // focus the chip that took this one's place, else Filters, else the results
+  const rest=[...document.querySelectorAll("#applied [data-rm]")],fb=$("#filtersBtn");
+  const f=k!=="all"&&rest.length?rest[Math.min(idx,rest.length-1)]:fb.offsetParent?fb:null;
+  if(f)f.focus();else{const r=$("#results");r.tabIndex=-1;r.focus({preventScroll:true});}
 }
 
 // --- Saved: on this device only. localStorage ev_saved = [{id, savedAt, snap}] ---

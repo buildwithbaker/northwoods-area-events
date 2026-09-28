@@ -12,7 +12,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Northwoods Area Events</title>
 <meta name="description" content="Upcoming events around Ashland, Bayfield, the Chequamegon Bay, Hayward, Duluth and the wider Northwoods, refreshed weekly.">
-<meta name="theme-color" content="#2E5082">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFF2F7">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#EFF2F7">
+<script>
+// Stored dark theme: set it before first paint so no light frame shows. Both theme-color tags carry the active --bg.
+try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content","#0F1420"));}}catch(e){}
+</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -49,7 +54,7 @@
 /* --sl/--sr: side gutters that clear a notch in landscape (viewport-fit=cover) */
 :root{--sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
 /* keep a focused item clear of the sticky bar plus one day header */
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
+html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
 body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
@@ -91,7 +96,7 @@ a{color:inherit}
 @media (max-width:359px){.selrow{grid-template-columns:minmax(0,1fr)}}
 .daterow{display:flex;flex-wrap:wrap;gap:6px}
 .chip{flex-shrink:0;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);font-weight:700}
+.chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep)}
 :root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
 .chipsel{flex-shrink:0;min-height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
 .selrow .chipsel{min-width:0;width:100%;padding:0 22px 0 8px;background-position:right 7px center;text-overflow:ellipsis}
@@ -115,7 +120,7 @@ a{color:inherit}
 .ev .head{display:flex;gap:8px;align-items:flex-start}
 .ev .t{flex:1;min-width:0;font-size:15.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
 .ev .t a{text-decoration:none;padding:3px 0}
-.ev .t a:hover{text-decoration:underline;color:var(--link)}
+@media (hover: hover){.ev .t a:hover{text-decoration:underline;color:var(--link)}}
 .when{flex-shrink:0;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--neutral-soft);color:var(--neutral);white-space:nowrap;margin-top:1px}
 .when.soon{background:var(--accent-soft);color:var(--accent-ink)}
 .ev .loc{font-size:13px;color:var(--neutral);margin-top:3px;overflow-wrap:anywhere}
@@ -136,6 +141,10 @@ a{color:inherit}
 .ongoing[open] .list{border-top:0;border-radius:0 0 12px 12px}
 .showmore{display:block;width:100%;height:48px;margin-top:12px;border:1px solid var(--link);border-radius:12px;background:var(--surface);color:var(--link);font-size:15px;font-weight:600;cursor:pointer}
 .empty{padding:20px 16px;background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;color:var(--neutral);font-size:14px;margin-top:12px}
+.empty .emsg{color:var(--text);font-size:15px;font-weight:600;overflow-wrap:anywhere}
+.empty .enote{margin-top:6px}
+.eacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.eact{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);font-size:15px;font-weight:600;cursor:pointer}
 .footer-note{font-size:12.5px;color:var(--neutral);margin-top:24px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6}
 .footer-note a{color:var(--link)}
 .footer-note strong{color:var(--text)}
@@ -158,7 +167,7 @@ a{color:inherit}
   .side{display:block;margin-top:14px}
   .side h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--neutral);margin:16px 0 6px}
   .side .opt{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:6px 10px;border:0;border-radius:8px;background:none;font-size:14px;text-align:left;cursor:pointer}
-  .side .opt:hover{background:var(--neutral-soft)}
+  @media (hover: hover){.side .opt:hover{background:var(--neutral-soft)}}
   .side .opt[aria-pressed="true"]{background:var(--primary-soft);color:var(--primary-deep);font-weight:700}
   :root[data-theme="dark"] .side .opt[aria-pressed="true"]{color:#fff}
   .side .opt .n{color:var(--neutral);font-size:12.5px;font-weight:500}
@@ -167,6 +176,18 @@ a{color:inherit}
   .itile{width:40px;height:40px}
   .itile svg{width:21px;height:21px}
 }
+
+/* touch: no grey tap flash, and an instant press state (no transition) on every control and event link */
+button,.chipsel,.ongoing summary,.ev .t a{-webkit-tap-highlight-color:transparent}
+/* controls only: no double-tap zoom delay, no text selection; event text stays selectable */
+button,.chipsel,.ongoing summary{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:active,.chip:active,.chipsel:active,.seg button:active{transform:scale(.97)}
+.showmore:active,.side .opt:active{transform:none;background:var(--neutral-soft)}
+.ongoing summary:active{background:var(--neutral-soft)}
+.ev .t a:active{background:var(--primary-soft);border-radius:4px}
+
+/* installed app: the browser's install offer is moot */
+@media (display-mode: standalone){#installBtn{display:none}}
 </style>
 </head>
 <body>
@@ -1583,9 +1604,23 @@ function sideHTML(){
     `<h2>${distLabel()}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m}${miUnit()}`:"Any distance",S.dist===m)).join("")}`+
     `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),S.cat===c,base.filter(e=>e.cat===c).length)).join("")}`;
 }
-function emptyMsg(){
-  if(S.cat==="My Bands"&&!S.q)return "No upcoming shows from your watch-list in this range - the weekly scan adds your bands when one books a show within driving range.";
-  return "Nothing matches. Try a wider date range, another category or clear the search.";
+// Empty results: say what was searched and over which dates, then offer only the ways out that apply.
+const RANGETXT={today:" today",weekend:" this weekend","7":" in the next 7 days","30":" in the next 30 days",all:" on any date"};
+function emptyHTML(){
+  const q=$("#search").value.trim(),wk=S.mode==="weekly";
+  const msg=(wk?"No weekly events":"No events")+(S.q?` for "${q}"`:"")+(wk?"":RANGETXT[S.when]);
+  const note=S.cat==="My Bands"&&!S.q&&!wk?"The weekly scan adds your bands when one books a show within driving range.":"";
+  const act=(k,l)=>`<button class="eact" type="button" data-act="${k}">${l}</button>`;
+  const acts=(S.q?act("q","Clear search"):"")+(S.cat||S.dist?act("filters","Clear all filters"):"")+(!wk&&S.when!=="all"?act("when","Search all dates"):"");
+  return `<div class="empty"><p class="emsg">${esc(msg)}</p>${note?`<p class="enote">${esc(note)}</p>`:""}${acts?`<div class="eacts">${acts}</div>`:""}</div>`;
+}
+// After an empty-state button: its button is gone, so focus the first control in the new results.
+function emptyAct(k){
+  if(k==="q"){$("#search").value="";S.q="";}
+  else if(k==="filters"){S.cat="";S.dist=0;}
+  else if(k==="when"){S.when="all";}
+  S.limit=40;render();
+  const f=$("#results").querySelector("a,button,summary");if(f)f.focus();
 }
 // The sidebar is display:none below 960px, so it is only built on wide screens.
 const WIDE=matchMedia("(min-width:960px)");
@@ -1613,7 +1648,7 @@ function render(){
   $("#announce").textContent="";
   const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
-  $("#results").innerHTML=(html||`<div class="empty">${esc(emptyMsg())}</div>`)+
+  $("#results").innerHTML=(html||emptyHTML())+
     (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"");
   const u=new URLSearchParams({mode:S.mode,sort:S.sort,when:S.when});if(S.cat)u.set("cat",S.cat);if(S.dist)u.set("dist",S.dist);
   try{history.replaceState(null,"","?"+u);}catch(e){}
@@ -1662,15 +1697,27 @@ document.addEventListener("click",ev=>{
   if(b.classList.contains("more")){const r=b.closest(".ev");const o=r.classList.toggle("open");b.textContent=o?"Less":"More";b.setAttribute("aria-expanded",o);return;}
   if(b.id==="more"){showMore();return;}
   if(b.id==="themeBtn")return;
+  if(b.dataset.act){emptyAct(b.dataset.act);return;}
   if(b.dataset.when){S.when=b.dataset.when;S.mode="upcoming";}
   else if(b.dataset.mode){S.mode=b.dataset.mode;}
   else if(b.dataset.cat!==undefined){S.cat=b.dataset.cat;}
   else if(b.dataset.dist!==undefined){S.dist=+b.dataset.dist;}
-  else if(b.dataset.from){setFrom(b.dataset.from);return;}
+  else if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
   else if(b.dataset.sort){S.sort=b.dataset.sort;S.mode="upcoming";}
   else return;
-  S.limit=40;render();
+  S.limit=40;pressNow(b);renderSoon();
 });
+// A tapped chip, segment or sidebar option shows as selected at once; the list is rebuilt after that repaint.
+const PKEYS=["when","mode","cat","dist","sort","from"];
+function pressNow(b){
+  if(!b.hasAttribute("aria-pressed"))return;const k=PKEYS.find(k=>b.dataset[k]!==undefined);if(!k)return;
+  b.parentElement.querySelectorAll(`[aria-pressed][data-${k}]`).forEach(x=>x.setAttribute("aria-pressed",x===b));
+}
+// Several quick taps coalesce into one render with the latest state.
+let renderSeq=0;
+function renderSoon(){const n=++renderSeq;requestAnimationFrame(()=>setTimeout(()=>{if(n===renderSeq)render();},0));}
+// An empty passive touchstart listener lets iOS Safari apply :active press states.
+document.addEventListener("touchstart",()=>{},{passive:true});
 document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="from"){setFrom(ev.target.value);return;}if(k==="cat")S.cat=ev.target.value;if(k==="dist")S.dist=+ev.target.value;S.limit=40;render();});
 // Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
 const FALLBACK=" - showing driving miles from Ashland instead.";
@@ -1699,7 +1746,8 @@ function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(
 armMidnight();
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
-function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const b=$("#themeBtn");b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}
+// Both theme-color tags carry the active theme's --bg: the theme is the app's choice, not the phone's.
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content",t==="dark"?"#0F1420":"#EFF2F7"));const b=$("#themeBtn");b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}
 let theme="light";try{if(localStorage.getItem("ev_theme")==="dark")theme="dark";}catch(e){}
 applyTheme(theme);
 $("#themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();});

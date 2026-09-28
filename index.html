@@ -85,15 +85,19 @@ a{color:inherit}
 
 .shell{max-width:1200px;margin:0 auto;padding:0 var(--sr) calc(56px + env(safe-area-inset-bottom)) var(--sl)}
 /* large title: scrolls away; the bar then shows the short title */
-.top{display:flex;align-items:flex-start;gap:12px;padding:max(16px,env(safe-area-inset-top)) 0 12px}
-.top .ttl{flex:1;min-width:0}
-.top h1{font-size:1.75rem;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--on-primary-container)}
+.top{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;padding:max(16px,env(safe-area-inset-top)) 0 12px}
+/* the title keeps at least 1.25rem per its longest word; below that the buttons wrap under it */
+.top .ttl{flex:1 1 calc(1.25rem * 6.3);min-width:0;container-type:inline-size}
+.top h1{font-size:1.75rem;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--on-primary-container);overflow-wrap:anywhere}
+/* large text: cap the title so its longest word ("Northwoods", about 6.05em) fits beside the buttons */
+.top h1{font-size:min(1.75rem, calc((100vw - 88px) / 6.3))}
+.top h1{font-size:min(1.75rem, 100cqi / 6.3)}
 :root[data-theme="dark"] .top h1{color:var(--on-surface)}
 .top .subtitle{display:none;font-size:.875rem;color:var(--on-surface-variant);margin-top:4px}
 .meta{font-size:.75rem;color:var(--on-surface-variant)}
 .meta .stale{color:var(--error);font-weight:600}
 .top .meta{display:none;margin-top:4px}
-.topbtns{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbtns{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
 .iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);border:1px solid var(--outline);background:var(--surface-container-high);color:var(--on-surface-variant);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .iconbtn svg{width:20px;height:20px}
 .installbtn{flex-shrink:0;min-height:44px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container);font-size:.9375rem;font-weight:600;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer}
@@ -103,20 +107,21 @@ a{color:inherit}
 :root[data-theme="dark"] .installbtn{border-color:var(--link);color:#fff}
 
 /* sticky bar: an opaque layer over the page, with a shadow only while content is under it */
-.bar{position:sticky;top:0;z-index:20;background:var(--surface-container);padding:8px var(--sr) 12px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--outline-variant)}
+.bar{position:sticky;top:0;z-index:20;background:var(--surface-container);padding:8px var(--sr) 8px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--outline-variant)}
 .bar.under{box-shadow:var(--bar-shadow)}
 /* freshness line and short title share one cell, so collapsing never changes the bar's height */
-.row0{display:grid;align-items:center;margin-bottom:8px}
+.row0{display:grid;align-items:center;margin-bottom:4px}
 .row0>*{grid-area:1 / 1}
 .row0 .short{font-size:1rem;font-weight:700;line-height:1.25;color:var(--on-surface);visibility:hidden}
 .bar.collapsed .row0 .short{visibility:visible}
 .bar.collapsed .row0 .meta{visibility:hidden}
-.row1{display:flex;gap:8px;align-items:center}
-.sw{position:relative;flex:1;min-width:0}
+.row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* the field keeps room for its placeholder; when it cannot, Date / Nearest wraps under it */
+.sw{position:relative;flex:1 1 calc(56px + 4em);min-width:0}
 .sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--on-surface-variant);pointer-events:none}
 /* the one px font size: iPhone zooms on focus below 16px */
 .search{width:100%;min-height:44px;padding:0 12px 0 40px;border:1px solid var(--outline);border-radius:var(--r-md);font-size:max(16px,1rem);background:var(--surface-container-high)}
-.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);padding:4px;min-height:44px}
+.seg{display:inline-flex;flex:0 0 auto;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);padding:4px;min-height:44px}
 .seg button{border:0;background:transparent;border-radius:var(--r-sm);padding:0 12px;font-size:.9375rem;font-weight:600;color:var(--on-surface-variant);cursor:pointer;min-width:52px}
 .seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
 .search::placeholder{color:var(--on-surface-variant)}
@@ -141,7 +146,7 @@ a{color:inherit}
 .count{font-size:.875rem;color:var(--on-surface-variant);margin:12px 2px 4px}
 .geonote{font-size:.875rem;color:var(--on-surface);background:var(--primary-container);border:1px solid var(--primary);border-radius:var(--r-md);padding:8px 12px;margin-top:12px}
 .geonote[hidden]{display:none}
-.ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--surface);display:flex;align-items:baseline;gap:8px;padding:12px 2px 8px;font-size:.8125rem;font-weight:600;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
+.ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--surface);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:12px 2px 8px;font-size:.8125rem;font-weight:600;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
 .ghead .n{color:var(--on-surface-variant);font-weight:600;letter-spacing:0}
 .ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--on-surface-variant);font-size:.8125rem}
 .list{background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
@@ -195,6 +200,7 @@ a{color:inherit}
   .bar.under{box-shadow:none}
   .chips{display:none}
   .row1{flex-direction:column;align-items:stretch}
+  .sw{flex:none}
   .seg{width:100%}
   .seg button{flex:1}
   .side{display:block;margin-top:16px}

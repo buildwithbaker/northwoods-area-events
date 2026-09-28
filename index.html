@@ -10,6 +10,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="text-scale" content="scale">
 <title>Northwoods Area Events</title>
 <meta name="description" content="Upcoming events around Ashland, Bayfield, the Chequamegon Bay, Hayward, Duluth and the wider Northwoods, refreshed weekly.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFF2F7">
@@ -35,27 +36,47 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Colour tokens, named by role. Values unchanged from before the rename; old name -> new name:
+   --bg -> --surface (page)                --card -> --surface-container (lists, sheets, the bar)
+   --surface -> --surface-container-high   --text -> --on-surface
+   --neutral -> --on-surface-variant       --desc -> --on-surface-muted
+   --neutral-border -> --outline           --neutral-soft -> --outline-variant
+   --primary -> --primary                  #fff on primary -> --on-primary
+   --primary-soft -> --primary-container   --primary-deep -> --on-primary-container
+   --accent -> --accent                    --accent-soft -> --accent-container
+   --accent-ink -> --accent-ink (day headers and soon badges)
+   --link -> --link                        --stale -> --error
+   The theme is the app's choice (data-theme), never the phone's. */
 :root{
-  --primary:#2E5082; --primary-deep:#25406A; --primary-soft:#E4EAF4;
-  --accent:#A07020; --accent-ink:#7A520F; --accent-soft:#F2E5C9;
-  --neutral:#526070; --neutral-border:#B0BAC8; --neutral-soft:#DDE2EA;
-  --bg:#EFF2F7; --card:#FFFFFF; --surface:#FFFFFF; --desc:#3c4654;
-  --text:#1A1F2B; --link:#2E5082; --stale:#8A1C1C;
+  --primary:#2E5082; --on-primary:#FFFFFF; --on-primary-container:#25406A; --primary-container:#E4EAF4;
+  --accent:#A07020; --accent-ink:#7A520F; --accent-container:#F2E5C9;
+  --on-surface-variant:#526070; --outline:#B0BAC8; --outline-variant:#DDE2EA;
+  --surface:#EFF2F7; --surface-container:#FFFFFF; --surface-container-high:#FFFFFF; --on-surface-muted:#3c4654;
+  --on-surface:#1A1F2B; --link:#2E5082; --error:#8A1C1C;
+  --bar-shadow:0 2px 8px rgba(8,12,20,.12); --sheet-shadow:0 -4px 24px rgba(8,12,20,.2);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
   --bar-h:0px; --gh-h:0px; color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --primary:#33598C; --primary-deep:#22344F; --primary-soft:#22344F;
-  --accent:#D6A24A; --accent-ink:#E2B462; --accent-soft:#3A3320;
-  --neutral:#9AA6B6; --neutral-border:#3A4556; --neutral-soft:#2A3342;
-  --bg:#0F1420; --card:#1B2330; --surface:#222C3C; --desc:#C2CAD6;
-  --text:#E7EBF1; --link:#9CBBE8; --stale:#F2A7A7; color-scheme:dark;
+  --primary:#33598C; --on-primary:#FFFFFF; --on-primary-container:#22344F; --primary-container:#22344F;
+  --accent:#D6A24A; --accent-ink:#E2B462; --accent-container:#3A3320;
+  --on-surface-variant:#9AA6B6; --outline:#3A4556; --outline-variant:#2A3342;
+  --surface:#0F1420; --surface-container:#1B2330; --surface-container-high:#222C3C; --on-surface-muted:#C2CAD6;
+  --on-surface:#E7EBF1; --link:#9CBBE8; --error:#F2A7A7;
+  --bar-shadow:0 2px 8px rgba(0,0,0,.5); --sheet-shadow:0 -4px 24px rgba(0,0,0,.6);
+  color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 /* --sl/--sr: side gutters that clear a notch in landscape (viewport-fit=cover) */
 :root{--sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
+/* 1rem follows the phone's text size: iPhone Settings via -apple-system-body (17px default), Chrome via the text-scale meta.
+   Elsewhere the shorthand is ignored and 1rem stays 16px. Inter stays the face. */
+html{font:-apple-system-body;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+/* macOS Safari also knows -apple-system-body: keep the browser default there */
+@supports (font: -apple-system-body) and (not (-webkit-touch-callout: default)){:root{font-size:100%}}
 /* keep a focused item clear of the sticky bar plus one day header */
-html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
-body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden;overflow-x:clip}
+html{background:var(--surface);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
+body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--surface);color:var(--on-surface);line-height:1.5;font-size:1rem;overflow-x:hidden;overflow-x:clip}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
@@ -63,88 +84,101 @@ a{color:inherit}
 .vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 .shell{max-width:1200px;margin:0 auto;padding:0 var(--sr) calc(56px + env(safe-area-inset-bottom)) var(--sl)}
-.top{display:flex;align-items:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) 0 10px}
+/* large title: scrolls away; the bar then shows the short title */
+.top{display:flex;align-items:flex-start;gap:12px;padding:max(16px,env(safe-area-inset-top)) 0 12px}
 .top .ttl{flex:1;min-width:0}
-.top h1{font-size:19px;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--primary-deep)}
-:root[data-theme="dark"] .top h1{color:var(--text)}
-.top .subtitle{display:none;font-size:13px;color:var(--neutral);margin-top:2px}
-.top .meta{font-size:12.5px;color:var(--neutral);margin-top:2px}
-.top .meta .stale{color:var(--stale);font-weight:600}
-.iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:10px;border:1px solid var(--neutral-border);background:var(--surface);color:var(--neutral);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.top h1{font-size:1.75rem;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--on-primary-container)}
+:root[data-theme="dark"] .top h1{color:var(--on-surface)}
+.top .subtitle{display:none;font-size:.875rem;color:var(--on-surface-variant);margin-top:4px}
+.meta{font-size:.75rem;color:var(--on-surface-variant)}
+.meta .stale{color:var(--error);font-weight:600}
+.top .meta{display:none;margin-top:4px}
+.topbtns{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);border:1px solid var(--outline);background:var(--surface-container-high);color:var(--on-surface-variant);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .iconbtn svg{width:20px;height:20px}
-.installbtn{flex-shrink:0;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid var(--primary);background:var(--primary-soft);color:var(--primary-deep);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer}
+.installbtn{flex-shrink:0;min-height:44px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container);font-size:.9375rem;font-weight:600;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer}
 .installbtn[hidden]{display:none}
 .installbtn svg{width:16px;height:16px;flex-shrink:0}
-@media (max-width:359px){.installbtn{padding:0 10px}.installbtn svg{display:none}}
+@media (max-width:359px){.installbtn{padding:0 8px}.installbtn svg{display:none}}
 :root[data-theme="dark"] .installbtn{border-color:var(--link);color:#fff}
 
-/* sticky control bar */
-.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px var(--sr) 10px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--neutral-soft)}
+/* sticky bar: an opaque layer over the page, with a shadow only while content is under it */
+.bar{position:sticky;top:0;z-index:20;background:var(--surface-container);padding:8px var(--sr) 12px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--outline-variant)}
+.bar.under{box-shadow:var(--bar-shadow)}
+/* freshness line and short title share one cell, so collapsing never changes the bar's height */
+.row0{display:grid;align-items:center;margin-bottom:8px}
+.row0>*{grid-area:1 / 1}
+.row0 .short{font-size:1rem;font-weight:700;line-height:1.25;color:var(--on-surface);visibility:hidden}
+.bar.collapsed .row0 .short{visibility:visible}
+.bar.collapsed .row0 .meta{visibility:hidden}
 .row1{display:flex;gap:8px;align-items:center}
 .sw{position:relative;flex:1;min-width:0}
-.sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--neutral);pointer-events:none}
-.search{width:100%;min-height:44px;padding:0 12px 0 38px;border:1px solid var(--neutral-border);border-radius:10px;font-size:16px;background:var(--surface)}
-.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--neutral-border);border-radius:10px;background:var(--surface);padding:3px;min-height:44px}
-.seg button{border:0;background:transparent;border-radius:7px;padding:0 12px;font-size:14px;font-weight:600;color:var(--neutral);cursor:pointer;min-width:52px}
-.seg button[aria-pressed="true"]{background:var(--primary);color:#fff}
-.search::placeholder{color:var(--neutral)}
+.sw svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--on-surface-variant);pointer-events:none}
+/* the one px font size: iPhone zooms on focus below 16px */
+.search{width:100%;min-height:44px;padding:0 12px 0 40px;border:1px solid var(--outline);border-radius:var(--r-md);font-size:max(16px,1rem);background:var(--surface-container-high)}
+.seg{display:inline-flex;flex-shrink:0;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);padding:4px;min-height:44px}
+.seg button{border:0;background:transparent;border-radius:var(--r-sm);padding:0 12px;font-size:.9375rem;font-weight:600;color:var(--on-surface-variant);cursor:pointer;min-width:52px}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.search::placeholder{color:var(--on-surface-variant)}
 /* phone filters: below the sticky search row and scroll away with the page; nothing scrolls sideways */
-.chips{display:flex;flex-direction:column;gap:8px;padding:10px 0 2px}
-.selrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.chips{display:flex;flex-direction:column;gap:8px;padding:12px 0 4px}
+.selrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .selrow [data-k="cat"]{grid-column:1 / -1}
 .selrow.gps{grid-template-columns:minmax(0,1fr)}
 @media (max-width:359px){.selrow{grid-template-columns:minmax(0,1fr)}}
-.daterow{display:flex;flex-wrap:wrap;gap:6px}
-.chip{flex-shrink:0;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:16px;font-weight:500;color:var(--text);cursor:pointer;white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep)}
+.daterow{display:flex;flex-wrap:wrap;gap:8px}
+.chip{flex-shrink:0;min-height:40px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high);font-size:.9375rem;font-weight:500;color:var(--on-surface);cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
 :root[data-theme="dark"] .chip[aria-pressed="true"]{color:#fff}
-.chipsel{flex-shrink:0;min-height:38px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 13px;font-size:16px;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
-.selrow .chipsel{min-width:0;width:100%;padding:0 22px 0 8px;background-position:right 7px center;text-overflow:ellipsis}
-.chipsel.on{background-color:var(--primary-soft);border-color:var(--primary);font-weight:700;color:var(--primary-deep)}
+/* selects stay at 1rem: iPhone zooms on focusing a control below 16px */
+.chipsel{flex-shrink:0;min-height:40px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23526070' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;padding:0 32px 0 12px;font-size:1rem;font-weight:500;appearance:none;-webkit-appearance:none;cursor:pointer}
+.selrow .chipsel{min-width:0;width:100%;padding:0 24px 0 8px;background-position:right 8px center;text-overflow:ellipsis}
+.chipsel.on{background-color:var(--primary-container);border-color:var(--primary);font-weight:700;color:var(--on-primary-container)}
 :root[data-theme="dark"] .chipsel.on{color:#fff}
 
-/* results */
+/* results: flat cards, no shadows */
 .side{display:none}
-.count{font-size:13px;color:var(--neutral);margin:12px 2px 4px}
-.geonote{font-size:13.5px;color:var(--text);background:var(--primary-soft);border:1px solid var(--primary);border-radius:10px;padding:8px 12px;margin-top:12px}
+.count{font-size:.875rem;color:var(--on-surface-variant);margin:12px 2px 4px}
+.geonote{font-size:.875rem;color:var(--on-surface);background:var(--primary-container);border:1px solid var(--primary);border-radius:var(--r-md);padding:8px 12px;margin-top:12px}
 .geonote[hidden]{display:none}
-.ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--bg);display:flex;align-items:baseline;gap:8px;padding:12px 2px 6px;font-size:13px;font-weight:700;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
-.ghead .n{color:var(--neutral);font-weight:600;letter-spacing:0}
-.ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--neutral);font-size:12.5px}
-.list{background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;overflow:hidden}
+.ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--surface);display:flex;align-items:baseline;gap:8px;padding:12px 2px 8px;font-size:.8125rem;font-weight:600;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
+.ghead .n{color:var(--on-surface-variant);font-weight:600;letter-spacing:0}
+.ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--on-surface-variant);font-size:.8125rem}
+.list{background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
 /* a row is one button that opens the event sheet; spans styled as blocks (a button holds phrasing content only) */
-.ev{display:flex;gap:12px;width:100%;min-height:56px;padding:13px 14px;border:0;border-top:1px solid var(--neutral-soft);border-radius:0;background:none;text-align:left;cursor:pointer;min-width:0}
+.ev{display:flex;gap:12px;width:100%;min-height:56px;padding:12px 16px;border:0;border-top:1px solid var(--outline-variant);border-radius:0;background:none;text-align:left;cursor:pointer;min-width:0}
 .ev:first-child{border-top:0}
-.itile{flex-shrink:0;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:1px}
-.itile svg{width:19px;height:19px}
+.itile{flex-shrink:0;width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center}
+.itile svg{width:20px;height:20px}
 .ev .body{display:block;flex:1;min-width:0}
 .ev .head{display:flex;gap:8px;align-items:flex-start}
-.ev .t{flex:1;min-width:0;font-size:15.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
-.when{flex-shrink:0;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--neutral-soft);color:var(--neutral);white-space:nowrap;margin-top:1px}
-.when.soon{background:var(--accent-soft);color:var(--accent-ink)}
-.ev .loc{display:block;font-size:13px;color:var(--neutral);margin-top:3px;overflow-wrap:anywhere}
-.ev .loc b{color:var(--text);font-weight:600}
-.ev .desc{font-size:14px;color:var(--desc);margin-top:5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ev .tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:7px}
-.tag{display:inline-block;max-width:100%;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;overflow-wrap:anywhere}
+.ev .t{flex:1;min-width:0;font-size:1rem;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.when{flex-shrink:0;font-size:.875rem;font-weight:700;line-height:1.3;padding:0 8px;border-radius:var(--r-pill);background:var(--outline-variant);color:var(--on-surface-variant);white-space:nowrap}
+.when.soon{background:var(--accent-container);color:var(--accent-ink)}
+.ev .loc{display:block;font-size:.875rem;color:var(--on-surface-variant);margin-top:4px;overflow-wrap:anywhere}
+.ev .loc b{color:var(--on-surface);font-weight:600}
+.ev .desc{font-size:.9375rem;color:var(--on-surface-muted);margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev .tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.tag{display:inline-block;max-width:100%;font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:var(--r-pill);overflow-wrap:anywhere}
 .ongoing{margin-top:12px}
-.ongoing summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 14px;background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;font-size:14px;font-weight:600}
-.ongoing summary::-webkit-details-marker{display:none}
-.ongoing summary .n{color:var(--neutral);font-weight:500}
-.ongoing summary .chev{margin-left:auto;display:inline-flex;transition:transform .15s}
-.ongoing summary .chev svg{width:18px;height:18px}
-.ongoing[open] summary{border-radius:12px 12px 0 0;border-bottom-color:var(--neutral-soft)}
-.ongoing[open] summary .chev{transform:rotate(180deg)}
-.ongoing[open] .list{border-top:0;border-radius:0 0 12px 12px}
-.showmore{display:block;width:100%;height:48px;margin-top:12px;border:1px solid var(--link);border-radius:12px;background:var(--surface);color:var(--link);font-size:15px;font-weight:600;cursor:pointer}
-.empty{padding:20px 16px;background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;color:var(--neutral);font-size:14px;margin-top:12px}
-.empty .emsg{color:var(--text);font-size:15px;font-weight:600;overflow-wrap:anywhere}
-.empty .enote{margin-top:6px}
-.eacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.eact{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);font-size:15px;font-weight:600;cursor:pointer}
-.footer-note{font-size:12.5px;color:var(--neutral);margin-top:24px;padding:16px 18px;background:var(--card);border-radius:12px;border:1px solid var(--neutral-border);border-top:3px solid var(--accent);line-height:1.6}
-.footer-note a{color:var(--link)}
-.footer-note strong{color:var(--text)}
+.ongoing summary,.mbnote summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 16px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);font-size:.9375rem;font-weight:600}
+.ongoing summary::-webkit-details-marker,.mbnote summary::-webkit-details-marker{display:none}
+.ongoing summary .n{color:var(--on-surface-variant);font-weight:500}
+.ongoing summary .chev,.mbnote summary .chev{margin-left:auto;display:inline-flex;transition:transform .15s}
+.ongoing summary .chev svg,.mbnote summary .chev svg{width:18px;height:18px}
+.ongoing[open] summary,.mbnote[open] summary{border-radius:var(--r-md) var(--r-md) 0 0;border-bottom-color:var(--outline-variant)}
+.ongoing[open] summary .chev,.mbnote[open] summary .chev{transform:rotate(180deg)}
+.ongoing[open] .list{border-top:0;border-radius:0 0 var(--r-md) var(--r-md)}
+/* My Bands criteria: a quiet row at the end of the list */
+.mbnote{margin-top:12px}
+.mbnote summary{font-weight:500;color:var(--on-surface-variant)}
+.mbnote p{padding:12px 16px;background:var(--surface-container);border:1px solid var(--outline);border-top:0;border-radius:0 0 var(--r-md) var(--r-md);font-size:.9375rem;color:var(--on-surface-muted)}
+.showmore{display:block;width:100%;height:48px;margin-top:12px;border:1px solid var(--link);border-radius:var(--r-md);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;cursor:pointer}
+.empty{padding:20px 16px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);color:var(--on-surface-variant);font-size:.9375rem;margin-top:12px}
+.empty .emsg{color:var(--on-surface);font-size:1rem;font-weight:600;overflow-wrap:anywhere}
+.empty .enote{margin-top:8px}
+.eacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.eact{min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;cursor:pointer}
 
 /* short screens (landscape phones, big zoom): the bar scrolls away instead of sticking */
 @media (max-height:500px){.bar{position:static} .ghead{top:0} html{scroll-padding-top:max(60px, var(--gh-h) + 12px)}}
@@ -152,64 +186,81 @@ a{color:inherit}
 /* desktop: sidebar filters + results */
 @media (min-width:960px){
   .shell{padding:0 32px 64px}
-  .top{padding:22px 0 14px}
-  .top h1{font-size:24px}
+  .top{padding:24px 0 16px}
   .top .subtitle{display:block}
-  .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px;align-items:start}
+  .top .meta{display:block}
+  .row0{display:none}
+  .layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;align-items:start}
   .bar{margin:0;padding:0 4px 8px 0;border:0;background:none;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain}
+  .bar.under{box-shadow:none}
   .chips{display:none}
   .row1{flex-direction:column;align-items:stretch}
   .seg{width:100%}
   .seg button{flex:1}
-  .side{display:block;margin-top:14px}
-  .side h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--neutral);margin:16px 0 6px}
-  .side .opt{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:6px 10px;border:0;border-radius:8px;background:none;font-size:14px;text-align:left;cursor:pointer}
-  @media (hover: hover){.side .opt:hover{background:var(--neutral-soft)}}
-  .side .opt[aria-pressed="true"]{background:var(--primary-soft);color:var(--primary-deep);font-weight:700}
+  .side{display:block;margin-top:16px}
+  .side h2{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--on-surface-variant);margin:16px 0 8px}
+  .side .opt{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:8px 12px;border:0;border-radius:var(--r-sm);background:none;font-size:.9375rem;text-align:left;cursor:pointer}
+  @media (hover: hover){.side .opt:hover{background:var(--outline-variant)}}
+  .side .opt[aria-pressed="true"]{background:var(--primary-container);color:var(--on-primary-container);font-weight:700}
   :root[data-theme="dark"] .side .opt[aria-pressed="true"]{color:#fff}
-  .side .opt .n{color:var(--neutral);font-size:12.5px;font-weight:500}
+  .side .opt .n{color:var(--on-surface-variant);font-size:.75rem;font-weight:500}
   .ghead{top:0}
-  .ev{padding:14px 18px}
+  .ev{padding:16px 20px}
   .itile{width:40px;height:40px}
-  .itile svg{width:21px;height:21px}
 }
 
 /* touch: no grey tap flash, and an instant press state (no transition) on every control and event link */
-button,.chipsel,.ongoing summary,.sh-btn{-webkit-tap-highlight-color:transparent}
-/* controls only: no double-tap zoom delay, no text selection; event text stays selectable */
-button,.chipsel,.ongoing summary,.sh-btn{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button,.chipsel,summary,.sh-btn,.ab-row{-webkit-tap-highlight-color:transparent}
+/* controls only: no double-tap zoom delay, no text selection; event text stays selectable in the sheet */
+button,.chipsel,summary,.sh-btn,.ab-row{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 button:active,.chip:active,.chipsel:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
-.showmore:active,.side .opt:active,.ev:active{transform:none;background:var(--neutral-soft)}
-.ongoing summary:active{background:var(--neutral-soft)}
-@media (hover: hover){.ev:hover{background:var(--bg)}}
+.showmore:active,.side .opt:active,.ev:active,.ab-switch:active{transform:none;background:var(--outline-variant)}
+summary:active,.ab-row:active{background:var(--outline-variant)}
+@media (hover: hover){.ev:hover{background:var(--surface)}}
 /* the list clips its corners, so draw the row's focus ring inside it */
-.ev:focus-visible{outline-offset:-2px}
+.ev:focus-visible,.ab-row:focus-visible,.ab-switch:focus-visible{outline-offset:-2px}
 
-/* event sheet: anchored to the bottom on phones, centered at 960px+. No transition (motion is a later piece). */
+/* sheets (event, About): anchored to the bottom on phones, centered at 960px+. No transition (motion is a later piece). */
 html.sheet-open{overflow:hidden}
-.sheet{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;max-height:85vh;max-height:85dvh;padding:0;border:0;border-radius:16px 16px 0 0;background:var(--card);color:var(--text);overflow-y:auto;overscroll-behavior:contain}
+.sheet{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;max-height:85vh;max-height:85dvh;padding:0;border:0;border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--surface-container);color:var(--on-surface);box-shadow:var(--sheet-shadow);overflow-y:auto;overscroll-behavior:contain}
 .sheet::backdrop{background:rgba(8,12,20,.55)}
-.sh-in{padding:0 var(--sr) calc(20px + env(safe-area-inset-bottom)) var(--sl)}
-.sh-top{position:sticky;top:0;z-index:1;display:flex;justify-content:flex-end;padding:14px 0 4px;background:var(--card)}
-.grab{position:absolute;top:6px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--neutral-border)}
-.sh-close{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:15px;font-weight:600;cursor:pointer}
-.sh-title{font-size:20px;font-weight:700;line-height:1.25;margin:2px 0 8px;overflow-wrap:anywhere}
+.sh-in{padding:0 var(--sr) calc(24px + env(safe-area-inset-bottom)) var(--sl)}
+.sh-top{position:sticky;top:0;z-index:1;display:flex;justify-content:flex-end;padding:16px 0 4px;background:var(--surface-container)}
+.grab{position:absolute;top:8px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:var(--r-pill);background:var(--outline)}
+.sh-close{min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high);font-size:.9375rem;font-weight:600;cursor:pointer}
+.sh-title{font-size:1.25rem;font-weight:700;line-height:1.25;margin:4px 0 8px;overflow-wrap:anywhere}
 .sh-date{font-weight:600}
-.sh-venue{margin-top:2px;overflow-wrap:anywhere}
-.sh-dist{margin-top:2px;font-size:14px;color:var(--neutral);overflow-wrap:anywhere}
-.sh-dist b{color:var(--text);font-weight:600}
-.sh-desc{margin-top:12px;color:var(--desc);overflow-wrap:anywhere}
+.sh-venue{margin-top:4px;overflow-wrap:anywhere}
+.sh-dist{margin-top:4px;font-size:.875rem;color:var(--on-surface-variant);overflow-wrap:anywhere}
+.sh-dist b{color:var(--on-surface);font-weight:600}
+.sh-desc{margin-top:12px;font-size:.9375rem;color:var(--on-surface-muted);overflow-wrap:anywhere}
 .sh-tags{margin-top:12px}
-.sh-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
-.sh-btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
-.sh-live{margin-top:10px;font-size:14px;font-weight:600}
+.sh-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
+.sh-btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.sh-live{margin-top:12px;font-size:.875rem;font-weight:600}
 .sh-live:empty{margin:0}
-.sh-link{display:block;margin-top:10px;font-size:13px;color:var(--neutral)}
+.sh-link{display:block;margin-top:12px;font-size:.875rem;color:var(--on-surface-variant)}
 .sh-link[hidden]{display:none}
-.sh-link input{display:block;width:100%;min-height:44px;margin-top:4px;padding:0 10px;border:1px solid var(--neutral-border);border-radius:8px;background:var(--surface);font-size:16px}
+.sh-link input{display:block;width:100%;min-height:44px;margin-top:4px;padding:0 12px;border:1px solid var(--outline);border-radius:var(--r-sm);background:var(--surface-container-high);font-size:1rem}
+/* About */
+.ab-sec{margin-top:20px}
+.ab-sec h3{font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--on-surface-variant);margin-bottom:8px}
+.ab-sec p{font-size:.9375rem;color:var(--on-surface-muted)}
+.ab-sec p+p,.ab-list+p,.ab-switch+p{margin-top:12px}
+.ab-sec p a{color:var(--link)}
+.ab-sec strong{color:var(--on-surface)}
+.ab-list{list-style:none;background:var(--surface-container-high);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
+.ab-list li+li{border-top:1px solid var(--outline-variant)}
+.ab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:8px 16px;font-size:.9375rem;color:var(--on-surface);text-decoration:none}
+.ab-row svg{width:16px;height:16px;flex-shrink:0;color:var(--on-surface-variant)}
+.ab-switch{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:8px 16px;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);font-size:.9375rem;font-weight:600;text-align:left;cursor:pointer}
+.ab-switch .track{position:relative;flex-shrink:0;width:44px;height:24px;border-radius:var(--r-pill);background:var(--outline-variant);border:1px solid var(--outline)}
+.ab-switch .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:var(--r-pill);background:var(--on-surface-variant)}
+.ab-switch[aria-checked="true"] .track{background:var(--primary);border-color:var(--primary)}
+.ab-switch[aria-checked="true"] .knob{left:22px;background:var(--on-primary)}
 @media (min-width:960px){
-  .sheet{inset:0;margin:auto;width:calc(100% - 64px);max-width:560px;max-height:85vh;border-radius:16px}
+  .sheet{inset:0;margin:auto;width:calc(100% - 64px);max-width:560px;max-height:85vh;border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(8,12,20,.3)}
   .grab{display:none}
 }
 
@@ -223,32 +274,28 @@ html.sheet-open{overflow:hidden}
     <div class="ttl">
       <h1>Northwoods Area Events</h1>
       <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
-      <div class="meta" id="meta"></div>
+      <p class="meta" id="metaTop"></p>
     </div>
+    <div class="topbtns">
     <button class="installbtn" id="installBtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Install app</button>
-    <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch to dark mode"></button>
+    <button class="iconbtn" id="aboutBtn" type="button" aria-label="About" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg></button>
+    </div>
   </header>
   <div class="layout">
-    <div class="bar">
+    <div class="bar" role="region" aria-label="Search and sort">
+      <div class="row0"><p class="meta" id="meta"></p><span class="short" aria-hidden="true">NW Events</span></div>
       <div class="row1">
-        <div class="sw"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
+        <div class="sw" role="search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
         <div class="seg" role="group" aria-label="Sort by"><button type="button" id="segDate" data-sort="date" aria-pressed="true">Date</button><button type="button" id="segPlace" data-sort="place" aria-pressed="false">Nearest</button></div>
       </div>
-      <nav class="side" id="side" aria-label="Filters"></nav>
+      <nav class="side" id="side" aria-label="Sidebar filters"></nav>
     </div>
-    <div class="chips" id="chips" role="group" aria-label="Filters"></div>
+    <div class="chips" id="chips" role="region" aria-label="Filters"></div>
     <main>
       <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
       <div class="vh" id="announce" role="status" aria-live="polite"></div>
       <div id="results"></div>
-      <div class="footer-note">
-    <strong>Sources scanned:</strong> <a href="https://visitashland.com" target="_blank" rel="noopener">Visit Ashland</a> &middot; <a href="https://www.coawi.org/517/Ashland-Community-Events" target="_blank" rel="noopener">City of Ashland</a> &middot; <a href="https://www.bayfieldcounty.wi.gov/299/Events" target="_blank" rel="noopener">Bayfield County</a> &middot; <a href="https://www.bayfield.org/events/" target="_blank" rel="noopener">bayfield.org</a> &middot; <a href="https://www.bigtop.org/lineup.html" target="_blank" rel="noopener">Big Top Chautauqua</a> &middot; <a href="https://www.stagenorth.com" target="_blank" rel="noopener">StageNorth</a> &middot; <a href="https://www.duluthplayhouse.org/upcoming-season" target="_blank" rel="noopener">Duluth Playhouse / NorShor</a> &middot; <a href="https://renegadetheaterco.org" target="_blank" rel="noopener">Renegade</a> &middot; <a href="https://uwsuper.edu/program/theatre/" target="_blank" rel="noopener">UW-Superior Theatre</a> &middot; <a href="https://muskyfest.com" target="_blank" rel="noopener">Musky Fest</a> &middot; <a href="https://lumberjackworldchampionships.com" target="_blank" rel="noopener">Lumberjack Championships</a> &middot; <a href="https://www.bayfrontfestivalpark.com/events-calendar" target="_blank" rel="noopener">Bayfront Festival Park</a> &middot; <a href="https://visitduluth.com" target="_blank" rel="noopener">Visit Duluth</a> &middot; <a href="https://www.wisdells.com/wisconsin-dells-events-calendar" target="_blank" rel="noopener">WisDells</a> &middot; <a href="https://dnr.wisconsin.gov/topic/fishing" target="_blank" rel="noopener">WI DNR fishing</a> &middot; <a href="https://www.badriver.com/" target="_blank" rel="noopener">Bad River Casino</a> &middot; <a href="https://www.legendarywaters.com/events" target="_blank" rel="noopener">Legendary Waters</a> &middot; <a href="https://www.facebook.com/ashlandfunandgames" target="_blank" rel="noopener">Play Unplugged</a> &middot; <a href="https://www.levelupsuperior.com" target="_blank" rel="noopener">Level UP Superior</a> &middot; <a href="https://animecons.com/events/schedule.php?loc=us" target="_blank" rel="noopener">anime conventions (400 mi)</a>.
-    <br><br>
-    Driving distances: OSRM, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.
-    <br><br>
-    <strong>Concert watch-list</strong> tuned to your taste: metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers, mashups. Past events drop off automatically; rescanned every Thursday.
-      </div>
     </main>
   </div>
 </div>
@@ -1527,8 +1574,6 @@ function svg(p){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 function catMeta(c){return CATMETA[c]||{fill:"#EDEFF3",ink:"#3A3F4A",icon:'<circle cx="12" cy="12" r="8"/>'};}
 const iconTile=c=>{const m=catMeta(c);return `<span class="itile" style="background:${m.fill};color:${m.ink}">${svg(m.icon)}</span>`;};
 const catTag=c=>{const m=catMeta(c);return `<span class="tag" style="background:${m.fill};color:${m.ink}">${esc(c)}</span>`;};
-const SUN_ICON=svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>');
-const MOON_ICON=svg('<path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/>');
 
 // --- stable event ids: e<hash> for EVENTS, w<hash> for RECURRING (FNV-1a, base 36) ---
 // A row with dates[] leaves start out of its key: the weekly scan trims past days and moves start.
@@ -1673,6 +1718,8 @@ function emptyAct(k){
   S.limit=40;render();
   const f=$("#results").querySelector("a,button,summary");if(f)f.focus();
 }
+// My Bands: the criteria only. The band lists are private and never appear on the page.
+const MBNOTE=`<details class="mbnote"><summary>How My Bands is picked<span class="chev">${svg('<path d="M6 9l6 6 6-6"/>')}</span></summary><p>My Bands lists touring acts from a concert watch-list tuned to metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers and mashups. The weekly scan adds a show when one of these bands books a date within driving range, and rescans every Thursday.</p></details>`;
 // The sidebar is display:none below 960px, so it is only built on wide screens.
 const WIDE=matchMedia("(min-width:960px)");
 function renderSide(){$("#side").innerHTML=WIDE.matches?sideHTML():"";}
@@ -1700,7 +1747,8 @@ function render(){
   const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
   $("#results").innerHTML=(html||emptyHTML())+
-    (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"");
+    (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"")+
+    (S.mode==="upcoming"&&S.cat==="My Bands"?MBNOTE:"");
   replaceURL();
   setBarH();
 }
@@ -1735,15 +1783,19 @@ const sizeRO="ResizeObserver" in window?new ResizeObserver(()=>setBarH()):null;l
 function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),...document.querySelectorAll("#results .ghead")];
   if(els.length===watched.length&&els.every((e,i)=>e===watched[i]))return;
   sizeRO.disconnect();els.forEach(e=>sizeRO.observe(e));watched=els;}
+// The freshness line: in the bar on phones, under the title on wide screens (only one is displayed).
+const scanDay=()=>{const ls=pd(LAST_SCAN);return `${MON[ls.getMonth()]} ${ls.getDate()}`;};
+function staleHTML(){const age=-daysFrom(pd(LAST_SCAN));return age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:"";}
 function setMeta(){
-  const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
-  $("#meta").innerHTML=`Updated ${MON[ls.getMonth()]} ${ls.getDate()} &middot; ${up.toLocaleString()} upcoming${age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:""}`;
+  const up=EVENTS.filter(isUpcoming).length;
+  $("#meta").innerHTML=$("#metaTop").innerHTML=`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming${staleHTML()}`;
 }
 document.addEventListener("click",ev=>{
   const b=ev.target.closest("button");if(!b)return;
   if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
   if(b.id==="more"){showMore();return;}
-  if(b.id==="themeBtn"||b.closest("#sheet"))return;
+  if(b.id==="aboutBtn"){go({open:"about"});openSheet("about");return;}
+  if(b.closest("#sheet"))return;
   if(b.dataset.act){emptyAct(b.dataset.act);return;}
   // Destinations push a history entry (Back undoes them); refinements replace the current one.
   if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))renderSoon();return;}
@@ -1798,7 +1850,9 @@ const VIEWKEYS=["mode","sort","when","cat","dist","q"];
 const DEF={mode:"upcoming",sort:"date",when:"7",cat:"",dist:0,q:""};
 // This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+// OPEN: the open sheet, an event id or "about". Only an event id goes in the URL; About is marked in history.state.
 let OPEN=null;
+const evOf=o=>o&&o!=="about"?o:"";
 try{history.scrollRestoration="manual";}catch(e){}
 const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,q:S.qt});
 function urlFor(v,ev){
@@ -1809,16 +1863,16 @@ function curState(){try{return history.state&&typeof history.state==="object"?hi
 // Rewrite the current entry for the current view, keeping its scroll position and sheet mark.
 function replaceURL(){
   const c=curState();
-  try{history.replaceState({...viewOf(),ev:OPEN||"",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),OPEN));}catch(e){}
+  try{history.replaceState({...viewOf(),ev:evOf(OPEN),about:OPEN==="about",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
 }
 function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.qt=v.q;S.q=v.q.toLowerCase();}
 // Destinations: call from a tap or key handler only (Chrome skips entries pushed without a user gesture).
 function go(patch){
-  const cur={...viewOf(),ev:OPEN||""},next={...cur,...patch};
+  const cur={...viewOf(),open:OPEN||""},next={...cur,...patch};
   if(Object.keys(next).every(k=>next[k]===cur[k]))return false;
   try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}
   if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);S.limit=40;}
-  try{history.pushState({...viewOf(),ev:next.ev,y:scrollY,sheet:next.ev?PL:""},"",urlFor(viewOf(),next.ev));}catch(e){}
+  try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
   return true;
 }
 // Refinements: the caller renders, and render() replaces the entry.
@@ -1826,11 +1880,12 @@ function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();d
 addEventListener("pagehide",()=>{try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}});
 addEventListener("popstate",e=>{
   const st=e.state&&typeof e.state==="object"&&e.state.mode?e.state:{...readURL(location.search),y:null};
-  if(OPEN&&!st.ev)closeSheet(true);
+  const want=st.about?"about":st.ev||"";
+  if(OPEN&&!want)closeSheet(true);
   const cur=viewOf();
   if(VIEWKEYS.some(k=>cur[k]!==st[k])){applyView(st);$("#search").value=S.qt;S.limit=40;render();}
   if(typeof st.y==="number")scrollTo(0,st.y);
-  if(st.ev&&OPEN!==st.ev)openSheet(st.ev);
+  if(want&&OPEN!==want)openSheet(want);
 });
 
 // --- event sheet ---
@@ -1874,7 +1929,7 @@ const GONE=`<h2 class="sh-title" id="sheetTitle">This event is no longer listed<
 function lockPage(on){const de=document.documentElement,sb=on?innerWidth-de.clientWidth:0;de.classList.toggle("sheet-open",on);de.style.paddingRight=sb>0?sb+"px":"";}
 function openSheet(id){
   const o=BYID.get(id);OPEN=id;
-  $("#sheetBody").innerHTML=o?sheetHTML(o,id):GONE;
+  $("#sheetBody").innerHTML=id==="about"?aboutHTML():o?sheetHTML(o,id):GONE;
   if(!sheet.open){
     lockPage(true);
     try{if(typeof sheet.showModal!=="function")throw 0;sheet.showModal();}
@@ -1885,7 +1940,7 @@ function openSheet(id){
   }
   sheet.scrollTop=0;$("#sheetClose").focus();
 }
-function openFromRow(id){go({ev:id});openSheet(id);}
+function openFromRow(id){go({open:id});openSheet(id);}
 // Every close (button, Esc, scrim, Back, the platform close request) ends in the dialog's close event.
 let closingFromPop=false,lastOpen=null;
 function closeSheet(fromPop){if(!sheet.open)return;closingFromPop=!!fromPop;lastOpen=OPEN;OPEN=null;sheet.close();}
@@ -1896,9 +1951,10 @@ sheet.addEventListener("close",()=>{
   else{
     OPEN=null;const c=curState();
     // The entry this page pushed for the sheet: step back once. A ?ev= link opened directly: drop ev in place.
-    if(c.ev&&c.sheet===PL){try{history.back();}catch(e){replaceURL();}}
+    if((c.ev||c.about)&&c.sheet===PL){try{history.back();}catch(e){replaceURL();}}
     else replaceURL();
   }
+  if(id==="about"){$("#aboutBtn").focus({preventScroll:true});return;}
   const r=id&&$("#results").querySelector(`.ev[data-ev="${CSS.escape(id)}"]`);
   if(r)r.focus({preventScroll:true});
   if(!r||document.activeElement!==r){const res=$("#results");res.tabIndex=-1;res.focus({preventScroll:true});}
@@ -1908,7 +1964,20 @@ sheet.addEventListener("click",ev=>{
   const b=ev.target.closest("button");if(!b)return;
   if(b.id==="sheetClose"||b.dataset.sh==="close")closeSheet();
   else if(b.dataset.sh==="share")shareEvent(b.dataset.id);
+  else if(b.id==="themeSwitch")setTheme(theme==="dark"?"light":"dark");
 });
+// About: sources, credit, the watch-list note, freshness, dark mode and the iPhone install hint.
+const SOURCES=[["https://visitashland.com", "Visit Ashland"], ["https://www.coawi.org/517/Ashland-Community-Events", "City of Ashland"], ["https://www.bayfieldcounty.wi.gov/299/Events", "Bayfield County"], ["https://www.bayfield.org/events/", "bayfield.org"], ["https://www.bigtop.org/lineup.html", "Big Top Chautauqua"], ["https://www.stagenorth.com", "StageNorth"], ["https://www.duluthplayhouse.org/upcoming-season", "Duluth Playhouse / NorShor"], ["https://renegadetheaterco.org", "Renegade"], ["https://uwsuper.edu/program/theatre/", "UW-Superior Theatre"], ["https://muskyfest.com", "Musky Fest"], ["https://lumberjackworldchampionships.com", "Lumberjack Championships"], ["https://www.bayfrontfestivalpark.com/events-calendar", "Bayfront Festival Park"], ["https://visitduluth.com", "Visit Duluth"], ["https://www.wisdells.com/wisconsin-dells-events-calendar", "WisDells"], ["https://dnr.wisconsin.gov/topic/fishing", "WI DNR fishing"], ["https://www.badriver.com/", "Bad River Casino"], ["https://www.legendarywaters.com/events", "Legendary Waters"], ["https://www.facebook.com/ashlandfunandgames", "Play Unplugged"], ["https://www.levelupsuperior.com", "Level UP Superior"], ["https://animecons.com/events/schedule.php?loc=us", "anime conventions (400 mi)"]];
+const EXT=svg('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/>');
+function aboutHTML(){
+  return `<h2 class="sh-title" id="sheetTitle">About</h2>`+
+    `<section class="ab-sec" aria-labelledby="abSrc"><h3 id="abSrc">Sources scanned</h3><ul class="ab-list">${SOURCES.map(([u,n])=>`<li><a class="ab-row" href="${esc(u)}" target="_blank" rel="noopener"><span>${esc(n)}</span>${EXT}</a></li>`).join("")}</ul>`+
+    `<p>Driving distances: OSRM, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abList"><h3 id="abList">Watch-list</h3><p><strong>Concert watch-list</strong> tuned to your taste: metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers, mashups. Past events drop off automatically; rescanned every Thursday.</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abUpd"><h3 id="abUpd">Updates</h3><p>Last updated ${scanDay()}${staleHTML()}</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abApp"><h3 id="abApp">Display</h3><button class="ab-switch" type="button" role="switch" id="themeSwitch" aria-checked="${theme==="dark"}"><span>Dark mode</span><span class="track" aria-hidden="true"><span class="knob"></span></span></button>`+
+    `<p>On iPhone: tap Share, then Add to Home Screen.</p></section>`;
+}
 // Share sheet, else copy the link, else show it selected in a read-only field.
 async function shareEvent(id){
   const o=BYID.get(id);if(!o)return;const url=shareURL(id),live=$("#sheetLive");live.textContent="";
@@ -1919,10 +1988,15 @@ async function shareEvent(id){
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
 // Both theme-color tags carry the active theme's --bg: the theme is the app's choice, not the phone's.
-function applyTheme(t){document.documentElement.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content",t==="dark"?"#0F1420":"#EFF2F7"));const b=$("#themeBtn");b.innerHTML=t==="dark"?SUN_ICON:MOON_ICON;b.setAttribute("aria-label",t==="dark"?"Switch to light mode":"Switch to dark mode");}
+// The switch lives in the About sheet.
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content",t==="dark"?"#0F1420":"#EFF2F7"));const sw=$("#themeSwitch");if(sw)sw.setAttribute("aria-checked",t==="dark");}
 let theme="light";try{if(localStorage.getItem("ev_theme")==="dark")theme="dark";}catch(e){}
 applyTheme(theme);
-$("#themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();});
+function setTheme(t){theme=t;try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();}
+
+// Large title: once the header has scrolled away, the stuck bar shows the short title and its shadow.
+// Only visibility and box-shadow change, so nothing moves.
+if("IntersectionObserver" in window)new IntersectionObserver(([en])=>{const bar=$(".bar");bar.classList.toggle("collapsed",!en.isIntersecting);bar.classList.toggle("under",!en.isIntersecting);}).observe($(".top"));
 
 $("#search").value=S.qt;
 setMeta();render();
@@ -1936,14 +2010,14 @@ if("serviceWorker" in navigator&&location.hostname.endsWith("github.io"))navigat
 // Install button (Chrome/Edge): shown only when the browser offers an install via beforeinstallprompt.
 // A prompt can be used once; the browser fires the event again later if the site is still installable.
 let installEvt=null;const installBtn=$("#installBtn");
-function hideInstall(){if(document.activeElement===installBtn)$("#themeBtn").focus();installBtn.hidden=true;}
+function hideInstall(){if(document.activeElement===installBtn)$("#aboutBtn").focus();installBtn.hidden=true;}
 addEventListener("beforeinstallprompt",e=>{
   if(matchMedia("(display-mode: standalone)").matches)return;
   e.preventDefault();installEvt=e;installBtn.hidden=false;});
 installBtn.addEventListener("click",async()=>{
   if(!installEvt)return;const e=installEvt;
   try{await e.prompt();await e.userChoice;}catch(err){console.warn("Install prompt failed:",err);}
-  installEvt=null;$("#themeBtn").focus();installBtn.hidden=true;});
+  installEvt=null;$("#aboutBtn").focus();installBtn.hidden=true;});
 addEventListener("appinstalled",()=>{installEvt=null;hideInstall();});
 </script>
 </body>

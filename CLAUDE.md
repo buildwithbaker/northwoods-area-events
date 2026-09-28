@@ -44,8 +44,14 @@ For what used to be one big "Local" bucket:
     "after four blank scans") and no mileage - distance comes from `TOWNS`.
   - `url` - the event's own page, `https:` only. The page renders any other scheme without a
     link. A monthly calendar page is a fallback; roll it to the current month each scan.
+  - optional `time`: "HH:MM" or "HH:MM-HH:MM", 24-hour, local Central time (America/Chicago). Only a time
+    read off the source; never guessed and never parsed out of prose. Left off when unknown, and on a `dates`
+    event whose dates have different times. On a span it means daily hours. The weekly scan starts writing
+    `time` only when its prompt includes that step (scan prompt draft 3, applied by Adam); until then it leaves
+    the field off.
 - `RECURRING` - weekly rows: `day`, `title`, `place`, optional `town`, `region`, `cat`,
-  optional `url`, optional `seasonStart` / `seasonEnd`, `note`.
+  optional `url`, optional `seasonStart` / `seasonEnd`, `note`, optional `time` (same format and rules as on
+  `EVENTS`; the day is `day`, so `time` is the time on that day).
 - `TOWNS` - keyed `"Town, ST"`: `{lat, lon, mi, src}`. `lat`/`lon` from the US Census Gazetteer
   (USGS GNIS populated place where Census has none), `mi` = OSRM driving miles from Ashland, WI,
   `src` names both and says when the route uses a ferry or a seasonal ice road. `town` on a row must be a key

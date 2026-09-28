@@ -55,7 +55,7 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
 :root{--sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
 /* keep a focused item clear of the sticky bar plus one day header */
 html{background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + max(60px, var(--gh-h) + 12px))}
-body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden}
+body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:15px;overflow-x:hidden;overflow-x:clip}
 button,input,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
@@ -112,22 +112,19 @@ a{color:inherit}
 .ghead .n{color:var(--neutral);font-weight:600;letter-spacing:0}
 .ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--neutral);font-size:12.5px}
 .list{background:var(--card);border:1px solid var(--neutral-border);border-radius:12px;overflow:hidden}
-.ev{display:flex;gap:12px;padding:13px 14px;border-top:1px solid var(--neutral-soft);min-width:0}
+/* a row is one button that opens the event sheet; spans styled as blocks (a button holds phrasing content only) */
+.ev{display:flex;gap:12px;width:100%;min-height:56px;padding:13px 14px;border:0;border-top:1px solid var(--neutral-soft);border-radius:0;background:none;text-align:left;cursor:pointer;min-width:0}
 .ev:first-child{border-top:0}
 .itile{flex-shrink:0;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-top:1px}
 .itile svg{width:19px;height:19px}
-.ev .body{flex:1;min-width:0}
+.ev .body{display:block;flex:1;min-width:0}
 .ev .head{display:flex;gap:8px;align-items:flex-start}
 .ev .t{flex:1;min-width:0;font-size:15.5px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
-.ev .t a{text-decoration:none;padding:3px 0}
-@media (hover: hover){.ev .t a:hover{text-decoration:underline;color:var(--link)}}
 .when{flex-shrink:0;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--neutral-soft);color:var(--neutral);white-space:nowrap;margin-top:1px}
 .when.soon{background:var(--accent-soft);color:var(--accent-ink)}
-.ev .loc{font-size:13px;color:var(--neutral);margin-top:3px;overflow-wrap:anywhere}
+.ev .loc{display:block;font-size:13px;color:var(--neutral);margin-top:3px;overflow-wrap:anywhere}
 .ev .loc b{color:var(--text);font-weight:600}
 .ev .desc{font-size:14px;color:var(--desc);margin-top:5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ev.open .desc{display:block;-webkit-line-clamp:unset}
-.ev .more{border:0;background:none;color:var(--link);font-size:13px;font-weight:600;padding:0 4px;cursor:pointer;min-height:24px;margin-left:auto}
 .ev .tags{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:7px}
 .tag{display:inline-block;max-width:100%;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;overflow-wrap:anywhere}
 .ongoing{margin-top:12px}
@@ -178,13 +175,43 @@ a{color:inherit}
 }
 
 /* touch: no grey tap flash, and an instant press state (no transition) on every control and event link */
-button,.chipsel,.ongoing summary,.ev .t a{-webkit-tap-highlight-color:transparent}
+button,.chipsel,.ongoing summary,.sh-btn{-webkit-tap-highlight-color:transparent}
 /* controls only: no double-tap zoom delay, no text selection; event text stays selectable */
-button,.chipsel,.ongoing summary{touch-action:manipulation;-webkit-user-select:none;user-select:none}
-button:active,.chip:active,.chipsel:active,.seg button:active{transform:scale(.97)}
-.showmore:active,.side .opt:active{transform:none;background:var(--neutral-soft)}
+button,.chipsel,.ongoing summary,.sh-btn{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:active,.chip:active,.chipsel:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
+.showmore:active,.side .opt:active,.ev:active{transform:none;background:var(--neutral-soft)}
 .ongoing summary:active{background:var(--neutral-soft)}
-.ev .t a:active{background:var(--primary-soft);border-radius:4px}
+@media (hover: hover){.ev:hover{background:var(--bg)}}
+/* the list clips its corners, so draw the row's focus ring inside it */
+.ev:focus-visible{outline-offset:-2px}
+
+/* event sheet: anchored to the bottom on phones, centered at 960px+. No transition (motion is a later piece). */
+html.sheet-open{overflow:hidden}
+.sheet{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;max-height:85vh;max-height:85dvh;padding:0;border:0;border-radius:16px 16px 0 0;background:var(--card);color:var(--text);overflow-y:auto;overscroll-behavior:contain}
+.sheet::backdrop{background:rgba(8,12,20,.55)}
+.sh-in{padding:0 var(--sr) calc(20px + env(safe-area-inset-bottom)) var(--sl)}
+.sh-top{position:sticky;top:0;z-index:1;display:flex;justify-content:flex-end;padding:14px 0 4px;background:var(--card)}
+.grab{position:absolute;top:6px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--neutral-border)}
+.sh-close{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--neutral-border);background:var(--surface);font-size:15px;font-weight:600;cursor:pointer}
+.sh-title{font-size:20px;font-weight:700;line-height:1.25;margin:2px 0 8px;overflow-wrap:anywhere}
+.sh-date{font-weight:600}
+.sh-venue{margin-top:2px;overflow-wrap:anywhere}
+.sh-dist{margin-top:2px;font-size:14px;color:var(--neutral);overflow-wrap:anywhere}
+.sh-dist b{color:var(--text);font-weight:600}
+.sh-desc{margin-top:12px;color:var(--desc);overflow-wrap:anywhere}
+.sh-tags{margin-top:12px}
+.sh-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--link);background:var(--surface);color:var(--link);font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
+.sh-btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+.sh-live{margin-top:10px;font-size:14px;font-weight:600}
+.sh-live:empty{margin:0}
+.sh-link{display:block;margin-top:10px;font-size:13px;color:var(--neutral)}
+.sh-link[hidden]{display:none}
+.sh-link input{display:block;width:100%;min-height:44px;margin-top:4px;padding:0 10px;border:1px solid var(--neutral-border);border-radius:8px;background:var(--surface);font-size:16px}
+@media (min-width:960px){
+  .sheet{inset:0;margin:auto;width:calc(100% - 64px);max-width:560px;max-height:85vh;border-radius:16px}
+  .grab{display:none}
+}
 
 /* installed app: the browser's install offer is moot */
 @media (display-mode: standalone){#installBtn{display:none}}
@@ -225,6 +252,12 @@ button:active,.chip:active,.chipsel:active,.seg button:active{transform:scale(.9
     </main>
   </div>
 </div>
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+  <div class="sh-in">
+    <div class="sh-top"><span class="grab" aria-hidden="true"></span><button class="sh-close" id="sheetClose" type="button">Close</button></div>
+    <div id="sheetBody"></div>
+  </div>
+</dialog>
 <script>
 // ===== Northwoods Area Events - data refreshed by the weekly scan =====
 const LAST_SCAN = "2026-09-24";
@@ -1497,15 +1530,30 @@ const catTag=c=>{const m=catMeta(c);return `<span class="tag" style="background:
 const SUN_ICON=svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/>');
 const MOON_ICON=svg('<path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/>');
 
+// --- stable event ids: e<hash> for EVENTS, w<hash> for RECURRING (FNV-1a, base 36) ---
+// A row with dates[] leaves start out of its key: the weekly scan trims past days and moves start.
+function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(36);}
+const BYID=new Map(),IDOF=new Map();
+(()=>{let dup=0;
+  const add=(o,base)=>{let id=base,n=1;while(BYID.has(id))id=base+"-"+(++n);if(n>1)dup++;BYID.set(id,o);IDOF.set(o,id);};
+  EVENTS.forEach(e=>add(e,"e"+fnv(e.dates?`${e.url||""}|${e.title}|D`:`${e.url||""}|${e.start}|${e.title}`)));
+  RECURRING.forEach(o=>add(o,"w"+fnv(`${o.title}|${o.day}|${o.town||""}`)));
+  if(dup)console.warn(`Event ids: ${dup} duplicate id(s) got a -2, -3 suffix in data order`);})();
+
 // --- state (URL-driven so every view is linkable) ---
-const P=new URLSearchParams(location.search);
-const S={mode:P.get("mode")==="weekly"?"weekly":"upcoming",sort:P.get("sort")==="place"?"place":"date",when:P.get("when")||"7",cat:P.get("cat")||"",dist:+(P.get("dist")||0)||0,from:"ashland",q:"",limit:40};
 const WHENS=[["today","Today"],["weekend","This weekend"],["7","Next 7 days"],["30","Next 30 days"],["all","All dates"]];
 const WHEN=Object.fromEntries(WHENS);
-if(!WHEN[S.when])S.when="7";
-if(S.cat&&!CATMETA[S.cat])S.cat="";
 const DISTS=[25,60,120,250];
-if(!DISTS.includes(S.dist))S.dist=0;
+const own=(o,k)=>k!=null&&Object.prototype.hasOwnProperty.call(o,k);
+// URL keys mode, sort, when, cat, dist, q, ev; defaults are left out. Never "from": a shared My location link would ask for location on load.
+function readURL(search){
+  const p=new URLSearchParams(search),w=p.get("when"),c=p.get("cat"),d=+(p.get("dist")||0);
+  return {mode:p.get("mode")==="weekly"?"weekly":"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)?w:"7",
+    cat:own(CATMETA,c)?c:"",dist:DISTS.includes(d)?d:0,q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
+}
+const U0=readURL(location.search);
+// q: lower-cased for matching; qt: the text as typed, for the URL and the search box.
+const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,from:"ashland",q:U0.q.toLowerCase(),qt:U0.q,limit:40};
 function range(){
   if(S.when==="today")return[today,today];
   if(S.when==="weekend"){const d=today.getDay();const fri=d===0?addDays(today,-2):d===6?addDays(today,-1):addDays(today,5-d);return[fri<today?today:fri,addDays(fri,2)];}
@@ -1518,13 +1566,15 @@ const qOk=e=>!S.q||hay(e).includes(S.q);
 function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&(!S.cat||e.cat===S.cat)&&distOk(e)&&qOk(e));}
 
 // --- rows ---
-function whenBadge(e,d){
-  if(isOngoing(e)){const en=lastDay(e);return `<span class="when">thru ${MON[en.getMonth()]} ${en.getDate()}</span>`;}
+// id: the row's id, so the badge can be part of the row's accessible name.
+function whenBadge(e,d,id){
+  const b=(c,t)=>`<span class="when${c}" id="${id}-w">${t}</span>`;
+  if(isOngoing(e)){const en=lastDay(e);return b("",`thru ${MON[en.getMonth()]} ${en.getDate()}`);}
   const n=daysFrom(d);
-  if(n===0)return `<span class="when soon">Today</span>`;
-  if(n===1)return `<span class="when soon">Tomorrow</span>`;
-  if(n<=6)return `<span class="when soon">${DOW[d.getDay()]}</span>`;
-  return `<span class="when">in ${n}d</span>`;
+  if(n===0)return b(" soon","Today");
+  if(n===1)return b(" soon","Tomorrow");
+  if(n<=6)return b(" soon",DOW[d.getDay()]);
+  return b("",`in ${n}d`);
 }
 function dateTxt(e,d){
   let t=`${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`;
@@ -1532,16 +1582,17 @@ function dateTxt(e,d){
   else if(e.end){const s=pd(e.start),en=pd(e.end);t=`${DOW[s.getDay()]} ${MON[s.getMonth()]} ${s.getDate()} - ${en.getMonth()===s.getMonth()?"":MON[en.getMonth()]+" "}${en.getDate()}`;}
   return t;
 }
-function titleHTML(o){const u=safeUrl(o.url);return u?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(o.title)}</a>`:esc(o.title);}
+// A row is one button: name = title, then the badge and the location line (not the description).
 function row(e,d,showDate){
-  const extra=e.dates&&!showDate?dateTxt(e,d).replace(/^[^,]*,? ?/,""):"";
-  return `<div class="ev">${iconTile(e.cat)}<div class="body"><div class="head"><div class="t">${titleHTML(e)}</div>${whenBadge(e,d)}</div>`+
-    `<div class="loc">${showDate?esc(dateTxt(e,d))+" &middot; ":extra?esc(extra[0].toUpperCase()+extra.slice(1))+" &middot; ":""}${locLine(e)}</div>`+
-    `${e.desc?`<div class="desc">${esc(e.desc)}</div>`:""}<div class="tags">${catTag(e.cat)}${e.desc?`<button class="more" type="button" aria-expanded="false">More</button>`:""}</div></div></div>`;
+  const id=IDOF.get(e),extra=e.dates&&!showDate?dateTxt(e,d).replace(/^[^,]*,? ?/,""):"";
+  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${id}-t ${id}-w ${id}-l">${iconTile(e.cat)}<span class="body"><span class="head"><span class="t" id="${id}-t">${esc(e.title)}</span>${whenBadge(e,d,id)}</span>`+
+    `<span class="loc" id="${id}-l">${showDate?esc(dateTxt(e,d))+" &middot; ":extra?esc(extra[0].toUpperCase()+extra.slice(1))+" &middot; ":""}${locLine(e)}</span>`+
+    `${e.desc?`<span class="desc">${esc(e.desc)}</span>`:""}<span class="tags">${catTag(e.cat)}</span></span></button>`;
 }
 function recRow(o){
-  return `<div class="ev">${iconTile(o.cat)}<div class="body"><div class="head"><div class="t">${titleHTML(o)}</div></div><div class="loc">${locLine(o)}</div>`+
-    `${o.note?`<div class="desc">${esc(o.note)}</div>`:""}<div class="tags">${catTag(o.cat)}${o.note?`<button class="more" type="button" aria-expanded="false">More</button>`:""}</div></div></div>`;
+  const id=IDOF.get(o);
+  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${id}-t ${id}-l">${iconTile(o.cat)}<span class="body"><span class="head"><span class="t" id="${id}-t">${esc(o.title)}</span></span><span class="loc" id="${id}-l">${locLine(o)}</span>`+
+    `${o.note?`<span class="desc">${esc(o.note)}</span>`:""}<span class="tags">${catTag(o.cat)}</span></span></button>`;
 }
 // n = the whole group's count, not just the rows in the current batch.
 const group=(label,n,items,sub)=>`<h2 class="ghead">${esc(label)} <span class="n">${n} event${n===1?"":"s"}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</h2><div class="list">${items}</div>`;
@@ -1616,7 +1667,7 @@ function emptyHTML(){
 }
 // After an empty-state button: its button is gone, so focus the first control in the new results.
 function emptyAct(k){
-  if(k==="q"){$("#search").value="";S.q="";}
+  if(k==="q"){$("#search").value="";S.q="";S.qt="";}
   else if(k==="filters"){S.cat="";S.dist=0;}
   else if(k==="when"){S.when="all";}
   S.limit=40;render();
@@ -1650,9 +1701,8 @@ function render(){
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
   $("#results").innerHTML=(html||emptyHTML())+
     (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"");
-  const u=new URLSearchParams({mode:S.mode,sort:S.sort,when:S.when});if(S.cat)u.set("cat",S.cat);if(S.dist)u.set("dist",S.dist);
-  try{history.replaceState(null,"","?"+u);}catch(e){}
-  setBarH();pruneMore(document);
+  replaceURL();
+  setBarH();
 }
 // Show more appends the next batch; rows already on the page are left alone.
 function showMore(){
@@ -1668,14 +1718,12 @@ function showMore(){
   }
   if(i<add.length){tpl.innerHTML=groupsHTML(add.slice(i));rows.push(...tpl.content.querySelectorAll(".ev"));res.insertBefore(tpl.content,btn);}
   if(V.shown<V.items.length)btn.textContent=moreLabel();
-  const a=rows[0].querySelector(".t a");if(a)a.focus();else{rows[0].tabIndex=-1;rows[0].focus();}
+  rows[0].focus();
   if(V.shown>=V.items.length)btn.remove();
   // Date view pages through dated events only (ongoing sit apart); Nearest pages through all of them, as #count does.
   $("#announce").textContent=`Showing ${V.shown} of ${V.items.length} ${V.dated?"dated ":""}events`;
-  setBarH();pruneMore(rows);
+  setBarH();
 }
-// Show "More" only where the 2-line clamp actually hides text. root: an element to search, or a list of rows.
-function pruneMore(root){requestAnimationFrame(()=>(root.querySelectorAll?root.querySelectorAll(".ev:not(.open)"):root).forEach(ev=>{const d=ev.querySelector(".desc"),m=ev.querySelector(".more");if(!m||!d||d.offsetParent===null)return;if(d.scrollHeight<=d.clientHeight+1)m.remove();}));}
 // --bar-h: sticky bar height (phones). --gh-h: tallest rendered day/town header, so scroll-padding
 // clears a header that wraps at large text sizes (the CSS never goes below the old 60px allowance).
 function setBarH(){const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
@@ -1691,21 +1739,21 @@ function setMeta(){
   const up=EVENTS.filter(isUpcoming).length;const ls=pd(LAST_SCAN);const age=daysFrom(ls)*-1;
   $("#meta").innerHTML=`Updated ${MON[ls.getMonth()]} ${ls.getDate()} &middot; ${up.toLocaleString()} upcoming${age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:""}`;
 }
-document.addEventListener("toggle",ev=>{if(ev.target.open)pruneMore(ev.target);},true);
 document.addEventListener("click",ev=>{
   const b=ev.target.closest("button");if(!b)return;
-  if(b.classList.contains("more")){const r=b.closest(".ev");const o=r.classList.toggle("open");b.textContent=o?"Less":"More";b.setAttribute("aria-expanded",o);return;}
+  if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
   if(b.id==="more"){showMore();return;}
-  if(b.id==="themeBtn")return;
+  if(b.id==="themeBtn"||b.closest("#sheet"))return;
   if(b.dataset.act){emptyAct(b.dataset.act);return;}
-  if(b.dataset.when){S.when=b.dataset.when;S.mode="upcoming";}
-  else if(b.dataset.mode){S.mode=b.dataset.mode;}
-  else if(b.dataset.cat!==undefined){S.cat=b.dataset.cat;}
-  else if(b.dataset.dist!==undefined){S.dist=+b.dataset.dist;}
-  else if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
-  else if(b.dataset.sort){S.sort=b.dataset.sort;S.mode="upcoming";}
+  // Destinations push a history entry (Back undoes them); refinements replace the current one.
+  if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))renderSoon();return;}
+  if(b.dataset.sort){pressNow(b);if(go({sort:b.dataset.sort,mode:"upcoming"}))renderSoon();return;}
+  if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
+  if(b.dataset.when)refine({when:b.dataset.when,mode:"upcoming"});
+  else if(b.dataset.cat!==undefined)refine({cat:b.dataset.cat});
+  else if(b.dataset.dist!==undefined)refine({dist:+b.dataset.dist});
   else return;
-  S.limit=40;pressNow(b);renderSoon();
+  pressNow(b);renderSoon();
 });
 // A tapped chip, segment or sidebar option shows as selected at once; the list is rebuilt after that repaint.
 const PKEYS=["when","mode","cat","dist","sort","from"];
@@ -1718,7 +1766,7 @@ let renderSeq=0;
 function renderSoon(){const n=++renderSeq;requestAnimationFrame(()=>setTimeout(()=>{if(n===renderSeq)render();},0));}
 // An empty passive touchstart listener lets iOS Safari apply :active press states.
 document.addEventListener("touchstart",()=>{},{passive:true});
-document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="from"){setFrom(ev.target.value);return;}if(k==="cat")S.cat=ev.target.value;if(k==="dist")S.dist=+ev.target.value;S.limit=40;render();});
+document.addEventListener("change",ev=>{const k=ev.target.dataset.k;if(!k)return;if(k==="from"){setFrom(ev.target.value);return;}if(k==="cat")refine({cat:ev.target.value});if(k==="dist")refine({dist:+ev.target.value});render();});
 // Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
 const FALLBACK=" - showing driving miles from Ashland instead.";
 function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;S.limit=40;render();}
@@ -1737,13 +1785,137 @@ function setFrom(v){
     },{enableHighAccuracy:false,timeout:15000,maximumAge:600000});
   }catch(e){geoFail("Your location is not available");}
 }
-let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=ev.target.value.trim().toLowerCase();S.limit=40;render();},150);});
+let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{refine({q:ev.target.value.trim()});render();},150);});
 addEventListener("resize",setBarH);
 // A tab left open overnight: recompute "today" when it comes back, and at local midnight while it stays open.
 function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render();}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;refreshDay();});
 function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,1);setTimeout(()=>{refreshDay();armMidnight();},m-n);}
 armMidnight();
+
+// --- history: go() pushes destinations, refine() replaces; render() only ever replaces ---
+const VIEWKEYS=["mode","sort","when","cat","dist","q"];
+const DEF={mode:"upcoming",sort:"date",when:"7",cat:"",dist:0,q:""};
+// This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
+const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+let OPEN=null;
+try{history.scrollRestoration="manual";}catch(e){}
+const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,q:S.qt});
+function urlFor(v,ev){
+  const u=new URLSearchParams();VIEWKEYS.forEach(k=>{if(v[k]!==DEF[k])u.set(k,v[k]);});if(ev)u.set("ev",ev);
+  const qs=u.toString();return location.pathname+(qs?"?"+qs:"");
+}
+function curState(){try{return history.state&&typeof history.state==="object"?history.state:{};}catch(e){return {};}}
+// Rewrite the current entry for the current view, keeping its scroll position and sheet mark.
+function replaceURL(){
+  const c=curState();
+  try{history.replaceState({...viewOf(),ev:OPEN||"",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),OPEN));}catch(e){}
+}
+function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.qt=v.q;S.q=v.q.toLowerCase();}
+// Destinations: call from a tap or key handler only (Chrome skips entries pushed without a user gesture).
+function go(patch){
+  const cur={...viewOf(),ev:OPEN||""},next={...cur,...patch};
+  if(Object.keys(next).every(k=>next[k]===cur[k]))return false;
+  try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}
+  if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);S.limit=40;}
+  try{history.pushState({...viewOf(),ev:next.ev,y:scrollY,sheet:next.ev?PL:""},"",urlFor(viewOf(),next.ev));}catch(e){}
+  return true;
+}
+// Refinements: the caller renders, and render() replaces the entry.
+function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();delete patch.q;}Object.assign(S,patch);S.limit=40;}
+addEventListener("pagehide",()=>{try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}});
+addEventListener("popstate",e=>{
+  const st=e.state&&typeof e.state==="object"&&e.state.mode?e.state:{...readURL(location.search),y:null};
+  if(OPEN&&!st.ev)closeSheet(true);
+  const cur=viewOf();
+  if(VIEWKEYS.some(k=>cur[k]!==st[k])){applyView(st);$("#search").value=S.qt;S.limit=40;render();}
+  if(typeof st.y==="number")scrollTo(0,st.y);
+  if(st.ev&&OPEN!==st.ev)openSheet(st.ev);
+});
+
+// --- event sheet ---
+const sheet=$("#sheet");
+const MONF=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const longDate=d=>`${DOWF[d.getDay()]}, ${MONF[d.getMonth()]} ${d.getDate()}`;
+const shortDate=d=>`${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`;
+const isWeekly=o=>IDOF.get(o)[0]==="w";
+function dateLine(o){
+  if(isWeekly(o))return (DAYLABEL[o.day]||o.day)+(o.seasonEnd?` · Through ${longDate(pd(o.seasonEnd))}`:"");
+  if(isOngoing(o))return `Runs through ${longDate(lastDay(o))}`;
+  if(o.dates){
+    const up=o.dates.map(pd).filter(d=>d>=today),ds=up.length?up:[lastDay(o)];
+    return ds.slice(0,6).map(d=>`${MON[d.getMonth()]} ${d.getDate()}`).join(", ")+(ds.length>6?` +${ds.length-6} more`:"");
+  }
+  if(o.end&&o.end!==o.start)return `${shortDate(pd(o.start))} - ${shortDate(pd(o.end))}`;
+  return longDate(pd(o.start));
+}
+function distLine(o){
+  if(!o.town)return "Distance unknown";
+  const mi=miOf(o),t=`<b>${esc(o.town)}</b> &middot; `;
+  if(mi==null)return t+"Distance unknown";
+  if(mi<3)return t+(fromMe()?"Near you":"In town");
+  return t+`${mi} mi ${fromMe()?"straight-line from you":"driving from Ashland"}`;
+}
+function shareURL(id){try{const u=new URL(location.href);u.search="?ev="+encodeURIComponent(id);u.hash="";return u.href;}catch(e){return "?ev="+encodeURIComponent(id);}}
+function sheetHTML(o,id){
+  const town=o.town?o.town.replace(/, [A-Z]{2}$/,""):"";
+  const dest=o.place+(o.town&&!o.place.toLowerCase().includes(town.toLowerCase())?", "+o.town:"");
+  const src=safeUrl(o.url);let host="";if(src){try{host=new URL(src).hostname.replace(/^www\./,"");}catch(e){}}
+  const text=isWeekly(o)?o.note:o.desc;
+  return `<h2 class="sh-title" id="sheetTitle">${esc(o.title)}</h2><p class="sh-date">${esc(dateLine(o))}</p><p class="sh-venue">${esc(o.place)}</p><p class="sh-dist">${distLine(o)}</p>`+
+    `${text?`<p class="sh-desc">${esc(text)}</p>`:""}<p class="sh-tags">${catTag(o.cat)}</p>`+
+    `<div class="sh-acts"><a class="sh-btn pri" href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(dest)}" target="_blank" rel="noopener">Directions</a>`+
+    `<button class="sh-btn" type="button" data-sh="share" data-id="${id}">Share</button>`+
+    `${src&&host?`<a class="sh-btn" href="${esc(src)}" target="_blank" rel="noopener">Open on ${esc(host)}</a>`:""}</div>`+
+    `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p><label class="sh-link" id="sheetLink" hidden>Link to this event<input type="text" readonly></label>`;
+}
+const GONE=`<h2 class="sh-title" id="sheetTitle">This event is no longer listed</h2><p>It may have ended or been removed in the weekly update.</p><div class="sh-acts"><button class="sh-btn pri" type="button" data-sh="close">See upcoming events</button></div>`;
+// While the sheet is open the page behind cannot scroll; pad for a classic scrollbar so nothing shifts sideways.
+function lockPage(on){const de=document.documentElement,sb=on?innerWidth-de.clientWidth:0;de.classList.toggle("sheet-open",on);de.style.paddingRight=sb>0?sb+"px":"";}
+function openSheet(id){
+  const o=BYID.get(id);OPEN=id;
+  $("#sheetBody").innerHTML=o?sheetHTML(o,id):GONE;
+  if(!sheet.open){
+    lockPage(true);
+    try{if(typeof sheet.showModal!=="function")throw 0;sheet.showModal();}
+    catch(e){try{sheet.show();}catch(e2){
+      // No <dialog> at all: open the source page instead.
+      lockPage(false);OPEN=null;replaceURL();
+      const u=o&&safeUrl(o.url);if(u)open(u,"_blank","noopener");return;}}
+  }
+  sheet.scrollTop=0;$("#sheetClose").focus();
+}
+function openFromRow(id){go({ev:id});openSheet(id);}
+// Every close (button, Esc, scrim, Back, the platform close request) ends in the dialog's close event.
+let closingFromPop=false,lastOpen=null;
+function closeSheet(fromPop){if(!sheet.open)return;closingFromPop=!!fromPop;lastOpen=OPEN;OPEN=null;sheet.close();}
+sheet.addEventListener("close",()=>{
+  lockPage(false);
+  const id=OPEN||lastOpen;lastOpen=null;
+  if(closingFromPop)closingFromPop=false;
+  else{
+    OPEN=null;const c=curState();
+    // The entry this page pushed for the sheet: step back once. A ?ev= link opened directly: drop ev in place.
+    if(c.ev&&c.sheet===PL){try{history.back();}catch(e){replaceURL();}}
+    else replaceURL();
+  }
+  const r=id&&$("#results").querySelector(`.ev[data-ev="${CSS.escape(id)}"]`);
+  if(r)r.focus({preventScroll:true});
+  if(!r||document.activeElement!==r){const res=$("#results");res.tabIndex=-1;res.focus({preventScroll:true});}
+});
+sheet.addEventListener("click",ev=>{
+  if(ev.target===sheet){closeSheet();return;}
+  const b=ev.target.closest("button");if(!b)return;
+  if(b.id==="sheetClose"||b.dataset.sh==="close")closeSheet();
+  else if(b.dataset.sh==="share")shareEvent(b.dataset.id);
+});
+// Share sheet, else copy the link, else show it selected in a read-only field.
+async function shareEvent(id){
+  const o=BYID.get(id);if(!o)return;const url=shareURL(id),live=$("#sheetLive");live.textContent="";
+  if(navigator.share){try{await navigator.share({title:o.title,text:`${o.title} - ${dateLine(o)}`,url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
+  try{await navigator.clipboard.writeText(url);live.textContent="Link copied";return;}catch(e){}
+  const lab=$("#sheetLink"),f=lab.querySelector("input");lab.hidden=false;f.value=url;f.focus();f.select();
+}
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
 // Both theme-color tags carry the active theme's --bg: the theme is the app's choice, not the phone's.
@@ -1752,7 +1924,10 @@ let theme="light";try{if(localStorage.getItem("ev_theme")==="dark")theme="dark";
 applyTheme(theme);
 $("#themeBtn").addEventListener("click",()=>{theme=theme==="dark"?"light":"dark";try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();});
 
+$("#search").value=S.qt;
 setMeta();render();
+if(U0.ev){openSheet(U0.ev);replaceURL();}
+else{const y=curState().y;if(typeof y==="number"&&y>0)scrollTo(0,y);}
 
 // Service worker (installable app + offline copy). GitHub Pages only: the same file also runs as a Cowork artifact.
 // sw.js is network-first for the page - see CLAUDE.md before changing it.

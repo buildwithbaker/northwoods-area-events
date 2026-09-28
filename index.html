@@ -55,6 +55,11 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
   --on-surface:#1A1F2B; --link:#2E5082; --error:#8A1C1C;
   --bar-shadow:0 2px 8px rgba(8,12,20,.12); --sheet-shadow:0 -4px 24px rgba(8,12,20,.2);
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
+  /* motion */
+  --ease-standard:cubic-bezier(0.2, 0, 0, 1); --ease-emph-decel:cubic-bezier(0.05, 0.7, 0.1, 1); --ease-emph-accel:cubic-bezier(0.3, 0, 0.8, 0.15);
+  --dur-short3:150ms; --dur-short4:200ms;
+  --spring-ios-default:linear(0, 0.082, 0.243, 0.413, 0.562, 0.682, 0.774, 0.841, 0.89, 0.925, 0.949, 0.965, 0.977, 0.984, 0.99, 0.993, 1);
+  --ease-sheet:var(--ease-emph-decel);
   /* category tint families: container and glyph/tag text (glyph 5.9:1 or more) */
   --fam-music:#EEEDFE; --on-fam-music:#3C3489; --fam-celebrate:#FAEEDA; --on-fam-celebrate:#7A5410;
   --fam-community:#E3EEF3; --on-fam-community:#1E4A5E; --fam-outdoors:#E4F0E1; --on-fam-outdoors:#24552B;
@@ -173,6 +178,8 @@ a{color:inherit}
 .ghead .n{color:var(--on-surface-variant);font-weight:600;letter-spacing:0}
 .ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--on-surface-variant);font-size:.8125rem}
 .list{background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
+/* every matching event is in the DOM; day-group cards off screen skip layout and paint until needed */
+#results > .list{content-visibility:auto;contain-intrinsic-size:auto 900px}
 /* a row is one button that opens the event sheet; spans styled as blocks (a button holds phrasing content only) */
 .ev{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;width:100%;min-height:56px;padding:12px 16px;border:0;border-top:1px solid var(--outline-variant);border-radius:0;background:none;text-align:left;cursor:pointer;min-width:0}
 .ev:first-child{border-top:0}
@@ -197,7 +204,7 @@ a{color:inherit}
 .ongoing summary,.mbnote summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 16px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);font-size:.9375rem;font-weight:600}
 .ongoing summary::-webkit-details-marker,.mbnote summary::-webkit-details-marker{display:none}
 .ongoing summary .n{color:var(--on-surface-variant);font-weight:500}
-.ongoing summary .chev,.mbnote summary .chev{margin-left:auto;display:inline-flex;transition:transform .15s}
+.ongoing summary .chev,.mbnote summary .chev{margin-left:auto;display:inline-flex;transition:transform var(--dur-short4) var(--ease-standard)}
 .ongoing summary .chev svg,.mbnote summary .chev svg{width:18px;height:18px}
 .ongoing[open] summary,.mbnote[open] summary{border-radius:var(--r-md) var(--r-md) 0 0;border-bottom-color:var(--outline-variant)}
 .ongoing[open] summary .chev,.mbnote[open] summary .chev{transform:rotate(180deg)}
@@ -206,7 +213,6 @@ a{color:inherit}
 .mbnote{margin-top:12px}
 .mbnote summary{font-weight:500;color:var(--on-surface-variant)}
 .mbnote p{padding:12px 16px;background:var(--surface-container);border:1px solid var(--outline);border-top:0;border-radius:0 0 var(--r-md) var(--r-md);font-size:.9375rem;color:var(--on-surface-muted)}
-.showmore{display:block;width:100%;height:48px;margin-top:12px;border:1px solid var(--link);border-radius:var(--r-md);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;cursor:pointer}
 .empty{padding:20px 16px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);color:var(--on-surface-variant);font-size:.9375rem;margin-top:12px}
 .empty .emsg{color:var(--on-surface);font-size:1rem;font-weight:600;overflow-wrap:anywhere}
 .empty .enote{margin-top:8px}
@@ -267,7 +273,7 @@ button,.fo,.optdate,summary,.sh-btn,.ab-row,.tab{-webkit-tap-highlight-color:tra
 /* controls only: no double-tap zoom delay, no text selection; event text stays selectable in the sheet */
 button,.fo,.optdate,summary,.sh-btn,.ab-row,.tab{touch-action:manipulation;-webkit-user-select:none;user-select:none}
 button:active,.chip:active,.seg button:active,.sh-btn:active{transform:scale(.97)}
-.showmore:active,.side .opt:active,.ev:active,.ab-switch:active{transform:none;background:var(--outline-variant)}
+.side .opt:active,.ev:active,.ab-switch:active{transform:none;background:var(--outline-variant)}
 summary:active,.ab-row:active,.tab:active,.fo:not(.off):active{background:var(--outline-variant)}
 @media (hover: hover){.ev:hover{background:var(--surface)}}
 /* the list clips its corners, so draw the row's focus ring inside it */
@@ -277,6 +283,15 @@ summary:active,.ab-row:active,.tab:active,.fo:not(.off):active{background:var(--
 html.sheet-open{overflow:hidden}
 .sheet{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-width:none;max-height:85vh;max-height:85dvh;padding:0;border:0;border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--surface-container);color:var(--on-surface);box-shadow:var(--sheet-shadow);overflow-y:auto;overscroll-behavior:contain}
 .sheet::backdrop{background:rgba(8,12,20,.55)}
+/* Sheets slide up over 600ms (a spring where linear() easing exists), the scrim fades in over 150ms;
+   they slide down over 220ms before close() runs. Only sheets, tab switches and chevrons move. */
+@supports (transition-timing-function: linear(0, 1)){:root{--ease-sheet:var(--spring-ios-default)}}
+.sheet{transform:translateY(0);transition:transform 600ms var(--ease-sheet)}
+@starting-style{.sheet[open]{transform:translateY(100%)}}
+.sheet.closing{transform:translateY(100%);transition:transform 220ms var(--ease-emph-accel)}
+.sheet::backdrop{opacity:1;transition:opacity 150ms linear}
+@starting-style{.sheet[open]::backdrop{opacity:0}}
+.sheet.closing::backdrop{opacity:0;transition:opacity 220ms linear}
 .sh-in{padding:0 var(--sr) calc(24px + env(safe-area-inset-bottom)) var(--sl)}
 .sh-top{position:sticky;top:0;z-index:1;display:flex;justify-content:flex-end;padding:16px 0 4px;background:var(--surface-container)}
 .grab{position:absolute;top:8px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:var(--r-pill);background:var(--outline)}
@@ -333,7 +348,22 @@ html.sheet-open{overflow:hidden}
 .ab-switch[aria-checked="true"] .knob{left:22px;background:var(--on-primary)}
 @media (min-width:960px){
   .sheet{inset:0;margin:auto;width:calc(100% - 64px);max-width:560px;max-height:85vh;border-radius:var(--r-lg);box-shadow:0 8px 32px rgba(8,12,20,.3)}
+  /* the centred dialog fades instead of sliding */
+  .sheet{transform:none;opacity:1;transition:opacity var(--dur-short3) var(--ease-standard)}
+  @starting-style{.sheet[open]{transform:none;opacity:0}}
+  .sheet.closing{transform:none;opacity:0;transition:opacity var(--dur-short3) var(--ease-standard)}
   .grab{display:none}
+}
+
+/* tab switches: a ~200ms cross-fade (View Transitions) */
+::view-transition-group(root),::view-transition-old(root),::view-transition-new(root){animation-duration:200ms;animation-timing-function:cubic-bezier(0.2, 0, 0, 1)}
+/* phones up to 360px: a row's slot note goes under the meta line, so the meta line (and its distance) gets the full width */
+@media (max-width:360px){.ev .slot:has(.s2){flex-basis:100%}}
+/* reduced motion: nothing moves (sheets appear in place; tab switches skip the View Transition in script) */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after,.sheet::backdrop{animation-duration:1ms !important;animation-iteration-count:1 !important;transition-duration:1ms !important;transition-delay:0s !important;scroll-behavior:auto !important}
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation-duration:1ms !important}
+  .sheet,.sheet.closing{transform:none !important}
 }
 
 /* installed app: the browser's install offer is moot */
@@ -1736,18 +1766,30 @@ const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DOWF=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-let today;
-function setToday(){const d=new Date();d.setHours(0,0,0,0);today=d;}
+// Day numbers (days since 1970 for a calendar date) let filtering compare integers instead of parsing dates per tap.
+const DAY=864e5,dn=s=>{const[y,m,d]=s.split("-").map(Number);return Date.UTC(y,m-1,d)/DAY;};
+const dnOf=d=>Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/DAY;
+const DATEOF=new Map();
+const dateOf=n=>{let d=DATEOF.get(n);if(!d){const t=new Date(n*DAY);d=new Date(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate());DATEOF.set(n,d);}return d;};
+let today,TD;
+function setToday(){const d=new Date();d.setHours(0,0,0,0);today=d;TD=dnOf(d);}
 setToday();
 
 // --- dates: dates[] (discrete days) wins over the start/end span when present ---
-const lastDay=e=>pd(e.dates&&e.dates.length?e.dates[e.dates.length-1]:(e.end||e.start));
-const isOngoing=e=>!e.dates&&pd(e.start)<today&&lastDay(e)>=today;
-const isUpcoming=e=>lastDay(e)>=today;
+// Data rows use the index (IX, built once below); a saved snapshot, which is not in the data, is parsed as before.
+const lastDay=e=>{const x=IX.get(e);return x&&x.e!=null?dateOf(x.e):pd(e.dates&&e.dates.length?e.dates[e.dates.length-1]:(e.end||e.start));};
+const isOngoing=e=>{const x=IX.get(e);return x&&x.s!=null?!x.ds&&x.s<TD&&x.e>=TD:!e.dates&&pd(e.start)<today&&lastDay(e)>=today;};
+const isUpcoming=e=>{const x=IX.get(e);return x&&x.e!=null?x.e>=TD:lastDay(e)>=today;};
 // First day of the event inside [a,b], or null. Ongoing spans report today.
-function firstIn(e,[a,b]){
-  if(e.dates){for(const s of e.dates){const d=pd(s);if(d>=a&&d<=b)return d;}return null;}
-  const s=pd(e.start),en=lastDay(e);if(s>b||en<a)return null;return s<a?a:s;
+let RNG=null;
+function firstIn(e,r){
+  const x=IX.get(e);
+  if(!x||x.s==null){const[a,b]=r;
+    if(e.dates){for(const s of e.dates){const d=pd(s);if(d>=a&&d<=b)return d;}return null;}
+    const s=pd(e.start),en=lastDay(e);if(s>b||en<a)return null;return s<a?a:s;}
+  if(!RNG||RNG.r!==r)RNG={r,a:dnOf(r[0]),b:dnOf(r[1])};const A=RNG.a,B=RNG.b;
+  if(x.ds){for(const v of x.ds)if(v>=A&&v<=B)return dateOf(v);return null;}
+  if(x.s>B||x.e<A)return null;return dateOf(x.s<A?A:x.s);
 }
 const daysFrom=d=>Math.round((d-today)/864e5);
 
@@ -1758,7 +1800,10 @@ const townRow=e=>e.town&&TOWNS[e.town]?TOWNS[e.town]:null;
 const GEO={pos:null,note:""};
 const fromMe=()=>S.from==="me"&&!!GEO.pos;
 function crow(a,b,c,d){const R=3958.8,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b);const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
-const miOf=e=>{const t=townRow(e);if(!t)return null;if(fromMe())return Math.round(crow(GEO.pos.lat,GEO.pos.lon,t.lat,t.lon));return t.mi!=null?t.mi:null;};
+// Straight-line miles are worked out once per town for each new position.
+const miOf=e=>{const t=townRow(e);if(!t)return null;
+  if(fromMe()){if(GEO.cpos!==GEO.pos){GEO.cpos=GEO.pos;GEO.cache=new Map();}let m=GEO.cache.get(e.town);if(m===undefined){m=Math.round(crow(GEO.pos.lat,GEO.pos.lon,t.lat,t.lon));GEO.cache.set(e.town,m);}return m;}
+  return t.mi!=null?t.mi:null;};
 const miUnit=()=>fromMe()?" mi straight-line":" mi";
 // place ending with its town name, optionally followed by a state
 function townEndRe(e){
@@ -1819,7 +1864,7 @@ function readURL(search){
 }
 const U0=readURL(location.search);
 // q: lower-cased for matching; qt: the text as typed, for the URL and the search box.
-const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,from:"ashland",q:U0.q.toLowerCase(),qt:U0.q,limit:40};
+const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,from:"ashland",q:U0.q.toLowerCase(),qt:U0.q};
 function range(){
   if(isDate(S.when)){const d=pd(S.when);return[d,d];}
   if(S.when==="today")return[today,today];
@@ -1829,7 +1874,11 @@ function range(){
 }
 function hay(o){return (o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat+" "+(o.town||"")).toLowerCase();}
 const distOk=e=>!S.dist||(miOf(e)!=null&&miOf(e)<=S.dist);
-const qOk=e=>!S.q||hay(e).includes(S.q);
+const qOk=e=>{if(!S.q)return true;const x=IX.get(e);return (x?x.h:hay(e)).includes(S.q);};
+// The index, built once at load: day numbers for start, end and each of dates, and the lower-case search text.
+const IX=new Map();
+for(const e of EVENTS){const ds=e.dates&&e.dates.length?e.dates.map(dn):null;IX.set(e,{s:dn(e.start),e:ds?ds[ds.length-1]:dn(e.end||e.start),ds,h:hay(e)});}
+for(const o of RECURRING)IX.set(o,{h:hay(o)});
 // every active filter except category (category counts are taken over this)
 function baseItems(){if(S.mode==="weekly")return RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o));const r=range();return EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));}
 function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&catOk(e)&&distOk(e)&&qOk(e));}
@@ -1877,7 +1926,7 @@ function recRow(o,ctx){return evRow(o,IDOF.get(o),metaLine(o),timeOf(o),ctx==="s
 const group=(label,n,items,sub)=>`<h2 class="ghead">${esc(label)} <span class="n">${n} event${n===1?"":"s"}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</h2><div class="list">${items}</div>`;
 const chev=icon("caret-down");
 
-// --- views: each returns the full sorted list and how to group it; rows go out in batches of S.limit ---
+// --- views: each returns the full sorted list and how to group it; rows go out in chunks (render / pump) ---
 function viewDate(list){
   const r=range();
   const ongoing=list.filter(isOngoing).sort((a,b)=>lastDay(a)-lastDay(b));
@@ -1909,7 +1958,6 @@ function groupsHTML(items){
   const gs=[];items.forEach(x=>{const k=V.key(x);const l=gs[gs.length-1];if(l&&l.k===k)l.items.push(x);else gs.push({k,items:[x]});});
   return gs.map(g=>group(V.label(g.items[0]),V.count[g.k],g.items.map(V.row).join(""),V.sub(g.items[0]))).join("");
 }
-const moreLabel=()=>{const left=V.items.length-V.shown;return `Show ${Math.min(40,left)} more (${left} left)`;};
 
 // --- controls ---
 const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
@@ -1947,7 +1995,7 @@ function emptyAct(k){
   if(k==="q"){$("#search").value="";S.q="";S.qt="";}
   else if(k==="filters"){clearAll();const f=$("#results").querySelector("a,button,summary");if(f)f.focus();return;}
   else if(k==="when"){S.when="all";}
-  S.limit=40;render();
+  render();
   const f=$("#results").querySelector("a,button,summary");if(f)f.focus();
 }
 // My Bands: the criteria only. The band lists are private and never appear on the page.
@@ -1966,48 +2014,69 @@ function chipKey(el){
   return null;
 }
 function setTabs(m){document.querySelectorAll(".tab").forEach(t=>{if(t.dataset.tab===m)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});}
-function render(){
-  document.documentElement.dataset.view=S.mode;setTabs(S.mode);
+// Rendering: the header, count line and first screenful (about 12 rows) in the tap's task, then the rest in
+// chunks of about 50, each after yieldToMain(). A new render bumps GEN, which drops any chunk still queued.
+const FIRST=12,CHUNK=50;let GEN=0;
+function yieldToMain(){try{if(globalThis.scheduler&&typeof scheduler.yield==="function")return scheduler.yield();}catch(e){}return new Promise(r=>setTimeout(r,0));}
+// opts.keep: leave the scroll position alone (Back, a new day, re-rendering Saved behind a sheet)
+function render(opts){
+  document.documentElement.dataset.view=S.mode;setTabs(S.mode);const gen=++GEN;
   const fk=chipKey(document.activeElement);
   $("#segDate").setAttribute("aria-pressed",S.sort==="date");$("#segPlace").setAttribute("aria-pressed",S.sort==="place");
   $("#chips").innerHTML=chipsHTML();renderSide();
   if(fk){const n=$("#chips").querySelector(fk);if(n)n.focus();}
   renderApplied();
-  if(S.mode==="saved"){renderSaved();return;}
+  if(S.mode==="saved"){renderSaved();return gen;}
   V=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
+  // group counts come from the full list, so a header is right before its rows arrive
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
-  V.shown=V.all?V.items.length:Math.min(S.limit,V.items.length);
+  V.shown=Math.min(FIRST,V.items.length);
   const what=S.mode==="weekly"?"weekly events":`events · ${whenText(S.when)}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
   $("#count").textContent=`${V.items.length+V.ongoing} ${what}`;
   $("#announce").textContent="";
   const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
-  $("#results").innerHTML=(html||emptyHTML())+
-    (V.shown<V.items.length?`<button class="showmore" type="button" id="more">${moreLabel()}</button>`:"")+
-    (S.mode==="upcoming"&&cats().includes("My Bands")?MBNOTE:"");
+  const res=$("#results");
+  res.innerHTML=(html||emptyHTML())+(S.mode==="upcoming"&&cats().includes("My Bands")?MBNOTE:"");
+  const ls=res.querySelectorAll(":scope > .list");V.last=ls[ls.length-1]||null;
   replaceURL();
   setBarH();
+  if(!(opts&&opts.keep))jumpToResults();
+  if(V.shown<V.items.length&&!(opts&&opts.vt))pump(gen);
+  return gen;
 }
-// Show more appends the next batch; rows already on the page are left alone.
-function showMore(){
-  const from=V.shown;S.limit+=40;V.shown=Math.min(S.limit,V.items.length);
-  const add=V.items.slice(from,V.shown);if(!add.length)return;
-  const res=$("#results"),btn=$("#more"),tpl=document.createElement("template"),rows=[];
-  let i=0;
-  // The last group on the page may continue into this batch: add to it, no second header.
-  if(from>0&&V.key(add[0])===V.key(V.items[from-1])){
+// Motion: honour reduced motion; tab switches cross-fade through a View Transition when there is one.
+const reducedMotion=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+const canVT=uaDone=>!uaDone&&typeof document.startViewTransition==="function"&&!reducedMotion();
+// Run a tab change (fn changes state and renders the first screen); the chunks start once the new view is captured.
+function withTabTransition(fn,uaDone){
+  if(!canVT(uaDone)){fn({});return;}
+  let g=0;
+  try{const t=document.startViewTransition(()=>{g=fn({vt:true});});
+    t.ready.catch(()=>{}).finally(()=>{if(g&&g===GEN&&V&&V.shown<V.items.length)pump(g);});
+  }catch(e){fn({});}
+}
+// When the results change, jump (no smooth scroll) to their top, but only if it has gone above the viewport.
+function jumpToResults(){const m=$("main"),bar=parseFloat(document.documentElement.style.getPropertyValue("--bar-h"))||0,top=m.getBoundingClientRect().top;if(top<bar)scrollTo(0,Math.max(0,scrollY+top-bar));}
+// Append rows up to index `to` of V.items: continue the last day group, then add new groups.
+function appendRows(to){
+  const from=V.shown,add=V.items.slice(from,to);if(!add.length)return;
+  const res=$("#results"),tpl=document.createElement("template"),before=res.querySelector(":scope > .mbnote");let i=0;
+  if(from>0&&V.last&&V.key(add[0])===V.key(V.items[from-1])){
     const k=V.key(add[0]);while(i<add.length&&V.key(add[i])===k)i++;
-    tpl.innerHTML=add.slice(0,i).map(V.row).join("");rows.push(...tpl.content.children);
-    const lists=res.querySelectorAll(":scope > .list");lists[lists.length-1].append(tpl.content);
+    tpl.innerHTML=add.slice(0,i).map(V.row).join("");V.last.append(tpl.content);
   }
-  if(i<add.length){tpl.innerHTML=groupsHTML(add.slice(i));rows.push(...tpl.content.querySelectorAll(".ev"));res.insertBefore(tpl.content,btn);}
-  if(V.shown<V.items.length)btn.textContent=moreLabel();
-  rows[0].focus();
-  if(V.shown>=V.items.length)btn.remove();
-  // Date view pages through dated events only (ongoing sit apart); Nearest pages through all of them, as #count does.
-  $("#announce").textContent=`Showing ${V.shown} of ${V.items.length} ${V.dated?"dated ":""}events`;
-  setBarH();
+  if(i<add.length){tpl.innerHTML=groupsHTML(add.slice(i));const ls=tpl.content.querySelectorAll(".list");V.last=ls[ls.length-1];res.insertBefore(tpl.content,before);}
+  V.shown=to;
 }
+async function pump(gen){
+  while(gen===GEN&&V.shown<V.items.length){await yieldToMain();if(gen!==GEN)return;appendRows(Math.min(V.shown+CHUNK,V.items.length));}
+  if(gen===GEN)setBarH();
+}
+// Something needs a row (or a page height) before chunking reaches it: finish synchronously until `done()`.
+function flushRows(done){if(!V||S.mode==="saved")return;while(V.shown<V.items.length&&!(done&&done()))appendRows(Math.min(V.shown+CHUNK,V.items.length));}
+function rowEl(id){const q=()=>$("#results").querySelector(`.ev[data-ev="${CSS.escape(id)}"]`);let r=q();if(!r){flushRows(()=>!!q());r=q();}return r;}
+function flushToY(y){flushRows(()=>document.documentElement.scrollHeight>=y+innerHeight);}
 // --bar-h: sticky bar height (phones). --gh-h: tallest rendered day/town header, so scroll-padding
 // clears a header that wraps at large text sizes (the CSS never goes below the old 60px allowance).
 function setBarH(){const mob=matchMedia("(max-width:959px)").matches,st=document.documentElement.style;
@@ -2031,17 +2100,16 @@ function setMeta(){
 }
 document.addEventListener("click",ev=>{
   const tab=ev.target.closest("a[data-tab]");
-  if(tab){if(ev.button||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;ev.preventDefault();setTabs(tab.dataset.tab);if(go({mode:tab.dataset.tab}))renderSoon();return;}
+  if(tab){if(ev.button||ev.metaKey||ev.ctrlKey||ev.shiftKey||ev.altKey)return;ev.preventDefault();setTabs(tab.dataset.tab);if(go({mode:tab.dataset.tab}))withTabTransition(o=>render(o));return;}
   const b=ev.target.closest("button");if(!b)return;
   if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
-  if(b.id==="more"){showMore();return;}
-  if(b.id==="aboutBtn"){go({open:"about"});openSheet("about");return;}
-  if(b.id==="filtersBtn"){go({open:"filters"});openSheet("filters");return;}
+  if(b.id==="aboutBtn"){openAs("about");return;}
+  if(b.id==="filtersBtn"){openAs("filters");return;}
   if(b.dataset.rm){removeApplied(b.dataset.rm);return;}
   if(b.closest("#sheet"))return;
   if(b.dataset.act){emptyAct(b.dataset.act);return;}
   // Destinations push a history entry (Back undoes them); refinements replace the current one.
-  if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))renderSoon();return;}
+  if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))withTabTransition(o=>render(o));return;}
   if(b.dataset.sort){pressNow(b);if(go({sort:b.dataset.sort,mode:"upcoming"}))renderSoon();return;}
   if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
   // Sidebar categories toggle independently; All categories clears them.
@@ -2067,16 +2135,16 @@ document.addEventListener("touchstart",()=>{},{passive:true});
 document.addEventListener("change",ev=>{if(ev.target.dataset.k!=="date")return;const v=ev.target.value;if(!isDate(v)||pd(v)<today)return;refine({when:v,mode:"upcoming"});render();});
 // Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
 const FALLBACK=" - showing driving miles from Ashland instead.";
-function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;S.limit=40;render();}
+function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;render();}
 function setFrom(v){
-  if(v!=="me"){S.from="ashland";GEO.pos=null;GEO.note="";S.limit=40;render();return;}
+  if(v!=="me"){S.from="ashland";GEO.pos=null;GEO.note="";render();return;}
   if(!("geolocation" in navigator)||!navigator.geolocation){geoFail("This browser cannot share its location");return;}
   S.from="me";GEO.note="Finding your location...";render();
   try{
     navigator.geolocation.getCurrentPosition(p=>{
       if(S.from!=="me")return;
       GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude};
-      GEO.note="Distances are straight-line miles from your location, not driving miles.";S.limit=40;render();
+      GEO.note="Distances are straight-line miles from your location, not driving miles.";render();
     },err=>{
       if(S.from!=="me")return;
       geoFail(err&&err.code===1?"Location permission was denied":err&&err.code===3?"Finding your location timed out":"Your location is not available");
@@ -2086,7 +2154,7 @@ function setFrom(v){
 let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{refine({q:ev.target.value.trim()});render();},150);});
 addEventListener("resize",setBarH);
 // A tab left open overnight: recompute "today" when it comes back, and at local midnight while it stays open.
-function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render();}}
+function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render({keep:true});}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;refreshDay();});
 function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,1);setTimeout(()=>{refreshDay();armMidnight();},m-n);}
 armMidnight();
@@ -2118,22 +2186,30 @@ function go(patch){
   const cur={...viewOf(),open:OPEN||""},next={...cur,...patch};
   if(Object.keys(next).every(k=>next[k]===cur[k]))return false;
   try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}
-  if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);S.limit=40;}
+  if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);}
   try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",filters:next.open==="filters",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
   return true;
 }
 // Refinements: the caller renders, and render() replaces the entry.
-function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();delete patch.q;}Object.assign(S,patch);S.limit=40;}
+function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();delete patch.q;}Object.assign(S,patch);}
 addEventListener("pagehide",()=>{try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}});
 addEventListener("popstate",e=>{
   const st=e.state&&typeof e.state==="object"&&e.state.mode?e.state:{...readURL(location.search),y:null};
   // our own step back after "Show N events": keep the applied filters on this entry
   if(pendingApply&&!OPEN){flushApply();return;}
-  const want=st.about?"about":st.filters?"filters":st.ev||"";
-  if(OPEN&&!want)closeSheet(true);
+  const want=st.about?"about":st.filters?"filters":st.ev||"",ua=!!e.hasUAVisualTransition;
+  // Back while a sheet is sliding out: that entry is already gone, so do not step back again. Going to
+  // another sheet's entry swaps the content in place; otherwise finish the close now.
+  if(sheet.open&&sheet.classList.contains("closing")){
+    if(want){clearTimeout(closeTimer);closeTimer=0;sheet.classList.remove("closing");closingFromPop=false;}
+    else{closingFromPop=true;finishClose();}
+  }
+  // the browser has already animated Back: close without the slide
+  if(OPEN&&!want)closeSheet(true,ua);
   const cur=viewOf();
-  if(VIEWKEYS.some(k=>cur[k]!==st[k])){applyView(st);$("#search").value=S.qt;S.limit=40;render();}
-  if(typeof st.y==="number")scrollTo(0,st.y);
+  const restore=o=>{applyView(st);$("#search").value=S.qt;const g=render({keep:true,...o});if(typeof st.y==="number"){flushToY(st.y);scrollTo(0,st.y);}return g;};
+  if(VIEWKEYS.some(k=>cur[k]!==st[k])){if(st.mode!==cur.mode)withTabTransition(restore,ua);else restore({});}
+  else if(typeof st.y==="number"){flushToY(st.y);scrollTo(0,st.y);}
   if(want&&OPEN!==want)openSheet(want);
 });
 
@@ -2188,6 +2264,7 @@ function openSheet(id){
   if(id==="filters")FD={cats:cats(),from:S.from,dist:S.dist,when:S.when==="all"||isDate(S.when)?S.when:null};
   $("#sheetBody").innerHTML=id==="about"?aboutHTML():id==="filters"?filtersHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
   $("#sheetClose").textContent=id==="filters"?"Done":"Close";
+  clearTimeout(closeTimer);sheet.classList.remove("closing");
   if(!sheet.open){
     lockPage(true);
     try{if(typeof sheet.showModal!=="function")throw 0;sheet.showModal();}
@@ -2198,11 +2275,35 @@ function openSheet(id){
   }
   sheet.scrollTop=0;$("#sheetClose").focus();
 }
-function openFromRow(id){go({open:id});openSheet(id);}
+function openFromRow(id){openAs(id);}
+// Open a sheet as a destination. If the last one is still sliding out, this one takes its place instead:
+// the slide stops, and the entry it was about to leave is reused (replaced), unless Back already removed it.
+function openAs(id){
+  if(sheet.open&&sheet.classList.contains("closing")){
+    clearTimeout(closeTimer);closeTimer=0;sheet.classList.remove("closing");
+    if(!closingFromPop){OPEN=id;replaceURL();openSheet(id);return;}
+    closingFromPop=false;
+  }
+  go({open:id});openSheet(id);
+}
 // Every close (button, Esc, scrim, Back, the platform close request) ends in the dialog's close event.
-let closingFromPop=false,lastOpen=null;
-function closeSheet(fromPop){if(!sheet.open)return;closingFromPop=!!fromPop;lastOpen=OPEN;OPEN=null;sheet.close();}
+// Close, Esc, the scrim and Back all come here: slide down, then close() and the one close handler.
+// instant: reduced motion, or the browser already animated Back. A second close mid-slide finishes the first.
+let closingFromPop=false,lastOpen=null,closeTimer=0;
+function closeSheet(fromPop,instant){
+  if(!sheet.open)return;
+  if(sheet.classList.contains("closing")){if(fromPop)closingFromPop=true;if(instant)finishClose();return;}
+  closingFromPop=!!fromPop;lastOpen=OPEN;OPEN=null;
+  if(instant||reducedMotion()){finishClose();return;}
+  sheet.classList.add("closing");closeTimer=setTimeout(finishClose,240);
+}
+function finishClose(){clearTimeout(closeTimer);closeTimer=0;sheet.classList.remove("closing");if(sheet.open)sheet.close();}
+// Esc and the platform close request: run the same exit instead of the dialog's instant close
+sheet.addEventListener("cancel",e=>{e.preventDefault();closeSheet();});
 sheet.addEventListener("close",()=>{
+  // a close event that arrives after the sheet has been opened again belongs to nothing now
+  if(sheet.open)return;
+  clearTimeout(closeTimer);sheet.classList.remove("closing");
   lockPage(false);
   const id=OPEN||lastOpen;lastOpen=null;
   if(closingFromPop)closingFromPop=false;
@@ -2214,7 +2315,7 @@ sheet.addEventListener("close",()=>{
   }
   if(id==="about"){$("#aboutBtn").focus({preventScroll:true});return;}
   if(id==="filters"){$("#filtersBtn").focus({preventScroll:true});return;}
-  const r=id&&$("#results").querySelector(`.ev[data-ev="${CSS.escape(id)}"]`);
+  const r=id&&rowEl(id);
   if(r)r.focus({preventScroll:true});
   if(!r||document.activeElement!==r){const res=$("#results");res.tabIndex=-1;res.focus({preventScroll:true});}
 });
@@ -2304,7 +2405,7 @@ function applyFilters(){pendingApply={cat:catKey(FD.cats),dist:FD.dist,from:FD.f
 // after the sheet's entry is gone: apply as a refinement of the list entry (no new history entry)
 function flushApply(){
   const d=pendingApply;if(!d)return;pendingApply=null;
-  S.cat=d.cat;S.dist=d.dist;if(d.when&&S.mode==="upcoming")S.when=d.when;S.limit=40;
+  S.cat=d.cat;S.dist=d.dist;if(d.when&&S.mode==="upcoming")S.when=d.when;
   if(d.from!==S.from)setFrom(d.from);else render();
 }
 // --- applied filters: one removable chip per non-default sheet setting ---
@@ -2323,7 +2424,7 @@ function renderApplied(){
   const fb=$("#filtersBtn"),bd=$("#filtersBadge");fb.setAttribute("aria-label",a.length?`Filters, ${a.length} active`:"Filters");fb.classList.toggle("on",!!a.length);bd.textContent=a.length;bd.hidden=!a.length;
 }
 // Clear all: categories, distance, From (back to Ashland) and the sheet date (back to 7 days). Search stays.
-function clearAll(){S.cat="";S.dist=0;if(S.when==="all"||isDate(S.when))S.when="7";S.limit=40;if(S.from==="me")setFrom("ashland");else render();}
+function clearAll(){S.cat="";S.dist=0;if(S.when==="all"||isDate(S.when))S.when="7";if(S.from==="me")setFrom("ashland");else render();}
 function removeApplied(k){
   const idx=[...document.querySelectorAll("#applied [data-rm]")].findIndex(x=>x.dataset.rm===k);
   if(k==="all")clearAll();
@@ -2360,7 +2461,7 @@ function toggleSave(id,btn){
   if(live)live.textContent=now?"Saved on this device":"Removed from Saved";
   // Ask once, after the first save, for storage the browser will not clear under pressure.
   if(now&&!persistAsked){persistAsked=true;try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
-  if(S.mode==="saved")render();
+  if(S.mode==="saved")render({keep:true});
 }
 // A saved row whose event is over or no longer listed, drawn from the event or its snapshot:
 // the short date (or day label), then Town, then Category; the slot carries the time and the label.
@@ -2486,9 +2587,9 @@ function setTheme(t){theme=t;try{localStorage.setItem("ev_theme",theme);}catch(e
 if("IntersectionObserver" in window)new IntersectionObserver(([en])=>{const bar=$(".bar");bar.classList.toggle("collapsed",!en.isIntersecting);bar.classList.toggle("under",!en.isIntersecting);}).observe($(".top"));
 
 $("#search").value=S.qt;
-setMeta();render();
+setMeta();render({keep:true});
 if(U0.ev){openSheet(U0.ev);replaceURL();}
-else{const y=curState().y;if(typeof y==="number"&&y>0)scrollTo(0,y);}
+else{const y=curState().y;if(typeof y==="number"&&y>0){flushToY(y);scrollTo(0,y);}}
 
 // Service worker (installable app + offline copy). GitHub Pages only: the same file also runs as a Cowork artifact.
 // sw.js is network-first for the page - see CLAUDE.md before changing it.

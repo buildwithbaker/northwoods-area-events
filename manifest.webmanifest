@@ -16,5 +16,9 @@
   "shortcuts": [
     { "name": "This weekend", "short_name": "Weekend", "url": "/northwoods-area-events/?when=weekend", "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }] },
     { "name": "Nearest", "short_name": "Nearest", "url": "/northwoods-area-events/?sort=place", "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ],
+  "screenshots": [
+    { "src": "screenshots/events-light.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Upcoming events, light theme" },
+    { "src": "screenshots/events-dark.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Upcoming events, dark theme" }
   ]
 }

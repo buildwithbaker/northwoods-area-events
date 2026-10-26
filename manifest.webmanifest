@@ -1,7 +1,7 @@
 {
   "name": "Northwoods Area Events",
   "short_name": "NW Events",
-  "description": "Upcoming events around Ashland, Bayfield, the Chequamegon Bay, Hayward, Duluth and the wider Northwoods, refreshed weekly.",
+  "description": "Events across the Northwoods: northern Wisconsin, the western U.P. and Duluth and the Arrowhead, with drive distances from your town. Refreshed weekly.",
   "id": "/northwoods-area-events/",
   "start_url": "/northwoods-area-events/",
   "scope": "/northwoods-area-events/",

@@ -3,7 +3,7 @@
 {
   "name": "Northwoods Area Events",
   "schemaVersion": 1,
-  "description": "Live, always-current list of events around Ashland/Bayfield, the Chequamegon Bay, Hayward, Duluth, and the Wisconsin Dells. Past events auto-hide on open; sort by date or by drive distance from Ashland, filter by date range, category and distance; weekly recurring section (bingo, open mic, farmers market, tabletop/Magic). Data refreshed by the weekly scheduled scan."
+  "description": "Events across the Northwoods: northern Wisconsin, the western U.P., Duluth and the Arrowhead. Past events hide on open; sort by date or by drive miles from the home town you pick; filter by date range, category, town and distance; weekly recurring section. Data refreshed by the weekly scheduled scan."
 }
 </script>
 <html lang="en">
@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="text-scale" content="scale">
 <title>Northwoods Area Events</title>
-<meta name="description" content="Upcoming events around Ashland, Bayfield, the Chequamegon Bay, Hayward, Duluth and the wider Northwoods, refreshed weekly.">
+<meta name="description" content="Events across the Northwoods: northern Wisconsin, the western U.P. and Duluth and the Arrowhead. Pick your town for drive distances. Refreshed weekly.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFF2F7">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#EFF2F7">
 <script>
@@ -26,11 +26,11 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://buildwithbaker.github.io/northwoods-area-events/">
 <meta property="og:title" content="Northwoods Area Events">
-<meta property="og:description" content="Upcoming events within a drive of Ashland, WI - sorted by date or by distance, updated every week.">
+<meta property="og:description" content="Events across the Northwoods, sorted by date or by drive distance from your town. Updated every week.">
 <meta property="og:image" content="https://buildwithbaker.github.io/northwoods-area-events/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Northwoods Area Events - within a drive of Ashland, WI. Updated every week.">
+<meta property="og:image:alt" content="Northwoods Area Events - events across the Northwoods, by date or drive distance from your town. Updated every week.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,8 +106,11 @@ a{color:inherit}
 /* the title keeps at least 1.25rem per its longest word; below that the buttons wrap under it */
 .top .ttl{flex:1 1 calc(1.25rem * 6.3);min-width:0;container-type:inline-size}
 .top h1{font-size:1.75rem;font-weight:700;letter-spacing:-.2px;line-height:1.2;color:var(--on-primary-container);overflow-wrap:anywhere}
-/* large text: cap the title so its longest word ("Northwoods", about 6.05em) fits beside the buttons */
-.top h1{font-size:min(1.75rem, 100cqi / 6.3)}
+/* one line with the app mark at normal text sizes (text about 12em + mark 1.15em + gap .35em);
+   at large text it never drops below body size and wraps instead */
+.top h1{display:flex;align-items:center;gap:.35em;font-size:min(1.75rem, max(100cqi / 13.8, 1rem))}
+.top h1 .mark{flex:0 0 auto;width:1.15em;height:1.15em}
+.top h1 .tt{min-width:0}
 :root[data-theme="dark"] .top h1{color:var(--on-surface)}
 .top .subtitle{display:none;font-size:.875rem;color:var(--on-surface-variant);margin-top:4px}
 .meta{font-size:.75rem;color:var(--on-surface-variant)}
@@ -127,11 +130,21 @@ a{color:inherit}
 .bar{position:sticky;top:0;z-index:20;background:var(--surface-container);padding:8px var(--sr) 8px var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));border-bottom:1px solid var(--outline-variant)}
 .bar.under{box-shadow:var(--bar-shadow)}
 /* freshness line and short title share one cell, so collapsing never changes the bar's height */
-.row0{display:grid;align-items:center;margin-bottom:4px}
-.row0>*{grid-area:1 / 1}
+.row0{display:flex;align-items:center;gap:8px;margin-bottom:4px;min-width:0}
+.r0c{display:grid;align-items:center;flex:1 1 auto;min-width:0}
+.r0c>*{grid-area:1 / 1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row0 .short{font-size:1rem;font-weight:700;line-height:1.25;color:var(--on-surface);visibility:hidden}
 .bar.collapsed .row0 .short{visibility:visible}
 .bar.collapsed .row0 .meta{visibility:hidden}
+/* home town: always one tap away in the sticky bar; ~32px to the eye, 44px hit area */
+.homebtn{position:relative;flex:0 1 auto;max-width:60%;display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px 0 10px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container-high);color:var(--on-surface);font-size:.875rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.homebtn::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+.homebtn .hn{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.homebtn svg{width:16px;height:16px;flex-shrink:0}
+.homebtn .pin{color:var(--primary)}
+:root[data-theme="dark"] .homebtn .pin{color:var(--link)}
+.homebtn.unset{border-color:var(--primary);background:var(--primary-container);color:var(--on-primary-container)}
+:root[data-theme="dark"] .homebtn.unset{color:#fff}
 .row1{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 /* the field keeps room for its placeholder; when it cannot, Date / Nearest wraps under it */
 .sw{position:relative;flex:1 1 calc(52px + 3.5em);min-width:0}
@@ -168,17 +181,31 @@ a{color:inherit}
 .achip svg{width:16px;height:16px;flex-shrink:0}
 .aclear{position:relative;min-height:32px;padding:0 8px;border:0;background:none;color:var(--link);font-size:.875rem;font-weight:600;text-decoration:underline;cursor:pointer}
 
+/* first run: what this is, and the one setting that matters (home town). Dismissible; gone once a town is set. */
+.hello{position:relative;margin-top:12px;padding:12px 16px;border-radius:var(--r-md);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container)}
+.hello[hidden]{display:none}
+:root[data-theme="dark"] .hello{color:var(--on-surface)}
+.hello h2{font-size:1rem;font-weight:700;line-height:1.3;padding-right:36px}
+.hello p{margin-top:2px;font-size:.875rem;line-height:1.4;padding-right:8px}
+.hello .eacts{margin-top:10px}
+.hello .eact{padding:0 14px}
+@media (max-width:359px){.hello{padding:12px}.hello .eact{padding:0 12px}.hello .eact svg{display:none}}
+.hello .eact.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.hello .eact svg{width:18px;height:18px;margin-right:6px;vertical-align:-3px}
+.hello .hx{position:absolute;top:0;right:0;width:44px;height:44px;border:0;border-radius:var(--r-pill);background:none;color:inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.hello .hx svg{width:18px;height:18px}
+.geonote .eact{display:inline-flex;align-items:center;margin-top:8px;min-height:40px}
 /* results: flat cards, no shadows */
 .side{display:none}
 /* the count line keeps one height (two lines reserved), so the list never jumps as the count changes */
-.count{font-size:.875rem;line-height:1.5;height:3em;color:var(--on-surface-variant);margin:8px 2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.count{font-size:.875rem;line-height:1.5;height:1.5em;color:var(--on-surface-variant);margin:8px 2px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .geonote{font-size:.875rem;color:var(--on-surface);background:var(--primary-container);border:1px solid var(--primary);border-radius:var(--r-md);padding:8px 12px;margin-top:12px}
 .geonote[hidden]{display:none}
 .ghead{position:sticky;top:var(--bar-h);z-index:10;background:var(--surface);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:12px 2px 8px;font-size:.8125rem;font-weight:600;color:var(--accent-ink);text-transform:uppercase;letter-spacing:.06em}
 .ghead .n{color:var(--on-surface-variant);font-weight:600;letter-spacing:0}
 .ghead .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600;color:var(--on-surface-variant);font-size:.8125rem}
 .list{background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);overflow:hidden}
-/* every matching event is in the DOM; day-group cards off screen skip layout and paint until needed */
+/* every matching event is in the DOM (rendered in chunks) */
 /* a row is one button that opens the event sheet; spans styled as blocks (a button holds phrasing content only) */
 .ev{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;width:100%;min-height:56px;padding:12px 16px;border:0;border-top:1px solid var(--outline-variant);border-radius:0;background:none;text-align:left;cursor:pointer;min-width:0}
 .ev:first-child{border-top:0}
@@ -187,7 +214,9 @@ a{color:inherit}
 /* the body keeps room for the title; at large text the slot drops below it rather than squeeze it */
 .ev .body{display:block;flex:1 1 min(8em, calc(100% - 52px));min-width:0}
 .ev .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:1rem;font-weight:600;line-height:1.25;color:var(--on-surface);overflow-wrap:anywhere}
-.ev .meta2{display:block;margin-top:2px;font-size:.875rem;line-height:1.3;color:var(--on-surface-variant);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* meta line: wraps between its pieces (town, miles, category), never inside one; two lines at most */
+.ev .meta2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:.875rem;line-height:1.3;color:var(--on-surface-variant);overflow-wrap:anywhere}
+.ev .meta2 .mp{white-space:nowrap}
 /* trailing slot: time on top, the run or extra-dates note below; takes no width when empty */
 .slot{flex:0 0 auto;margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;text-align:right;white-space:nowrap;line-height:1.3}
 .slot .s1{font-size:.875rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--on-surface)}
@@ -202,7 +231,8 @@ a{color:inherit}
 .ongoing{margin-top:12px}
 .ongoing summary,.mbnote summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 16px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md);font-size:.9375rem;font-weight:600}
 .ongoing summary::-webkit-details-marker,.mbnote summary::-webkit-details-marker{display:none}
-.ongoing summary .n{color:var(--on-surface-variant);font-weight:500}
+.ongoing summary .n{color:var(--on-surface-variant);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ongoing summary .lbl{white-space:nowrap}
 .ongoing summary .chev,.mbnote summary .chev{margin-left:auto;display:inline-flex;transition:transform var(--dur-short4) var(--ease-standard)}
 .ongoing summary .chev svg,.mbnote summary .chev svg{width:18px;height:18px}
 .ongoing[open] summary,.mbnote[open] summary{border-radius:var(--r-md) var(--r-md) 0 0;border-bottom-color:var(--outline-variant)}
@@ -303,7 +333,7 @@ html.sheet-open{overflow:hidden}
 .sh-desc{margin-top:12px;font-size:.9375rem;color:var(--on-surface-muted);overflow-wrap:anywhere}
 .sh-tags{margin-top:12px}
 .sh-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
+.sh-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;text-align:left;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
 .sh-btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
 .sh-btn svg{width:18px;height:18px;margin-right:8px;flex-shrink:0}
 .sh-btn[aria-pressed="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
@@ -315,6 +345,28 @@ html.sheet-open{overflow:hidden}
 .sh-link{display:block;margin-top:12px;font-size:.875rem;color:var(--on-surface-variant)}
 .sh-link[hidden]{display:none}
 .sh-link input{display:block;width:100%;min-height:44px;margin-top:4px;padding:0 12px;border:1px solid var(--outline);border-radius:var(--r-sm);background:var(--surface-container-high);font-size:1rem}
+/* event sheet: source and "more in town" as quiet rows; calendar choices fold under one button */
+.sh-when{display:inline-block;margin-right:6px;padding:1px 8px;border-radius:var(--r-pill);background:var(--accent-container);color:var(--accent-ink);font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;vertical-align:2px}
+.sh-rows{list-style:none;margin-top:16px;border-top:1px solid var(--outline-variant)}
+.sh-rows li{border-bottom:1px solid var(--outline-variant)}
+.sh-row{display:flex;width:100%;align-items:center;gap:12px;min-height:48px;padding:8px 2px;border:0;background:none;color:var(--on-surface);font-size:.9375rem;text-align:left;text-decoration:none;cursor:pointer;overflow-wrap:anywhere}
+.sh-row .k{color:var(--on-surface-variant);flex-shrink:0}
+.sh-row .v{flex:1 1 auto;min-width:0;font-weight:600;color:var(--link)}
+.sh-row svg{width:16px;height:16px;flex-shrink:0;color:var(--on-surface-variant)}
+.sh-btn[aria-expanded="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
+:root[data-theme="dark"] .sh-btn[aria-expanded="true"]{color:#fff}
+.calx-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.calx-opts[hidden]{display:none}
+.sh-dist .sh-set{border:0;background:none;padding:0;color:var(--link);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
+/* home-town sheet */
+.hp-lead{font-size:.9375rem;color:var(--on-surface-muted)}
+.hp-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.hp-find{position:relative;margin-top:16px}
+.hp-find svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--on-surface-variant);pointer-events:none}
+.hp-find input{width:100%;min-height:44px;padding:0 12px 0 40px;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);font-size:max(16px,1rem)}
+.hp-none{margin-top:12px;font-size:.9375rem;color:var(--on-surface-variant)}
+.fs[hidden],.fl li[hidden]{display:none}
+.fo .sub{display:block;font-size:.8125rem;color:var(--on-surface-variant)}
 /* Filters sheet */
 .fs{border:0;margin-top:20px;min-width:0}
 .fs legend{padding:0;margin-bottom:8px;font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--on-surface-variant)}
@@ -340,7 +392,10 @@ html.sheet-open{overflow:hidden}
 .ab-list li+li{border-top:1px solid var(--outline-variant)}
 .ab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:8px 16px;font-size:.9375rem;color:var(--on-surface);text-decoration:none}
 .ab-row svg{width:16px;height:16px;flex-shrink:0;color:var(--on-surface-variant)}
+/* About rows that are buttons (Home town, Share this app): no browser button fill, same look as the link rows */
+button.ab-row{width:100%;border:0;background:none;font-family:inherit;text-align:left;cursor:pointer}
 .ab-switch{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:8px 16px;border:1px solid var(--outline);border-radius:var(--r-md);background:var(--surface-container-high);font-size:.9375rem;font-weight:600;text-align:left;cursor:pointer}
+.ab-switch+.ab-switch{margin-top:8px}
 .ab-switch .track{position:relative;flex-shrink:0;width:44px;height:24px;border-radius:var(--r-pill);background:var(--outline-variant);border:1px solid var(--outline)}
 .ab-switch .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:var(--r-pill);background:var(--on-surface-variant)}
 .ab-switch[aria-checked="true"] .track{background:var(--primary);border-color:var(--primary)}
@@ -393,12 +448,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-music-notes" viewBox="0 0 256 256"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></symbol><symbol id="i-guitar" viewBox="0 0 256 256"><path d="M249.66,46.34l-40-40a8,8,0,0,0-11.31,11.32L200.69,20,140.52,80.16C117.73,68.3,92.21,69.29,76.75,84.74a42.27,42.27,0,0,0-9.39,14.37A8.24,8.24,0,0,1,59.81,104c-14.59.49-27.26,5.72-36.65,15.11C11.08,131.22,6,148.6,8.74,168.07,11.4,186.7,21.07,205.15,36,220s33.34,24.56,52,27.22A71.13,71.13,0,0,0,98.1,248c15.32,0,28.83-5.23,38.76-15.16,9.39-9.39,14.62-22.06,15.11-36.65a8.24,8.24,0,0,1,4.92-7.55,42.12,42.12,0,0,0,14.37-9.39c15.45-15.46,16.44-41,4.58-63.77L236,55.31l2.34,2.34a8,8,0,1,0,11.32-11.31ZM160,167.93a26.12,26.12,0,0,1-8.95,5.83,24.24,24.24,0,0,0-15,21.89c-.36,10.46-4,19.41-10.43,25.88-8.44,8.43-21,11.95-35.36,9.89C75,229.25,59.73,221.19,47.27,208.73S26.75,181,24.58,165.81c-2-14.37,1.46-26.92,9.89-35.36C40.94,124,49.89,120.37,60.35,120h0a24.22,24.22,0,0,0,21.89-15,26.12,26.12,0,0,1,5.83-9c5.49-5.49,13-8.13,21.38-8.13a49.38,49.38,0,0,1,19.13,4.19L108.5,112.19a32,32,0,1,0,35.31,35.31l20.08-20.08C170.41,142.71,169.47,158.41,160,167.93Zm-10.4-61.48a72.9,72.9,0,0,1,5.93,6.75l-15.42,15.42a32.22,32.22,0,0,0-12.68-12.68l15.42-15.43A73,73,0,0,1,149.55,106.45ZM112,128a16,16,0,0,1,16,16h0a16,16,0,1,1-16-16Zm48.85-32.85a86.94,86.94,0,0,0-6.68-6L176,67.31,188.69,80l-21.83,21.82A86.94,86.94,0,0,0,160.86,95.14ZM200,68.68,187.32,56,212,31.31,224.69,44ZM93.66,194.33a8,8,0,0,1-11.31,11.32l-32-32a8,8,0,0,1,11.32-11.31Z"/></symbol><symbol id="i-mask-happy" viewBox="0 0 256 256"><path d="M217,34.8a15.94,15.94,0,0,0-14.82-1.71C188.15,38.55,159.82,47.71,128,47.71S67.84,38.55,53.79,33.09A16,16,0,0,0,32,48v55.77c0,35.84,9.65,69.65,27.18,95.18,18.16,26.46,42.6,41,68.82,41s50.66-14.57,68.82-41C214.35,173.44,224,139.63,224,103.79V48A16,16,0,0,0,217,34.8Zm-9,69c0,32.64-8.66,63.23-24.37,86.13C168.54,211.9,148.79,224,128,224s-40.54-12.1-55.63-34.08C56.66,167,48,136.43,48,103.79V48c15.11,5.87,45.58,15.71,80,15.71S192.9,53.87,208,48v55.81Zm-18,18.87A8,8,0,1,1,178,133.33c-2.68-3-8.85-5.33-14-5.33s-11.36,2.34-14,5.33A8,8,0,1,1,138,122.66c5.71-6.38,16.14-10.66,26-10.66S184.25,116.28,190,122.66ZM92,128c-5.19,0-11.36,2.34-14,5.33A8,8,0,1,1,66,122.66C71.75,116.28,82.18,112,92,112s20.25,4.28,26,10.66A8,8,0,1,1,106,133.33C103.36,130.34,97.19,128,92,128Zm76.45,45.19a52.9,52.9,0,0,1-80.9,0A8,8,0,1,1,99.72,162.8a36.89,36.89,0,0,0,56.56,0,8,8,0,0,1,12.17,10.39Z"/></symbol><symbol id="i-confetti" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"/></symbol><symbol id="i-identification-badge" viewBox="0 0 256 256"><path d="M75.19,198.4a8,8,0,0,0,11.21-1.6,52,52,0,0,1,83.2,0,8,8,0,1,0,12.8-9.6A67.88,67.88,0,0,0,155,165.51a40,40,0,1,0-53.94,0A67.88,67.88,0,0,0,73.6,187.2,8,8,0,0,0,75.19,198.4ZM128,112a24,24,0,1,1-24,24A24,24,0,0,1,128,112Zm72-88H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM88,64a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Z"/></symbol><symbol id="i-poker-chip" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,152a48,48,0,1,1,48-48A48.05,48.05,0,0,1,128,176Zm39.21-98.53a63.66,63.66,0,0,0-31.21-13V40.37a87.6,87.6,0,0,1,48.28,20ZM120,64.52a63.66,63.66,0,0,0-31.21,13L71.72,60.4a87.6,87.6,0,0,1,48.28-20ZM77.47,88.79a63.66,63.66,0,0,0-13,31.21H40.37a87.6,87.6,0,0,1,20-48.28ZM64.52,136a63.66,63.66,0,0,0,13,31.21L60.4,184.28a87.6,87.6,0,0,1-20-48.28Zm24.27,42.53A63.66,63.66,0,0,0,120,191.48v24.15a87.6,87.6,0,0,1-48.28-20ZM136,191.48a63.66,63.66,0,0,0,31.21-12.95l17.07,17.07a87.6,87.6,0,0,1-48.28,20Zm42.53-24.27A63.66,63.66,0,0,0,191.48,136h24.15a87.6,87.6,0,0,1-20,48.28ZM191.48,120a63.66,63.66,0,0,0-12.95-31.21L195.6,71.72a87.6,87.6,0,0,1,20,48.28Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></symbol><symbol id="i-chalkboard-teacher" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H53.39a8,8,0,0,0,7.23-4.57,48,48,0,0,1,86.76,0,8,8,0,0,0,7.23,4.57H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,144a24,24,0,1,1,24,24A24,24,0,0,1,80,144Zm136,56H159.43a64.39,64.39,0,0,0-28.83-26.16,40,40,0,1,0-53.2,0A64.39,64.39,0,0,0,48.57,200H40V56H216ZM56,96V80a8,8,0,0,1,8-8H192a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H176a8,8,0,0,1,0-16h8V88H72v8a8,8,0,0,1-16,0Z"/></symbol><symbol id="i-person-simple-hike" viewBox="0 0 256 256"><path d="M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm48,112v88a8,8,0,0,1-16,0V151.66c-25.75-2.25-34.35-15.52-42-27.36-2.85-4.39-5.56-8.57-9.13-12.19l-13.4,30.81,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.14-10.52L122.19,96.5a8,8,0,0,1,11-3.92,40.92,40.92,0,0,1,8,5.47c6.37,5.52,10.51,11.91,14.16,17.55,7.68,11.84,13.22,20.4,36.6,20.4A8,8,0,0,1,200,144ZM72,152a8,8,0,0,0,7.35-4.85l24-56a8,8,0,0,0-4.2-10.5l-28-12a8,8,0,0,0-10.5,4.2l-24,56a8,8,0,0,0,4.2,10.5l28,12A8,8,0,0,0,72,152ZM54.51,127.8,72.2,86.5l13.3,5.7L67.8,133.49Z"/></symbol><symbol id="i-fish-simple" viewBox="0 0 256 256"><path d="M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm42,79.08c-15.08,20.84-37.53,34.88-66.7,41.74-20.08,4.72-43.54,6-70.12,3.93q2.4,17.82,6.72,37.54a8,8,0,0,1-6.1,9.52,7.81,7.81,0,0,1-1.72.19,8,8,0,0,1-7.81-6.29q-4.89-22.36-7.41-42.62-20.22-2.51-42.58-7.41a8,8,0,0,1,3.43-15.63q19.7,4.32,37.5,6.73c-2.09-26.56-.78-50,3.93-70.06C66,83.55,80.05,61.1,100.88,46,115,35.76,140.15,23.64,179.27,24c21.19.21,40.83,4.33,43.81,6.08a8,8,0,0,1,2.83,2.83c1.75,3,5.87,22.59,6.08,43.78C232.21,98.31,228.57,129.44,210,155.08Zm-23.76,2.8A112.07,112.07,0,0,1,98.12,69.74C75.64,94,66.7,132.47,71.36,184.6,123.51,189.28,162,180.35,186.25,157.88ZM212.44,43.56a175.75,175.75,0,0,0-39.22-3.51c-24.34.64-44.71,6.49-60.76,17.39a96,96,0,0,0,86.09,86.1c10.91-16,16.76-36.42,17.4-60.76A175.82,175.82,0,0,0,212.44,43.56Z"/></symbol><symbol id="i-paw-print" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"/></symbol><symbol id="i-tree-palm" viewBox="0 0 256 256"><path d="M237.79,53.23a66.86,66.86,0,0,0-97.74,0,72.21,72.21,0,0,0-12.05,17,72.21,72.21,0,0,0-12-17,66.86,66.86,0,0,0-97.74,0,8,8,0,0,0,2.6,12.85L77,90.55a71.42,71.42,0,0,0-43.36,33.21,70.64,70.64,0,0,0-7.2,54.32A8,8,0,0,0,39,182.36l81-61.68V224a8,8,0,0,0,16,0V120.68l81,61.68a8,8,0,0,0,12.57-4.28,70.64,70.64,0,0,0-7.2-54.32A71.42,71.42,0,0,0,179,90.55l56.22-24.47a8,8,0,0,0,2.6-12.85ZM67.08,48a51.13,51.13,0,0,1,37.28,16.26,56.53,56.53,0,0,1,14.26,26.93L39,56.53A50.5,50.5,0,0,1,67.08,48ZM40,161.5a54.82,54.82,0,0,1,7.47-29.7,55.55,55.55,0,0,1,34-25.89A56.52,56.52,0,0,1,96.1,104a55.82,55.82,0,0,1,16.23,2.41ZM208.5,131.8A54.82,54.82,0,0,1,216,161.5l-72.3-55.1a56.3,56.3,0,0,1,64.83,25.4ZM137.38,91.19a56.53,56.53,0,0,1,14.26-26.93A51.13,51.13,0,0,1,188.92,48,50.5,50.5,0,0,1,217,56.53Z"/></symbol><symbol id="i-balloon" viewBox="0 0 256 256"><path d="M128,16a88.1,88.1,0,0,0-88,88c0,23.43,9.4,49.42,25.13,69.5,12.08,15.41,26.5,26,41.91,31.09L96.65,228.85A8,8,0,0,0,104,240h48a8,8,0,0,0,7.35-11.15L149,204.59c15.4-5.07,29.83-15.68,41.91-31.09C206.6,153.42,216,127.43,216,104A88.1,88.1,0,0,0,128,16Zm11.87,208H116.13l6.94-16.19c1.64.12,3.28.19,4.93.19s3.29-.07,4.93-.19Zm38.4-60.37C163.94,181.93,146.09,192,128,192s-35.94-10.07-50.27-28.37C64.12,146.27,56,124,56,104a72,72,0,0,1,144,0C200,124,191.88,146.27,178.27,163.63Zm-1-59.74A8.52,8.52,0,0,1,176,104a8,8,0,0,1-7.88-6.68,41.29,41.29,0,0,0-33.43-33.43,8,8,0,1,1,2.64-15.78,57.5,57.5,0,0,1,46.57,46.57A8,8,0,0,1,177.32,103.89Z"/></symbol><symbol id="i-game-controller" viewBox="0 0 256 256"><path d="M176,112H152a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16ZM104,96H96V88a8,8,0,0,0-16,0v8H72a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM241.48,200.65a36,36,0,0,1-54.94,4.81c-.12-.12-.24-.24-.35-.37L146.48,160h-37L69.81,205.09l-.35.37A36.08,36.08,0,0,1,44,216,36,36,0,0,1,8.56,173.75a.68.68,0,0,1,0-.14L24.93,89.52A59.88,59.88,0,0,1,83.89,40H172a60.08,60.08,0,0,1,59,49.25c0,.06,0,.12,0,.18l16.37,84.17a.68.68,0,0,1,0,.14A35.74,35.74,0,0,1,241.48,200.65ZM172,144a44,44,0,0,0,0-88H83.89A43.9,43.9,0,0,0,40.68,92.37l0,.13L24.3,176.59A20,20,0,0,0,58,194.3l41.92-47.59a8,8,0,0,1,6-2.71Zm59.7,32.59-8.74-45A60,60,0,0,1,172,160h-4.2L198,194.31a20.09,20.09,0,0,0,17.46,5.39,20,20,0,0,0,16.23-23.11Z"/></symbol><symbol id="i-swimming-pool" viewBox="0 0 256 256"><path d="M88,149.39a8,8,0,0,0,8-8V128h64v15.29a8,8,0,0,0,16,0V32a8,8,0,0,0-16,0V48H96V32a8,8,0,0,0-16,0V141.39A8,8,0,0,0,88,149.39ZM96,112V96h64v16Zm64-48V80H96V64ZM24,168a8,8,0,0,1,8-8c14.42,0,22.19,5.18,28.44,9.34C66,173.06,70.42,176,80,176s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34a8,8,0,0,1,0,16c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,178.94,137.57,176,128,176s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,178.94,41.58,176,32,176A8,8,0,0,1,24,168Zm208,40a8,8,0,0,1-8,8c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,218.94,137.57,216,128,216s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,218.94,41.58,216,32,216a8,8,0,0,1,0-16c14.42,0,22.19,5.18,28.44,9.34C66,213.06,70.42,216,80,216s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34A8,8,0,0,1,232,208Z"/></symbol><symbol id="i-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/></symbol><symbol id="i-calendar-blank" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></symbol><symbol id="i-repeat" viewBox="0 0 256 256"><path d="M24,128A72.08,72.08,0,0,1,96,56H204.69L194.34,45.66a8,8,0,0,1,11.32-11.32l24,24a8,8,0,0,1,0,11.32l-24,24a8,8,0,0,1-11.32-11.32L204.69,72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H51.31l10.35-10.34a8,8,0,0,0-11.32-11.32l-24,24a8,8,0,0,0,0,11.32l24,24a8,8,0,0,0,11.32-11.32L51.31,200H160a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></symbol><symbol id="i-bookmark-simple" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 256 256"><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol><symbol id="i-info" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-arrow-square-out" viewBox="0 0 256 256"><path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/></symbol><symbol id="i-download-simple" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></symbol><symbol id="i-magnifying-glass" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol><symbol id="i-share-network" viewBox="0 0 256 256"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></symbol><symbol id="i-navigation-arrow" viewBox="0 0 256 256"><path d="M237.33,106.21,61.41,41l-.16-.05A16,16,0,0,0,40.9,61.25a1,1,0,0,0,.05.16l65.26,175.92A15.77,15.77,0,0,0,121.28,248h.3a15.77,15.77,0,0,0,15-11.29l.06-.2,21.84-78,78-21.84.2-.06a16,16,0,0,0,.62-30.38ZM149.84,144.3a8,8,0,0,0-5.54,5.54L121.3,232l-.06-.17L56,56l175.82,65.22.16.06Z"/></symbol><symbol id="i-calendar-plus" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H136v16a8,8,0,0,1-16,0V160H104a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,160,152Z"/></symbol><symbol id="i-bookmark-simple-fill" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Z"/></symbol></svg>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-music-notes" viewBox="0 0 256 256"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></symbol><symbol id="i-guitar" viewBox="0 0 256 256"><path d="M249.66,46.34l-40-40a8,8,0,0,0-11.31,11.32L200.69,20,140.52,80.16C117.73,68.3,92.21,69.29,76.75,84.74a42.27,42.27,0,0,0-9.39,14.37A8.24,8.24,0,0,1,59.81,104c-14.59.49-27.26,5.72-36.65,15.11C11.08,131.22,6,148.6,8.74,168.07,11.4,186.7,21.07,205.15,36,220s33.34,24.56,52,27.22A71.13,71.13,0,0,0,98.1,248c15.32,0,28.83-5.23,38.76-15.16,9.39-9.39,14.62-22.06,15.11-36.65a8.24,8.24,0,0,1,4.92-7.55,42.12,42.12,0,0,0,14.37-9.39c15.45-15.46,16.44-41,4.58-63.77L236,55.31l2.34,2.34a8,8,0,1,0,11.32-11.31ZM160,167.93a26.12,26.12,0,0,1-8.95,5.83,24.24,24.24,0,0,0-15,21.89c-.36,10.46-4,19.41-10.43,25.88-8.44,8.43-21,11.95-35.36,9.89C75,229.25,59.73,221.19,47.27,208.73S26.75,181,24.58,165.81c-2-14.37,1.46-26.92,9.89-35.36C40.94,124,49.89,120.37,60.35,120h0a24.22,24.22,0,0,0,21.89-15,26.12,26.12,0,0,1,5.83-9c5.49-5.49,13-8.13,21.38-8.13a49.38,49.38,0,0,1,19.13,4.19L108.5,112.19a32,32,0,1,0,35.31,35.31l20.08-20.08C170.41,142.71,169.47,158.41,160,167.93Zm-10.4-61.48a72.9,72.9,0,0,1,5.93,6.75l-15.42,15.42a32.22,32.22,0,0,0-12.68-12.68l15.42-15.43A73,73,0,0,1,149.55,106.45ZM112,128a16,16,0,0,1,16,16h0a16,16,0,1,1-16-16Zm48.85-32.85a86.94,86.94,0,0,0-6.68-6L176,67.31,188.69,80l-21.83,21.82A86.94,86.94,0,0,0,160.86,95.14ZM200,68.68,187.32,56,212,31.31,224.69,44ZM93.66,194.33a8,8,0,0,1-11.31,11.32l-32-32a8,8,0,0,1,11.32-11.31Z"/></symbol><symbol id="i-mask-happy" viewBox="0 0 256 256"><path d="M217,34.8a15.94,15.94,0,0,0-14.82-1.71C188.15,38.55,159.82,47.71,128,47.71S67.84,38.55,53.79,33.09A16,16,0,0,0,32,48v55.77c0,35.84,9.65,69.65,27.18,95.18,18.16,26.46,42.6,41,68.82,41s50.66-14.57,68.82-41C214.35,173.44,224,139.63,224,103.79V48A16,16,0,0,0,217,34.8Zm-9,69c0,32.64-8.66,63.23-24.37,86.13C168.54,211.9,148.79,224,128,224s-40.54-12.1-55.63-34.08C56.66,167,48,136.43,48,103.79V48c15.11,5.87,45.58,15.71,80,15.71S192.9,53.87,208,48v55.81Zm-18,18.87A8,8,0,1,1,178,133.33c-2.68-3-8.85-5.33-14-5.33s-11.36,2.34-14,5.33A8,8,0,1,1,138,122.66c5.71-6.38,16.14-10.66,26-10.66S184.25,116.28,190,122.66ZM92,128c-5.19,0-11.36,2.34-14,5.33A8,8,0,1,1,66,122.66C71.75,116.28,82.18,112,92,112s20.25,4.28,26,10.66A8,8,0,1,1,106,133.33C103.36,130.34,97.19,128,92,128Zm76.45,45.19a52.9,52.9,0,0,1-80.9,0A8,8,0,1,1,99.72,162.8a36.89,36.89,0,0,0,56.56,0,8,8,0,0,1,12.17,10.39Z"/></symbol><symbol id="i-confetti" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"/></symbol><symbol id="i-identification-badge" viewBox="0 0 256 256"><path d="M75.19,198.4a8,8,0,0,0,11.21-1.6,52,52,0,0,1,83.2,0,8,8,0,1,0,12.8-9.6A67.88,67.88,0,0,0,155,165.51a40,40,0,1,0-53.94,0A67.88,67.88,0,0,0,73.6,187.2,8,8,0,0,0,75.19,198.4ZM128,112a24,24,0,1,1-24,24A24,24,0,0,1,128,112Zm72-88H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM88,64a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Z"/></symbol><symbol id="i-poker-chip" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,152a48,48,0,1,1,48-48A48.05,48.05,0,0,1,128,176Zm39.21-98.53a63.66,63.66,0,0,0-31.21-13V40.37a87.6,87.6,0,0,1,48.28,20ZM120,64.52a63.66,63.66,0,0,0-31.21,13L71.72,60.4a87.6,87.6,0,0,1,48.28-20ZM77.47,88.79a63.66,63.66,0,0,0-13,31.21H40.37a87.6,87.6,0,0,1,20-48.28ZM64.52,136a63.66,63.66,0,0,0,13,31.21L60.4,184.28a87.6,87.6,0,0,1-20-48.28Zm24.27,42.53A63.66,63.66,0,0,0,120,191.48v24.15a87.6,87.6,0,0,1-48.28-20ZM136,191.48a63.66,63.66,0,0,0,31.21-12.95l17.07,17.07a87.6,87.6,0,0,1-48.28,20Zm42.53-24.27A63.66,63.66,0,0,0,191.48,136h24.15a87.6,87.6,0,0,1-20,48.28ZM191.48,120a63.66,63.66,0,0,0-12.95-31.21L195.6,71.72a87.6,87.6,0,0,1,20,48.28Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></symbol><symbol id="i-chalkboard-teacher" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H53.39a8,8,0,0,0,7.23-4.57,48,48,0,0,1,86.76,0,8,8,0,0,0,7.23,4.57H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,144a24,24,0,1,1,24,24A24,24,0,0,1,80,144Zm136,56H159.43a64.39,64.39,0,0,0-28.83-26.16,40,40,0,1,0-53.2,0A64.39,64.39,0,0,0,48.57,200H40V56H216ZM56,96V80a8,8,0,0,1,8-8H192a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H176a8,8,0,0,1,0-16h8V88H72v8a8,8,0,0,1-16,0Z"/></symbol><symbol id="i-person-simple-hike" viewBox="0 0 256 256"><path d="M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm48,112v88a8,8,0,0,1-16,0V151.66c-25.75-2.25-34.35-15.52-42-27.36-2.85-4.39-5.56-8.57-9.13-12.19l-13.4,30.81,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.14-10.52L122.19,96.5a8,8,0,0,1,11-3.92,40.92,40.92,0,0,1,8,5.47c6.37,5.52,10.51,11.91,14.16,17.55,7.68,11.84,13.22,20.4,36.6,20.4A8,8,0,0,1,200,144ZM72,152a8,8,0,0,0,7.35-4.85l24-56a8,8,0,0,0-4.2-10.5l-28-12a8,8,0,0,0-10.5,4.2l-24,56a8,8,0,0,0,4.2,10.5l28,12A8,8,0,0,0,72,152ZM54.51,127.8,72.2,86.5l13.3,5.7L67.8,133.49Z"/></symbol><symbol id="i-fish-simple" viewBox="0 0 256 256"><path d="M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm42,79.08c-15.08,20.84-37.53,34.88-66.7,41.74-20.08,4.72-43.54,6-70.12,3.93q2.4,17.82,6.72,37.54a8,8,0,0,1-6.1,9.52,7.81,7.81,0,0,1-1.72.19,8,8,0,0,1-7.81-6.29q-4.89-22.36-7.41-42.62-20.22-2.51-42.58-7.41a8,8,0,0,1,3.43-15.63q19.7,4.32,37.5,6.73c-2.09-26.56-.78-50,3.93-70.06C66,83.55,80.05,61.1,100.88,46,115,35.76,140.15,23.64,179.27,24c21.19.21,40.83,4.33,43.81,6.08a8,8,0,0,1,2.83,2.83c1.75,3,5.87,22.59,6.08,43.78C232.21,98.31,228.57,129.44,210,155.08Zm-23.76,2.8A112.07,112.07,0,0,1,98.12,69.74C75.64,94,66.7,132.47,71.36,184.6,123.51,189.28,162,180.35,186.25,157.88ZM212.44,43.56a175.75,175.75,0,0,0-39.22-3.51c-24.34.64-44.71,6.49-60.76,17.39a96,96,0,0,0,86.09,86.1c10.91-16,16.76-36.42,17.4-60.76A175.82,175.82,0,0,0,212.44,43.56Z"/></symbol><symbol id="i-paw-print" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"/></symbol><symbol id="i-tree-palm" viewBox="0 0 256 256"><path d="M237.79,53.23a66.86,66.86,0,0,0-97.74,0,72.21,72.21,0,0,0-12.05,17,72.21,72.21,0,0,0-12-17,66.86,66.86,0,0,0-97.74,0,8,8,0,0,0,2.6,12.85L77,90.55a71.42,71.42,0,0,0-43.36,33.21,70.64,70.64,0,0,0-7.2,54.32A8,8,0,0,0,39,182.36l81-61.68V224a8,8,0,0,0,16,0V120.68l81,61.68a8,8,0,0,0,12.57-4.28,70.64,70.64,0,0,0-7.2-54.32A71.42,71.42,0,0,0,179,90.55l56.22-24.47a8,8,0,0,0,2.6-12.85ZM67.08,48a51.13,51.13,0,0,1,37.28,16.26,56.53,56.53,0,0,1,14.26,26.93L39,56.53A50.5,50.5,0,0,1,67.08,48ZM40,161.5a54.82,54.82,0,0,1,7.47-29.7,55.55,55.55,0,0,1,34-25.89A56.52,56.52,0,0,1,96.1,104a55.82,55.82,0,0,1,16.23,2.41ZM208.5,131.8A54.82,54.82,0,0,1,216,161.5l-72.3-55.1a56.3,56.3,0,0,1,64.83,25.4ZM137.38,91.19a56.53,56.53,0,0,1,14.26-26.93A51.13,51.13,0,0,1,188.92,48,50.5,50.5,0,0,1,217,56.53Z"/></symbol><symbol id="i-balloon" viewBox="0 0 256 256"><path d="M128,16a88.1,88.1,0,0,0-88,88c0,23.43,9.4,49.42,25.13,69.5,12.08,15.41,26.5,26,41.91,31.09L96.65,228.85A8,8,0,0,0,104,240h48a8,8,0,0,0,7.35-11.15L149,204.59c15.4-5.07,29.83-15.68,41.91-31.09C206.6,153.42,216,127.43,216,104A88.1,88.1,0,0,0,128,16Zm11.87,208H116.13l6.94-16.19c1.64.12,3.28.19,4.93.19s3.29-.07,4.93-.19Zm38.4-60.37C163.94,181.93,146.09,192,128,192s-35.94-10.07-50.27-28.37C64.12,146.27,56,124,56,104a72,72,0,0,1,144,0C200,124,191.88,146.27,178.27,163.63Zm-1-59.74A8.52,8.52,0,0,1,176,104a8,8,0,0,1-7.88-6.68,41.29,41.29,0,0,0-33.43-33.43,8,8,0,1,1,2.64-15.78,57.5,57.5,0,0,1,46.57,46.57A8,8,0,0,1,177.32,103.89Z"/></symbol><symbol id="i-game-controller" viewBox="0 0 256 256"><path d="M176,112H152a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16ZM104,96H96V88a8,8,0,0,0-16,0v8H72a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM241.48,200.65a36,36,0,0,1-54.94,4.81c-.12-.12-.24-.24-.35-.37L146.48,160h-37L69.81,205.09l-.35.37A36.08,36.08,0,0,1,44,216,36,36,0,0,1,8.56,173.75a.68.68,0,0,1,0-.14L24.93,89.52A59.88,59.88,0,0,1,83.89,40H172a60.08,60.08,0,0,1,59,49.25c0,.06,0,.12,0,.18l16.37,84.17a.68.68,0,0,1,0,.14A35.74,35.74,0,0,1,241.48,200.65ZM172,144a44,44,0,0,0,0-88H83.89A43.9,43.9,0,0,0,40.68,92.37l0,.13L24.3,176.59A20,20,0,0,0,58,194.3l41.92-47.59a8,8,0,0,1,6-2.71Zm59.7,32.59-8.74-45A60,60,0,0,1,172,160h-4.2L198,194.31a20.09,20.09,0,0,0,17.46,5.39,20,20,0,0,0,16.23-23.11Z"/></symbol><symbol id="i-swimming-pool" viewBox="0 0 256 256"><path d="M88,149.39a8,8,0,0,0,8-8V128h64v15.29a8,8,0,0,0,16,0V32a8,8,0,0,0-16,0V48H96V32a8,8,0,0,0-16,0V141.39A8,8,0,0,0,88,149.39ZM96,112V96h64v16Zm64-48V80H96V64ZM24,168a8,8,0,0,1,8-8c14.42,0,22.19,5.18,28.44,9.34C66,173.06,70.42,176,80,176s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34a8,8,0,0,1,0,16c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,178.94,137.57,176,128,176s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,178.94,41.58,176,32,176A8,8,0,0,1,24,168Zm208,40a8,8,0,0,1-8,8c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,218.94,137.57,216,128,216s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,218.94,41.58,216,32,216a8,8,0,0,1,0-16c14.42,0,22.19,5.18,28.44,9.34C66,213.06,70.42,216,80,216s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34A8,8,0,0,1,232,208Z"/></symbol><symbol id="i-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/></symbol><symbol id="i-calendar-blank" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></symbol><symbol id="i-repeat" viewBox="0 0 256 256"><path d="M24,128A72.08,72.08,0,0,1,96,56H204.69L194.34,45.66a8,8,0,0,1,11.32-11.32l24,24a8,8,0,0,1,0,11.32l-24,24a8,8,0,0,1-11.32-11.32L204.69,72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H51.31l10.35-10.34a8,8,0,0,0-11.32-11.32l-24,24a8,8,0,0,0,0,11.32l24,24a8,8,0,0,0,11.32-11.32L51.31,200H160a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></symbol><symbol id="i-bookmark-simple" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 256 256"><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol><symbol id="i-info" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-arrow-square-out" viewBox="0 0 256 256"><path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/></symbol><symbol id="i-download-simple" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></symbol><symbol id="i-magnifying-glass" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol><symbol id="i-share-network" viewBox="0 0 256 256"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></symbol><symbol id="i-navigation-arrow" viewBox="0 0 256 256"><path d="M237.33,106.21,61.41,41l-.16-.05A16,16,0,0,0,40.9,61.25a1,1,0,0,0,.05.16l65.26,175.92A15.77,15.77,0,0,0,121.28,248h.3a15.77,15.77,0,0,0,15-11.29l.06-.2,21.84-78,78-21.84.2-.06a16,16,0,0,0,.62-30.38ZM149.84,144.3a8,8,0,0,0-5.54,5.54L121.3,232l-.06-.17L56,56l175.82,65.22.16.06Z"/></symbol><symbol id="i-calendar-plus" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H136v16a8,8,0,0,1-16,0V160H104a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,160,152Z"/></symbol><symbol id="i-bookmark-simple-fill" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Z"/></symbol><symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol><symbol id="i-crosshair-simple" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V184a8,8,0,0,0-16,0v31.63A88.13,88.13,0,0,1,40.37,136H72a8,8,0,0,0,0-16H40.37A88.13,88.13,0,0,1,120,40.37V72a8,8,0,0,0,16,0V40.37A88.13,88.13,0,0,1,215.63,120H184a8,8,0,0,0,0,16h31.63A88.13,88.13,0,0,1,136,215.63Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol></svg>
 <div class="shell">
   <header class="top">
     <div class="ttl">
-      <h1>Northwoods Area Events</h1>
-      <div class="subtitle">Ashland &middot; Bayfield &middot; Chequamegon Bay &middot; Hayward &middot; Duluth &middot; the Dells &amp; beyond</div>
+      <h1><svg class="mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect x="2" y="2" width="96" height="96" rx="21" fill="#2E5082"/><rect x="20" y="26" width="60" height="56" rx="7" fill="#fff"/><path d="M27 26h46a7 7 0 0 1 7 7v8H20v-8a7 7 0 0 1 7-7z" fill="#A07020"/><rect x="33" y="18" width="6" height="14" rx="3" fill="#fff"/><rect x="61" y="18" width="6" height="14" rx="3" fill="#fff"/><polygon points="50,46 40,60 45,60 36,73 64,73 55,60 60,60" fill="#2F6B3A"/><rect x="47.5" y="73" width="5" height="5" fill="#2F6B3A"/></svg><span class="tt">Northwoods Area Events</span></h1>
+      <div class="subtitle">Northern Wisconsin &middot; the western U.P. &middot; Duluth &amp; the Arrowhead</div>
       <p class="meta" id="metaTop"></p>
     </div>
     <div class="topbtns">
@@ -408,7 +463,7 @@ SOFTWARE.
   </header>
   <div class="layout">
     <div class="bar" role="region" aria-label="Search and sort">
-      <div class="row0"><p class="meta" id="meta"></p><span class="short" aria-hidden="true">NW Events</span></div>
+      <div class="row0"><div class="r0c"><p class="meta" id="meta"></p><span class="short" aria-hidden="true">NW Events</span></div><button class="homebtn" id="homeBtn" type="button" aria-haspopup="dialog"></button></div>
       <div class="row1">
         <div class="sw" role="search"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-magnifying-glass"/></svg><input class="search" id="search" type="search" placeholder="Search" aria-label="Search events" autocomplete="off"></div>
         <button class="fbtn" id="filtersBtn" type="button" aria-haspopup="dialog" aria-label="Filters"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-sliders-horizontal"/></svg><span class="badge" id="filtersBadge" aria-hidden="true" hidden></span></button>
@@ -418,6 +473,7 @@ SOFTWARE.
     </div>
     <div class="chips" id="chips" role="region" aria-label="Filters"></div>
     <main>
+      <section class="hello" id="hello" aria-labelledby="helloT" hidden></section>
       <div class="geonote" id="geoNote" role="status" aria-live="polite" hidden></div>
       <div class="applied" id="applied" hidden></div>
       <div class="count" id="count" role="status" aria-live="polite"></div>
@@ -1377,6 +1433,100 @@ const RECURRING = [
 ];
 
 // ===== render - not touched by the weekly scan =====
+// ===== home towns and drive miles - DRIVE is rebuilt by tools/drive-table.py; not touched by the weekly scan =====
+// HOMES: the towns a reader can pick as home, grouped for the picker. [key, lat, lon]: Census 2024 Gazetteer internal point,
+// or the town's TOWNS row when it has one. Hand-kept: add a town here, then run tools/drive-table.py.
+const HOMES = [["Chequamegon Bay & Bayfield Peninsula", [["Ashland, WI", 46.58176, -90.8719],
+  ["Washburn, WI", 46.67665, -90.90129],
+  ["Bayfield, WI", 46.81614, -90.82484],
+  ["Red Cliff, WI", 46.91006, -90.78744],
+  ["La Pointe, WI", 46.7791, -90.78657],
+  ["Odanah, WI", 46.59408, -90.67795],
+  ["Mason, WI", 46.43632, -91.05984],
+  ["Iron River, WI", 46.57933, -91.39985],
+  ["Cornucopia, WI", 46.85668, -91.10814],
+  ["Port Wing, WI", 46.77559, -91.38061],
+  ["Herbster, WI", 46.8422, -91.2419],
+  ["Cable, WI", 46.20109, -91.29367],
+  ["Drummond, WI", 46.3437, -91.24989],
+  ["Mellen, WI", 46.32398, -90.66045],
+  ["Glidden, WI", 46.13467, -90.57213],
+  ["Butternut, WI", 46.0133, -90.49743]]],
+  ["Superior & Douglas County", [["Superior, WI", 46.69212, -92.08036],
+  ["Solon Springs, WI", 46.34783, -91.82939],
+  ["Lake Nebagamon, WI", 46.49775, -91.70435],
+  ["Poplar, WI", 46.58185, -91.78232],
+  ["Maple, WI", 46.60795, -91.7046]]],
+  ["Hayward, Spooner & the northwest", [["Hayward, WI", 46.00659, -91.48968],
+  ["Stone Lake, WI", 45.83893, -91.55209],
+  ["Winter, WI", 45.82214, -91.01304],
+  ["Spooner, WI", 45.82592, -91.88613],
+  ["Shell Lake, WI", 45.72637, -91.91003],
+  ["Minong, WI", 46.09898, -91.82595],
+  ["Siren, WI", 45.77783, -92.38315],
+  ["Webster, WI", 45.87978, -92.36283],
+  ["Grantsburg, WI", 45.78379, -92.67733],
+  ["Danbury, WI", 46.00955, -92.37632],
+  ["Ladysmith, WI", 45.46097, -91.09757]]],
+  ["Iron County & the Gogebic Range", [["Hurley, WI", 46.44429, -90.21127],
+  ["Mercer, WI", 46.16133, -90.04184],
+  ["Montreal, WI", 46.43318, -90.24193],
+  ["Ironwood, MI", 46.45221, -90.15043],
+  ["Bessemer, MI", 46.47758, -90.04984],
+  ["Wakefield, MI", 46.4769, -89.93343],
+  ["Watersmeet, MI", 46.29528, -89.20613],
+  ["Marenisco, MI", 46.37372, -89.71202]]],
+  ["Lakeland: Vilas, Oneida & Price", [["Minocqua, WI", 45.87921, -89.70362],
+  ["Woodruff, WI", 45.89444, -89.69115],
+  ["Lac du Flambeau, WI", 45.96228, -89.89687],
+  ["Manitowish Waters, WI", 46.11971, -89.86771],
+  ["Boulder Junction, WI", 46.1148, -89.65444],
+  ["Land O'Lakes, WI", 46.14624, -89.3912],
+  ["St. Germain, WI", 45.92836, -89.50142],
+  ["Eagle River, WI", 45.92469, -89.25778],
+  ["Three Lakes, WI", 45.8045, -89.16906],
+  ["Rhinelander, WI", 45.63428, -89.42995],
+  ["Park Falls, WI", 45.93634, -90.44427],
+  ["Phillips, WI", 45.69403, -90.40142],
+  ["Prentice, WI", 45.54122, -90.29281]]],
+  ["Wausau corridor & the east", [["Tomahawk, WI", 45.47896, -89.71177],
+  ["Merrill, WI", 45.18064, -89.70034],
+  ["Antigo, WI", 45.14127, -89.15523],
+  ["Crandon, WI", 45.5678, -88.89554],
+  ["Laona, WI", 45.55968, -88.66966],
+  ["Florence, WI", 45.92786, -88.23524],
+  ["Medford, WI", 45.13543, -90.3435]]],
+  ["Copper Country & the U.P.", [["Ontonagon, MI", 46.86632, -89.3124],
+  ["Houghton, MI", 47.11175, -88.56724],
+  ["Hancock, MI", 47.13673, -88.59776],
+  ["Calumet, MI", 47.24774, -88.45342],
+  ["Copper Harbor, MI", 47.46791, -87.86988],
+  ["L'Anse, MI", 46.75205, -88.4484],
+  ["Baraga, MI", 46.77873, -88.49391],
+  ["Iron River, MI", 46.09591, -88.6366],
+  ["Crystal Falls, MI", 46.0902, -88.32144]]],
+  ["Duluth & the Arrowhead", [["Duluth, MN", 46.77446, -92.13414],
+  ["Hermantown, MN", 46.80234, -92.24084],
+  ["Proctor, MN", 46.74079, -92.22813],
+  ["Cloquet, MN", 46.72507, -92.50133],
+  ["Carlton, MN", 46.65577, -92.4304],
+  ["Moose Lake, MN", 46.4503, -92.76095],
+  ["Two Harbors, MN", 47.02995, -91.67574],
+  ["Silver Bay, MN", 47.29331, -91.27681],
+  ["Finland, MN", 47.43209, -91.25596],
+  ["Ely, MN", 47.9056, -91.85073],
+  ["Virginia, MN", 47.52795, -92.5176],
+  ["Eveleth, MN", 47.47492, -92.54961],
+  ["Hibbing, MN", 47.3959, -92.94647],
+  ["Tower, MN", 47.81575, -92.27469],
+  ["Grand Marais, MN", 47.75856, -90.34432],
+  ["Lutsen, MN", 47.67443, -90.69278],
+  ["Tofte, MN", 47.76796, -90.84182],
+  ["Grand Portage, MN", 47.95284, -89.66001]]]];
+// DRIVE: OSRM driving miles from each home town to each key in DRIVE.to (TOWNS order when built).
+// A town the scan adds later is missing from DRIVE.to: its distance shows as straight-line, labelled, until the script runs again.
+const DRIVE = {"built":"2026-10-25","src":"OSRM router.project-osrm.org, driving","to":["Ashland, WI","Moquah, WI","White River, WI","Odanah, WI","Washburn, WI","Mason, WI","Mellen, WI","Bayfield, WI","Delta, WI","La Pointe, WI","Saxon, WI","Iron River, WI","Cornucopia, WI","Red Cliff, WI","Drummond, WI","Kimball, WI","Glidden, WI","Herbster, WI","Hurley, WI","Ironwood, MI","Cable, WI","Bessemer, MI","Maple, WI","Barnes, WI","Port Wing, WI","Butternut, WI","Wakefield, MI","Park Falls, WI","Hayward, WI","Mercer, WI","Solon Springs, WI","Superior, WI","Duluth, MN","Manitowish Waters, WI","Phillips, WI","Stone Lake, WI","Hermantown, MN","Carlton, MN","Prentice, WI","Boulder Junction, WI","Cloquet, MN","Knife River, MN","Ogema, WI","Woodruff, WI","Minocqua, WI","Watersmeet, MI","Westboro, WI","Land O'Lakes, WI","Two Harbors, MN","St. Germain, WI","Ontonagon, MI","Danbury, WI","Siren, WI","Eagle River, WI","Turtle Lake, WI","Silver Bay, MN","Grantsburg, WI","Finland, MN","Eau Claire, WI","Schroeder, MN","Lutsen, MN","Tofte, MN","Grand Marais, MN","Maplewood, MN","Welch, MN","Apple Valley, MN","St. Cloud, MN","Roseville, MN","Falcon Heights, MN","Brooklyn Center, MN","St. Paul, MN","Bemidji, MN","Grand Portage, MN","Minneapolis, MN","St. Louis Park, MN","Plymouth, MN","Bloomington, MN","Minnetonka, MN","Shakopee, MN","Prior Lake, MN","La Crosse, WI","Green Bay, WI","Oshkosh, WI","Appleton, WI","Wisconsin Dells, WI","Madison, WI","Middleton, WI","Austin, MN","Fargo, ND","Janesville, WI","Brookfield, WI","Milwaukee, WI","West Allis, WI","Lake Geneva, WI","Cedar Rapids, IA"],"mi":{"Ashland, WI":[0,11,11,12,12,18,23,24,28,28,28,29,31,31,32,35,39,39,40,41,42,45,45,46,46,49,51,56,59,63,64,66,70,73,73,73,77,87,87,89,89,91,92,93,94,96,98,99,99,100,101,111,113,117,121,128,129,140,165,166,167,171,182,184,206,208,213,215,217,218,218,219,219,221,226,229,232,232,242,244,247,258,262,264,272,303,303,319,324,333,337,339,342,368,403],"Washburn, WI":[12,14,22,22,0,21,36,13,30,16,37,32,20,20,34,44,52,27,50,50,45,55,47,48,35,62,61,68,62,73,67,69,73,83,85,75,80,89,100,99,92,93,104,103,104,106,111,109,101,110,111,114,115,127,124,130,131,143,168,169,169,173,185,186,208,211,216,218,219,220,220,222,222,223,229,231,235,235,245,247,250,271,274,276,291,316,316,322,326,346,349,351,355,381,406],"Bayfield, WI":[25,26,34,35,13,33,48,0,42,4,50,44,22,7,46,57,64,29,62,63,57,68,59,61,37,74,73,81,74,85,79,81,85,95,98,88,92,101,112,112,104,106,117,115,116,119,123,121,113,122,123,126,127,139,136,142,143,155,180,181,181,185,197,198,221,223,228,230,231,233,232,234,234,235,241,243,247,247,257,259,262,283,287,289,304,328,328,334,339,358,362,364,367,393,418],"Red Cliff, WI":[31,33,41,41,20,40,55,7,49,10,57,50,20,0,53,64,71,27,69,70,64,75,62,68,35,81,80,88,81,92,86,79,83,102,105,95,90,99,119,119,102,103,124,122,123,126,130,128,111,129,130,133,134,146,143,140,150,153,187,179,179,183,195,225,265,247,226,228,229,231,230,232,232,233,239,241,245,245,255,257,269,290,294,296,311,335,335,332,336,365,369,371,374,400,425],"La Pointe, WI":[28,29,37,38,16,36,51,4,46,0,53,47,24,10,50,60,68,32,65,66,60,71,63,64,40,77,76,84,77,88,82,83,88,98,101,91,95,104,116,115,107,108,120,119,120,122,126,125,116,125,127,129,131,142,139,145,147,157,183,184,184,188,199,202,224,252,231,233,234,235,235,237,236,238,244,246,250,249,260,261,265,287,290,292,307,332,332,336,341,362,365,367,371,396,421],"Odanah, WI":[12,21,23,0,22,28,29,34,38,38,16,39,41,41,42,23,45,49,29,29,52,34,55,56,56,54,40,61,69,52,74,76,81,62,78,83,87,97,93,78,99,101,97,82,83,85,104,88,109,89,90,121,123,106,131,138,139,150,175,177,177,181,192,194,216,219,223,225,227,228,228,229,229,231,236,239,242,242,252,254,257,249,252,254,263,294,294,329,334,324,327,329,333,359,443],"Mason, WI":[18,13,13,28,21,0,27,33,17,36,43,25,40,40,14,51,43,47,52,56,25,61,40,29,39,53,67,60,42,79,47,61,66,89,77,56,73,82,92,105,85,86,96,102,102,112,102,115,94,116,117,87,95,133,104,123,111,135,148,162,162,166,177,166,188,191,187,175,176,177,174,215,214,180,186,188,192,192,202,204,230,262,266,268,272,320,314,274,319,356,341,343,346,390,386],"Iron River, WI":[29,19,34,39,32,25,49,44,15,47,55,0,30,50,24,62,65,24,67,68,33,72,17,23,15,74,78,81,50,90,37,39,43,100,98,64,50,59,113,116,62,64,117,120,121,123,124,126,71,127,128,84,99,144,110,100,115,113,154,139,139,143,155,185,194,208,186,188,189,191,190,192,192,193,199,201,205,205,215,217,236,284,287,289,278,326,320,292,297,362,386,395,392,396,392],"Cornucopia, WI":[31,33,41,41,20,40,55,22,45,24,56,30,0,20,53,63,71,8,69,69,64,74,42,59,15,81,80,87,81,92,66,59,63,102,104,94,70,79,119,118,82,84,123,122,123,125,130,128,92,129,130,113,129,146,139,121,145,133,183,159,160,164,175,205,245,228,206,208,210,211,211,212,212,213,219,222,225,225,235,237,265,290,293,295,307,355,349,312,317,391,368,370,374,425,421],"Port Wing, WI":[46,34,49,56,35,39,64,37,30,40,72,15,15,35,39,79,80,9,84,85,48,89,27,44,0,89,95,96,65,107,51,44,48,117,113,79,55,64,128,133,67,69,132,137,138,140,139,143,76,144,145,98,114,161,124,105,129,118,168,144,144,148,160,190,230,213,191,193,194,196,195,197,197,198,204,206,210,210,220,222,250,299,302,304,292,340,334,297,302,376,400,409,406,410,406],"Herbster, WI":[39,40,48,49,27,47,62,29,39,32,64,24,8,27,48,71,78,0,76,77,57,82,36,53,9,88,87,95,74,99,60,53,57,109,112,87,64,73,126,126,76,78,131,130,130,133,137,136,85,136,137,107,122,153,133,114,138,127,177,153,153,157,169,199,239,222,200,202,203,205,204,206,206,207,213,215,219,219,229,231,259,297,301,303,301,349,343,306,311,384,409,418,415,419,415],"Cable, WI":[42,35,34,52,45,25,40,57,20,60,63,33,64,64,11,64,37,57,65,68,0,73,48,23,48,47,79,54,19,75,41,70,74,85,71,32,81,90,85,99,93,95,90,96,95,124,96,120,102,109,129,69,72,121,80,131,88,144,124,170,170,174,186,143,165,168,169,151,153,154,151,223,223,156,162,165,168,168,178,180,206,256,260,261,248,296,291,250,338,332,357,366,363,367,363],"Drummond, WI":[32,27,23,42,34,14,37,46,12,50,57,24,53,53,0,64,47,48,62,65,11,71,39,15,39,57,76,63,28,87,33,61,65,97,80,41,72,81,95,110,84,86,99,105,105,122,106,125,94,119,127,73,81,142,90,123,97,135,134,161,162,166,177,152,174,177,173,161,162,163,160,214,214,166,172,174,178,177,188,190,216,266,269,271,258,306,300,260,319,342,366,375,372,376,372],"Mellen, WI":[23,35,14,29,36,27,0,48,44,51,23,49,55,55,37,25,16,62,25,28,40,34,64,52,64,26,39,32,54,50,70,86,90,60,50,67,97,106,64,73,109,110,68,75,74,85,75,88,118,87,90,104,107,105,115,147,123,160,159,186,186,190,202,178,200,203,204,186,188,189,186,239,239,191,197,200,203,203,213,215,241,235,238,240,249,280,280,285,343,310,313,315,319,345,429],"Glidden, WI":[39,51,30,45,52,43,16,64,56,68,39,65,71,71,47,41,0,78,41,44,37,50,80,59,80,10,55,17,51,39,77,102,106,49,34,64,113,122,48,62,125,127,53,59,59,101,59,83,134,73,105,101,104,85,112,163,120,176,157,202,202,206,218,175,197,200,201,183,185,186,183,255,255,189,194,197,200,200,210,212,202,219,223,225,233,264,264,283,370,294,298,300,303,329,414],"Butternut, WI":[49,61,40,54,62,53,26,74,66,77,49,75,80,81,56,50,10,88,50,53,47,59,90,69,89,0,65,7,60,30,87,111,116,40,24,74,122,132,39,54,135,136,43,49,49,93,49,74,144,63,115,110,114,75,122,173,130,185,133,212,212,216,227,185,218,210,211,193,194,196,192,265,264,198,204,206,210,210,220,222,193,210,213,215,223,255,255,266,379,285,288,290,294,319,404],"Superior, WI":[66,56,71,76,69,61,86,81,52,83,91,39,59,79,61,98,102,53,104,104,70,109,24,50,44,111,115,118,71,127,32,0,8,137,135,87,15,24,150,153,26,28,154,157,158,160,161,163,36,164,165,55,71,181,105,65,110,77,149,104,104,108,119,149,189,171,150,152,153,155,154,156,156,157,163,165,169,169,179,181,231,329,332,334,273,321,315,256,261,357,382,391,387,391,401],"Solon Springs, WI":[64,53,55,74,66,47,70,79,49,82,89,36,66,85,33,96,77,59,101,102,41,107,25,22,50,87,112,93,40,124,0,32,37,134,112,55,44,53,145,151,56,57,131,137,137,158,138,161,65,151,163,48,64,178,74,94,79,106,118,133,133,137,148,147,158,170,148,150,151,153,152,186,185,155,161,164,167,167,177,179,200,297,301,303,242,290,284,254,290,326,350,359,356,360,356],"Lake Nebagamon, WI":[49,38,54,59,51,44,68,64,34,67,74,22,51,70,32,81,76,45,87,87,40,92,14,21,36,86,97,92,43,110,15,28,33,120,110,56,40,49,124,136,52,53,128,135,134,143,135,146,61,147,148,64,79,163,90,90,95,102,134,129,129,133,144,163,174,186,164,166,167,169,168,182,181,171,177,180,183,183,193,195,216,313,317,319,258,306,300,270,286,342,366,375,372,376,372],"Poplar, WI":[47,37,53,57,50,43,67,62,33,66,73,20,46,65,42,80,83,40,85,86,51,90,5,31,31,93,96,99,53,108,21,19,23,118,117,75,30,39,131,134,42,44,135,138,139,141,142,144,51,145,146,68,83,162,93,80,99,93,137,119,119,123,135,165,205,188,166,168,169,171,170,172,172,173,179,181,185,185,195,197,219,317,320,322,261,309,304,272,277,345,370,379,376,380,376],"Maple, WI":[44,34,50,54,47,40,64,59,30,63,70,17,42,62,39,77,80,36,82,83,48,88,0,28,27,90,93,96,50,105,26,24,29,115,114,63,35,45,128,132,47,49,132,135,136,139,139,141,57,142,143,73,88,159,99,86,104,98,143,125,125,129,140,170,210,193,171,173,175,176,176,177,177,179,184,187,190,190,200,202,225,322,326,328,267,315,309,277,282,350,375,384,381,385,381],"Hayward, WI":[59,53,51,69,62,42,54,74,38,78,77,50,81,81,28,78,51,74,79,82,19,87,50,25,65,60,93,67,0,89,40,71,76,99,73,15,83,92,87,107,95,96,91,97,97,138,98,128,104,111,143,51,54,123,62,133,70,145,106,172,172,176,187,125,147,149,151,133,134,136,132,225,224,138,144,146,150,150,160,162,188,286,289,291,230,278,272,232,319,314,339,348,344,348,344],"Stone Lake, WI":[73,66,64,83,75,56,67,88,51,91,90,64,94,95,41,92,64,87,92,95,32,101,63,38,79,74,106,71,15,107,55,87,91,111,79,0,98,107,93,114,110,112,97,104,104,152,103,135,119,118,157,56,45,130,54,148,61,161,92,187,187,191,203,116,138,141,148,125,126,127,124,240,240,130,136,138,142,141,152,153,174,272,275,277,216,264,258,224,317,300,325,334,330,334,330],"Winter, WI":[76,76,67,82,85,65,53,97,61,101,76,73,104,104,51,78,54,97,78,81,42,87,82,57,88,45,92,39,32,76,72,103,108,79,48,32,115,124,62,83,127,128,66,73,72,124,73,104,136,86,143,87,76,98,79,165,92,177,89,204,204,208,219,142,173,167,179,151,152,153,150,257,256,156,161,164,167,167,177,179,163,233,237,238,200,248,243,222,348,284,309,318,315,319,326],"Spooner, WI":[86,79,77,96,88,68,80,100,64,104,103,74,103,107,54,105,77,97,105,108,45,114,63,50,88,87,119,88,27,115,38,70,74,129,97,19,81,90,109,132,93,95,113,122,122,165,120,153,102,136,169,38,27,148,35,131,43,144,81,170,171,175,186,98,120,123,130,106,108,109,106,223,223,111,117,120,123,123,133,135,163,261,264,266,205,253,247,205,299,289,314,323,319,323,319],"Shell Lake, WI":[93,86,84,103,95,76,87,108,71,111,110,81,110,115,62,112,84,104,112,115,52,121,70,57,95,94,126,95,34,123,46,77,82,136,104,26,88,98,108,139,101,102,113,129,129,172,119,160,110,143,177,41,30,155,30,139,46,151,81,178,178,182,193,92,115,117,134,101,102,104,100,231,230,106,112,114,118,118,128,130,163,260,264,266,205,253,247,200,302,288,313,322,319,323,317],"Minong, WI":[81,70,70,91,83,61,73,96,57,99,96,54,83,102,47,98,70,77,98,101,38,107,43,29,68,80,112,86,22,108,18,50,54,118,94,37,61,70,109,129,73,75,113,119,119,158,120,150,82,133,162,31,47,145,56,111,63,124,100,150,150,154,166,130,140,153,131,133,134,136,135,203,203,138,144,147,150,150,160,162,182,279,283,285,224,272,266,237,300,308,332,341,338,342,338],"Siren, WI":[112,106,104,122,115,95,107,127,91,131,130,101,130,134,81,131,104,124,132,135,72,140,90,76,115,113,146,115,53,142,65,71,77,155,123,45,84,99,135,158,102,99,139,148,148,191,146,179,106,162,196,17,0,174,45,135,17,148,108,174,174,178,190,86,103,108,104,89,90,92,91,241,227,94,100,102,106,106,116,118,190,287,291,292,231,279,274,193,273,315,340,349,346,350,338],"Webster, WI":[114,109,105,124,116,97,108,129,92,132,131,92,121,141,83,133,105,115,133,136,73,142,81,68,106,115,147,116,55,144,57,64,70,157,125,47,76,92,137,160,95,91,141,150,150,193,148,181,99,164,198,10,7,176,53,128,23,140,109,167,167,171,182,92,111,115,110,96,97,98,98,234,219,101,107,109,113,112,122,124,191,289,292,294,233,281,275,199,279,317,341,351,347,351,345],"Grantsburg, WI":[128,122,120,138,131,111,123,143,107,146,146,117,146,150,97,147,120,140,148,151,88,156,105,92,131,129,162,130,69,158,81,110,107,171,139,61,106,89,151,174,92,127,155,164,164,207,162,195,135,178,212,33,17,190,53,164,0,176,123,203,203,207,218,71,111,94,90,75,76,77,77,231,255,80,85,88,92,91,101,103,206,303,307,308,247,295,290,178,258,331,356,365,362,366,324],"Danbury, WI":[111,100,96,121,114,87,104,126,83,129,127,84,113,133,73,128,101,107,128,132,69,137,73,59,98,110,143,117,51,139,48,55,62,149,125,56,68,83,146,160,86,83,150,150,150,188,157,181,91,164,193,0,17,176,62,120,33,132,119,159,159,163,174,99,140,122,101,103,104,105,105,224,211,108,114,116,120,119,130,132,201,298,302,303,242,291,285,206,269,326,351,360,357,361,352],"Ladysmith, WI":[105,110,96,111,119,99,82,131,95,135,106,107,138,138,85,107,80,131,107,110,76,116,107,82,122,70,121,65,58,102,103,135,139,105,46,50,146,155,43,108,158,160,47,96,95,142,54,129,167,110,172,104,93,112,54,196,109,209,60,235,235,240,251,117,145,153,178,125,127,128,137,288,288,130,136,139,154,142,164,163,135,210,213,215,172,220,214,193,350,256,281,290,286,291,298],"Hurley, WI":[40,49,39,29,50,52,25,62,65,65,13,67,69,69,62,10,41,76,0,4,65,9,82,76,84,50,15,57,79,25,94,104,108,35,74,92,115,124,89,49,127,129,93,56,57,60,100,63,136,62,65,128,132,81,140,165,148,178,184,204,204,208,220,203,225,228,229,211,212,214,210,257,257,216,222,224,228,228,238,240,266,223,226,228,236,268,268,310,362,298,301,303,307,332,417],"Mercer, WI":[63,72,64,52,73,79,50,85,88,88,36,90,92,92,87,33,39,99,25,26,75,32,105,101,107,30,37,37,89,0,125,127,131,12,55,107,138,147,70,25,150,152,74,32,33,63,81,46,159,39,87,139,142,49,155,188,158,201,164,227,227,231,243,217,249,242,239,226,227,228,225,280,280,231,237,239,243,243,253,255,242,199,202,204,213,244,244,297,385,274,277,279,283,309,393],"Montreal, WI":[42,51,37,31,52,50,23,64,67,68,15,72,71,71,60,9,39,79,2,5,63,11,87,75,87,48,17,55,77,27,92,108,113,37,72,90,120,129,87,51,132,133,91,57,58,62,98,65,141,64,67,127,130,83,138,170,146,182,182,209,209,213,224,201,223,226,227,209,210,212,208,262,261,214,220,222,226,226,236,238,264,224,228,230,238,269,269,308,366,299,303,305,308,334,419],"Ironwood, MI":[41,50,42,29,50,57,28,63,66,66,14,68,69,70,65,10,44,77,4,0,68,7,83,80,85,53,12,61,82,26,103,104,109,36,77,95,115,125,92,51,128,129,96,56,57,58,103,61,137,63,63,132,135,78,143,166,151,178,187,205,205,209,220,206,228,231,252,214,215,217,214,258,257,219,225,228,231,231,241,243,266,223,226,228,237,268,268,313,362,298,301,303,307,333,417],"Bessemer, MI":[45,54,48,34,55,61,34,67,71,71,19,72,74,74,71,15,50,82,9,7,73,0,88,85,89,59,6,67,87,32,107,109,114,35,83,101,120,130,98,45,132,134,102,55,56,52,109,54,142,64,56,137,141,72,149,171,157,183,193,210,210,214,225,212,234,236,256,220,221,223,219,262,262,225,231,233,237,237,247,249,265,220,225,227,235,267,267,319,367,297,300,302,306,331,416],"Wakefield, MI":[51,60,53,40,61,67,39,73,76,76,24,78,80,80,76,21,55,87,15,12,79,6,93,91,95,65,0,67,93,37,113,115,119,29,89,106,126,135,103,39,138,139,107,50,50,46,114,49,147,58,51,143,146,66,154,176,162,189,198,215,215,219,231,217,239,242,262,225,227,228,225,268,267,231,236,239,242,242,252,254,259,214,220,222,230,262,261,324,372,292,295,297,301,326,411],"Watersmeet, MI":[96,105,99,85,106,112,85,118,122,122,70,123,125,125,122,66,101,133,60,58,124,52,139,136,140,93,46,98,138,63,158,160,165,52,103,152,171,181,102,39,183,185,109,52,53,0,115,22,193,43,45,188,192,30,196,222,208,234,211,261,261,265,276,290,295,303,307,294,294,304,288,313,313,296,303,308,304,308,314,313,254,178,189,203,225,256,256,344,418,286,264,266,269,320,405],"Marenisco, MI":[66,75,68,54,75,82,54,88,91,91,39,93,94,95,91,36,70,102,30,27,94,21,108,106,110,60,15,65,108,30,128,129,134,27,83,121,141,150,98,25,153,154,102,40,41,34,109,35,162,45,56,158,161,55,169,191,177,203,207,230,230,234,245,232,292,257,277,240,241,243,240,283,282,245,251,254,257,257,267,269,250,203,211,213,221,252,252,340,387,282,286,288,291,317,402],"Minocqua, WI":[94,103,89,83,104,102,74,116,115,120,67,121,123,123,105,64,59,130,57,57,95,56,136,117,138,49,50,43,97,33,137,158,162,22,52,104,169,178,54,19,181,183,61,2,0,53,68,42,191,15,95,150,148,27,149,220,164,232,166,258,259,263,274,245,251,259,250,249,249,260,243,311,311,251,258,263,259,263,269,269,209,166,169,171,180,211,211,299,418,241,244,246,250,276,360],"Woodruff, WI":[93,102,89,82,103,102,75,115,115,119,66,120,122,122,105,63,59,130,56,56,96,55,135,118,137,49,50,43,97,32,137,157,161,21,52,104,168,178,56,18,180,182,63,0,2,52,69,41,190,14,94,150,148,26,150,219,164,231,168,257,258,262,273,246,252,260,250,251,251,261,244,310,310,253,259,265,261,265,271,270,211,168,171,173,181,213,213,301,419,243,246,248,252,277,362],"Lac du Flambeau, WI":[81,90,81,69,90,94,66,103,106,106,54,108,109,110,97,51,51,117,43,43,87,49,123,109,125,41,47,35,89,19,129,144,149,19,44,96,156,165,58,18,168,169,63,13,14,57,69,39,177,27,99,142,140,39,143,206,156,218,152,245,245,249,260,206,237,231,242,214,216,217,214,298,297,220,225,228,231,231,241,243,223,180,183,185,194,225,225,285,410,255,258,260,264,290,374],"Manitowish Waters, WI":[73,82,74,62,83,89,60,95,98,98,46,100,102,102,97,43,49,109,35,36,85,35,115,111,117,40,29,41,99,12,135,137,141,0,59,111,148,157,73,14,160,162,78,21,22,52,84,35,169,28,80,149,155,38,158,198,171,211,188,237,237,241,253,221,272,280,249,229,231,232,265,290,290,273,280,243,281,285,291,290,231,188,191,193,201,233,233,321,395,263,266,268,272,297,382],"Boulder Junction, WI":[89,98,87,78,99,105,73,112,115,115,63,116,118,118,110,59,62,126,49,51,99,45,132,125,133,54,39,54,107,25,151,153,158,14,62,114,164,174,73,0,177,178,81,18,19,39,88,22,186,22,81,160,158,33,162,215,174,227,185,254,254,258,269,264,269,277,260,268,268,235,261,306,306,270,276,282,278,282,288,287,228,185,188,190,198,230,230,318,411,260,263,265,269,294,379],"Land O'Lakes, WI":[99,108,102,88,109,115,88,121,125,125,72,126,128,128,125,69,83,135,63,61,120,54,141,139,143,74,49,75,128,46,161,163,167,35,83,135,174,183,95,22,186,188,102,41,42,22,109,0,196,32,64,181,179,23,183,225,195,237,204,263,264,268,279,283,289,297,281,287,287,298,281,316,316,290,296,301,298,302,307,307,247,171,182,172,218,249,249,337,421,279,257,259,263,314,399],"St. Germain, WI":[100,109,101,89,110,116,87,122,125,125,73,127,129,129,119,70,73,136,62,63,109,64,142,131,144,63,58,57,111,39,151,164,168,28,66,118,175,184,70,22,187,189,77,14,15,43,83,32,196,0,85,164,162,15,164,225,178,238,181,264,264,268,280,260,266,274,264,264,264,275,258,317,317,267,273,278,275,279,284,284,224,181,185,187,195,226,226,314,432,256,260,262,265,291,376],"Eagle River, WI":[117,126,120,106,127,133,105,139,142,142,90,144,146,146,131,87,85,153,81,78,121,72,159,143,161,75,66,69,123,49,163,181,185,38,78,130,192,201,72,33,204,206,79,26,27,30,85,23,213,15,72,176,174,0,166,242,190,255,181,281,281,285,297,260,266,274,329,264,264,275,258,334,334,266,273,278,274,278,284,284,224,148,159,149,195,226,226,314,439,256,234,236,240,291,375],"Three Lakes, WI":[127,136,130,116,137,143,116,150,153,153,101,154,156,156,140,97,94,164,91,89,131,83,170,152,171,84,77,78,132,60,172,191,196,49,82,139,202,212,70,43,214,216,77,36,36,40,84,34,224,24,82,185,183,11,164,253,199,265,179,292,292,296,307,258,264,272,327,262,262,273,256,344,344,265,271,276,273,277,282,282,222,137,149,139,193,224,224,312,499,254,224,226,230,289,374],"Rhinelander, WI":[118,127,113,106,127,126,99,140,139,143,91,145,146,147,129,88,83,154,80,80,120,79,160,142,162,73,74,67,121,56,161,181,186,45,59,128,193,202,47,42,205,206,54,24,26,55,61,48,214,34,97,174,180,25,141,243,196,255,156,282,282,286,297,235,241,249,304,239,239,250,233,335,334,242,248,253,250,254,259,259,199,139,160,162,170,201,201,289,476,231,235,237,240,266,351],"Park Falls, WI":[56,67,47,61,68,60,32,80,73,84,55,81,87,87,63,57,17,95,57,61,53,67,96,75,96,7,67,0,67,37,93,118,122,41,18,71,129,138,33,54,141,143,37,43,43,98,44,75,150,57,118,117,114,69,118,179,130,192,127,218,219,223,234,180,212,205,217,189,190,192,188,271,271,194,200,202,206,206,216,218,187,204,207,209,218,249,249,260,386,279,282,284,288,313,398],"Phillips, WI":[73,85,64,78,85,77,50,98,90,101,73,98,104,105,80,74,34,112,74,77,71,83,114,93,113,24,89,18,73,55,112,135,140,59,0,79,146,156,15,62,159,160,19,52,52,103,25,83,168,66,139,125,123,78,100,197,139,209,121,236,236,240,251,162,205,213,223,171,172,173,198,289,288,176,182,184,214,188,224,223,169,185,189,191,199,230,230,254,396,261,264,266,269,295,380],"Prentice, WI":[87,99,78,93,100,91,64,112,104,115,87,113,119,119,95,89,48,126,89,92,85,98,128,107,128,39,103,33,87,70,145,150,154,73,14,93,161,170,0,73,173,175,7,56,54,102,14,95,182,70,144,146,135,72,96,211,151,224,109,250,250,254,266,159,194,202,220,167,169,170,186,303,303,195,178,181,202,184,212,212,157,173,176,178,187,218,218,242,392,248,251,253,257,283,367],"Tomahawk, WI":[119,131,110,115,132,123,96,144,136,147,99,144,150,151,126,96,80,158,89,89,117,88,160,139,159,70,82,64,119,65,177,181,186,54,46,124,192,202,34,51,205,206,34,34,32,77,37,70,214,47,119,178,167,47,128,243,183,255,137,282,282,286,297,216,222,230,285,220,220,231,214,335,334,223,229,235,231,235,241,240,180,137,141,143,151,182,182,270,457,213,216,218,221,247,332],"Merrill, WI":[145,156,136,135,157,149,121,169,162,173,119,170,176,176,152,116,106,183,109,109,142,108,185,164,185,96,103,90,144,85,218,249,254,74,72,150,261,270,59,71,273,274,57,54,52,97,49,90,282,67,139,219,208,67,169,311,224,323,117,350,350,354,365,196,202,210,265,200,200,211,194,403,402,203,209,214,210,215,220,220,160,117,121,122,131,162,162,250,437,192,196,198,201,227,311],"Antigo, WI":[163,172,161,152,173,174,147,185,187,189,136,196,192,192,178,133,131,200,126,126,168,133,211,190,210,121,127,116,170,102,235,267,271,91,97,175,278,287,85,88,290,291,80,70,78,90,78,84,299,74,132,236,225,61,186,328,241,341,134,367,367,371,383,213,219,227,282,217,217,228,211,420,420,220,226,232,228,232,238,237,177,93,99,88,148,179,179,267,454,209,174,176,179,220,328],"Crandon, WI":[145,154,140,134,155,153,126,167,166,170,118,172,174,174,157,115,110,181,107,108,147,111,187,169,189,100,105,95,149,84,188,209,213,72,86,156,220,229,74,69,232,234,81,52,53,68,88,62,241,52,111,201,207,39,168,270,223,283,183,309,309,313,325,262,268,276,331,266,266,277,260,362,362,269,275,280,277,281,286,286,226,110,133,114,197,228,228,316,503,258,208,210,213,253,378],"Laona, WI":[162,170,152,150,171,177,138,184,187,187,135,188,190,191,168,131,122,198,126,123,159,117,204,181,205,112,111,106,161,95,200,225,230,84,98,168,236,246,86,81,249,250,93,64,65,75,99,74,258,64,117,213,219,51,180,287,235,299,187,326,326,330,341,266,272,280,335,270,270,281,264,379,378,273,279,284,281,285,290,290,230,99,120,100,201,206,232,320,507,223,195,197,200,241,373],"Florence, WI":[152,161,155,141,162,168,141,174,178,178,125,179,181,181,178,122,157,189,116,114,180,108,194,192,196,129,102,123,194,105,214,216,220,94,132,184,227,237,126,95,239,241,133,81,82,65,140,78,249,70,107,244,228,56,221,278,244,290,235,316,317,321,332,314,320,328,363,318,318,329,312,369,369,321,327,333,329,333,339,338,278,114,163,138,249,249,254,368,474,266,238,229,235,276,416],"Medford, WI":[115,127,106,121,128,119,92,140,132,143,115,141,147,147,123,116,76,154,117,120,113,125,156,135,155,66,131,61,115,98,156,188,192,101,42,113,199,208,31,105,211,213,25,87,86,131,17,124,220,101,173,157,146,101,108,249,162,262,77,288,288,292,304,155,161,169,224,160,160,170,153,341,341,162,168,174,170,174,180,179,127,144,148,149,158,189,189,210,396,219,222,224,228,254,291],"Ontonagon, MI":[101,110,104,90,111,117,90,123,127,127,74,128,130,130,127,71,105,137,65,62,129,56,143,141,145,115,51,118,143,87,163,165,169,80,136,157,176,185,144,81,188,190,151,94,95,45,157,64,197,85,0,193,196,72,205,226,212,239,253,265,266,270,281,267,290,292,312,276,277,278,275,318,318,281,287,289,293,293,303,305,296,220,231,245,267,298,298,386,423,328,306,308,312,362,447],"Houghton, MI":[148,157,150,136,158,164,136,170,173,173,121,175,176,177,173,118,152,184,112,109,176,103,190,188,192,162,97,164,190,134,210,211,216,124,175,203,223,232,173,111,235,236,180,123,124,74,187,94,244,115,51,240,243,102,251,273,259,285,283,312,312,316,327,314,367,375,359,322,324,325,359,365,364,368,333,336,376,339,386,385,325,212,261,236,296,328,327,416,469,358,336,327,333,374,477],"Hancock, MI":[150,159,153,139,160,166,138,172,175,175,123,177,179,179,175,120,154,186,114,111,178,105,192,190,194,164,100,166,192,136,212,214,218,126,177,205,225,234,176,113,237,239,182,126,126,77,189,96,246,117,53,242,245,104,254,275,261,288,285,314,314,318,330,316,369,377,361,325,326,327,362,367,367,370,336,338,378,341,388,387,328,215,264,239,298,330,330,418,472,360,339,330,336,377,479],"Calumet, MI":[160,169,163,149,170,176,149,182,186,186,133,187,189,189,186,130,165,196,124,122,188,115,202,200,204,174,110,177,202,146,222,224,228,137,188,216,235,244,186,124,247,249,193,136,137,87,199,106,257,127,64,252,256,114,264,286,272,298,295,324,325,329,340,326,380,388,371,335,336,338,372,377,377,380,346,348,388,352,398,398,338,225,274,250,309,340,340,428,482,370,349,340,346,388,489],"Copper Harbor, MI":[195,204,198,184,205,211,184,217,221,221,168,222,224,224,221,165,200,232,159,157,223,151,237,235,239,209,145,212,237,182,257,259,263,172,223,251,270,280,221,159,282,284,228,171,172,122,234,141,292,162,99,287,291,149,299,321,307,333,330,359,360,364,375,361,415,423,406,370,371,373,407,412,412,416,381,383,423,387,433,433,373,260,309,285,344,375,375,463,517,405,384,375,381,423,524],"L'Anse, MI":[142,151,144,130,151,157,130,164,167,167,115,169,170,171,167,111,146,178,106,103,170,97,184,181,186,155,91,158,184,128,204,205,210,118,169,197,216,226,167,105,229,230,174,117,118,68,181,88,238,109,46,233,237,96,245,267,253,279,276,306,306,310,321,308,361,369,353,316,317,319,353,359,358,362,327,329,370,333,379,379,319,180,229,205,290,321,321,409,463,351,304,295,301,343,471],"Baraga, MI":[138,147,141,127,148,154,127,161,164,164,112,165,167,168,164,108,143,175,102,100,166,94,181,178,182,152,88,155,180,125,200,202,207,115,166,194,213,223,164,102,226,227,171,114,115,65,178,84,235,106,42,230,234,92,242,264,250,276,273,303,303,307,318,305,358,366,349,313,314,316,350,355,355,359,324,326,367,330,376,376,316,185,234,209,287,318,318,406,460,348,309,300,306,348,468],"Iron River, MI":[122,131,125,111,132,138,110,144,147,147,95,149,151,151,147,92,126,158,86,83,150,77,164,162,166,111,71,106,164,89,184,186,190,78,115,167,197,206,109,65,209,211,115,63,64,35,122,48,218,52,77,214,217,38,203,247,233,260,218,286,286,290,302,297,302,310,333,301,301,311,295,339,339,303,310,315,311,315,321,320,261,143,192,168,232,263,263,351,444,293,267,258,264,306,412],"Crystal Falls, MI":[138,147,141,127,148,154,126,160,163,163,111,165,167,167,164,108,142,174,102,99,166,93,180,178,182,128,87,122,180,105,200,202,206,94,131,183,213,222,125,81,225,227,132,79,80,51,138,64,234,68,93,230,233,54,219,263,249,276,234,302,302,306,318,313,318,326,349,317,317,327,311,355,355,319,326,331,327,331,337,336,277,128,177,153,248,263,268,367,460,281,252,243,249,291,431],"Duluth, MN":[71,60,76,81,73,66,90,85,56,88,96,43,64,83,66,103,106,57,108,109,74,114,29,54,49,116,119,123,76,131,37,8,0,141,140,91,7,21,154,158,23,23,159,162,163,165,165,168,30,168,170,62,77,185,110,59,107,72,154,98,98,102,114,145,186,168,147,149,150,151,151,150,151,154,160,162,166,166,176,178,236,333,337,339,278,326,320,252,257,361,386,395,392,396,398],"Hermantown, MN":[78,67,83,88,80,73,97,92,63,95,103,50,70,90,72,110,113,64,115,116,81,121,36,61,55,123,126,129,83,138,44,15,7,148,147,98,0,20,161,165,22,26,165,168,169,172,172,174,34,175,176,68,84,192,116,63,106,76,160,102,102,106,118,145,185,167,146,148,149,151,150,145,154,153,159,161,165,165,175,177,243,340,344,345,284,332,327,252,257,368,393,402,399,403,397],"Proctor, MN":[74,64,79,84,77,69,94,89,60,91,99,47,67,87,69,106,110,61,112,112,78,117,32,58,52,119,123,126,79,135,40,11,8,145,143,95,5,15,158,161,18,28,162,165,166,168,169,171,35,172,173,64,80,189,113,64,102,77,157,103,103,107,119,140,180,163,142,144,145,146,146,146,156,149,154,157,161,160,170,172,239,337,340,342,281,329,323,247,252,365,389,399,395,399,393],"Cloquet, MN":[89,79,95,99,92,85,109,104,75,107,115,62,82,102,84,122,125,76,127,128,93,132,47,73,67,135,138,141,95,150,56,26,23,160,159,110,22,9,173,176,0,43,177,180,181,183,184,186,51,187,188,86,103,204,139,80,92,92,172,119,119,123,134,131,171,154,132,134,135,137,136,144,171,139,145,147,151,151,161,163,254,352,355,357,296,344,339,238,240,380,405,414,411,415,384],"Carlton, MN":[87,76,92,97,89,82,106,101,72,104,112,59,79,99,81,119,122,73,124,125,90,130,45,70,64,132,135,138,92,147,53,24,21,157,156,107,20,0,170,174,9,41,174,177,178,181,181,183,48,184,185,83,100,201,137,77,90,90,170,116,116,120,132,128,168,151,129,131,132,134,133,148,169,136,142,145,148,148,158,160,252,349,353,354,293,341,336,235,240,377,402,411,408,412,381],"Moose Lake, MN":[109,99,114,119,112,104,129,124,95,126,134,82,102,122,104,141,145,96,147,147,113,152,67,93,87,154,158,161,111,170,75,46,43,180,178,117,42,25,193,196,28,63,197,200,201,203,204,206,70,207,208,61,78,224,115,99,68,112,190,138,139,143,154,106,146,129,107,109,110,112,111,148,191,114,120,123,126,126,136,138,251,359,362,364,315,363,358,213,223,399,424,433,430,434,359],"Two Harbors, MN":[98,88,103,108,101,93,118,113,84,116,123,71,91,111,93,131,134,85,136,136,102,141,56,82,76,143,147,150,103,159,65,35,30,169,167,119,34,49,182,185,51,8,186,189,190,192,193,195,0,196,197,89,105,213,137,30,135,42,181,68,69,73,84,173,213,196,175,177,178,179,179,175,121,182,188,190,194,193,204,205,263,361,364,366,305,353,347,280,285,389,414,423,419,423,426],"Silver Bay, MN":[127,117,132,137,130,122,147,142,113,144,152,100,120,140,122,159,163,114,165,165,131,170,85,111,105,172,176,179,132,188,94,64,59,198,196,148,63,77,211,214,80,37,215,218,219,221,222,224,30,225,226,118,134,242,166,0,164,15,210,41,41,45,57,202,242,225,204,206,207,208,208,204,94,211,217,219,223,222,233,234,292,390,393,395,334,382,376,309,314,418,443,452,448,452,455],"Finland, MN":[140,129,145,150,142,135,159,154,125,157,165,112,133,152,135,172,175,126,177,178,143,183,98,123,117,185,188,192,145,200,106,77,71,210,209,160,76,90,223,227,92,50,228,231,232,234,234,237,42,237,239,131,146,254,179,15,176,0,223,30,39,43,54,215,255,237,216,218,219,221,220,217,91,223,229,231,235,235,245,247,305,402,406,408,347,395,389,322,327,430,455,464,461,465,467],"Ely, MN":[184,174,189,194,187,179,204,199,170,202,209,157,177,197,179,217,220,171,222,222,188,227,142,168,162,229,233,236,189,245,151,121,114,255,253,205,108,117,268,271,113,80,272,275,276,278,279,281,72,282,283,193,191,299,223,68,200,55,267,62,92,96,107,238,278,261,240,242,243,244,244,176,144,247,253,255,259,258,269,270,349,447,450,452,391,439,433,345,299,475,500,509,505,509,491],"Virginia, MN":[133,122,138,143,135,128,152,148,118,150,158,106,126,145,128,165,168,120,171,171,137,176,91,117,111,178,181,185,138,194,99,70,63,204,202,154,57,65,217,220,61,80,221,224,225,227,227,230,88,231,232,142,139,248,172,74,148,80,216,109,115,119,130,187,227,210,188,190,191,193,192,131,167,195,201,204,207,207,217,219,298,396,399,401,340,388,382,294,254,424,448,458,454,458,440],"Eveleth, MN":[130,120,135,140,133,125,150,145,116,147,155,103,123,143,125,162,166,117,168,168,134,173,88,114,108,175,179,182,135,191,96,67,60,201,199,151,54,62,214,217,58,77,218,221,222,224,225,227,85,228,229,139,137,245,169,71,146,77,213,103,112,116,127,184,224,207,185,187,189,190,190,129,164,193,198,201,204,204,214,216,295,393,396,398,337,385,379,291,252,421,446,455,451,455,437],"Hibbing, MN":[145,134,150,155,147,140,164,159,130,162,170,117,138,157,139,177,180,131,182,183,148,188,103,128,122,190,193,196,150,205,111,82,74,215,214,165,69,77,228,232,73,92,232,236,236,239,239,242,99,242,243,154,151,259,183,88,160,95,228,120,129,133,145,199,239,221,175,202,203,204,204,103,182,207,213,197,219,203,229,231,310,407,411,412,351,399,394,305,226,435,460,469,466,470,451],"Tower, MN":[162,152,168,172,165,158,182,177,148,180,188,135,155,175,157,195,198,149,200,201,166,205,120,146,140,208,211,214,168,223,129,99,92,233,232,183,87,95,246,249,91,110,250,253,254,256,257,259,84,260,261,171,169,277,201,84,178,78,245,85,115,119,130,216,257,239,218,220,221,222,222,154,167,225,231,233,237,236,247,249,327,425,428,430,369,417,412,323,277,453,478,487,484,488,469],"Grand Marais, MN":[182,171,187,192,184,177,201,196,167,199,207,154,175,194,177,214,217,168,219,220,185,225,140,165,159,227,230,234,187,242,148,119,114,252,251,202,118,132,265,269,134,92,270,273,274,276,276,279,84,279,281,173,188,296,221,57,218,54,265,48,20,34,0,257,297,279,258,260,261,263,262,259,38,265,271,273,277,277,287,289,347,444,448,450,389,437,431,364,369,472,497,506,503,507,509],"Lutsen, MN":[166,156,172,176,169,162,186,181,152,184,192,139,159,179,161,199,202,153,204,205,170,209,124,150,144,212,215,218,172,227,133,103,98,237,235,187,102,117,250,253,119,76,254,257,258,260,261,263,69,264,265,157,173,281,205,41,203,39,249,33,0,15,20,241,282,264,243,245,246,247,247,243,57,250,256,258,262,261,272,274,331,429,432,434,373,421,416,348,353,457,482,491,488,492,494],"Tofte, MN":[170,160,176,180,173,166,190,185,156,188,196,143,163,183,165,203,206,157,208,209,174,213,128,154,148,216,219,222,176,231,137,107,102,241,239,191,106,121,254,257,123,80,258,261,262,264,265,267,73,268,269,161,177,285,209,45,207,43,253,13,15,0,34,245,286,268,247,249,250,251,251,247,71,254,260,262,266,265,276,278,335,433,436,438,377,425,420,352,357,461,486,495,492,496,498],"Grand Portage, MN":[219,208,224,229,221,214,238,233,204,236,244,191,212,231,214,251,254,205,256,257,222,262,177,202,196,264,267,270,224,279,185,156,150,289,288,239,155,169,302,306,171,129,307,310,310,313,313,316,121,316,317,210,225,333,258,94,255,91,302,85,57,71,38,294,334,316,295,297,298,300,299,296,0,302,308,310,314,314,324,326,384,481,485,487,426,474,468,401,406,509,534,543,540,544,546]}};
+// ===== end home towns and drive miles =====
 const $=s=>document.querySelector(s);
 // Every scraped field goes through esc(); links only when the url parses as https.
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -1414,18 +1564,32 @@ function firstIn(e,r){
 }
 const daysFrom=d=>Math.round((d-today)/864e5);
 
-// --- place: town key -> TOWNS row (drive miles from Ashland); unknown towns sort last ---
-const townRow=e=>e.town&&TOWNS[e.town]?TOWNS[e.town]:null;
-// "From": Ashland = OSRM driving miles from TOWNS; My location = straight-line miles from the phone.
-// The position lives in memory only - never stored, never put in the URL.
-const GEO={pos:null,note:""};
-const fromMe=()=>S.from==="me"&&!!GEO.pos;
+// --- place: distance from the reader's home town; unknown towns sort last ---
+// HOME is a HOMES key, kept on this device only (localStorage ev_home), never put in the URL.
+// Miles: OSRM driving miles from DRIVE; a town or home missing from DRIVE falls back to straight-line,
+// always labelled as such, and the gap is reported in the console and in About until tools/drive-table.py runs.
+const HOMEOF=new Map(HOMES.flatMap(([g,rows])=>rows.map(r=>[r[0],{lat:r[1],lon:r[2],g}])));
+const DIX=new Map((DRIVE.to||[]).map((t,i)=>[t,i]));
+const homeName=k=>k?k.replace(/, [A-Z]{2}$/,""):"";
+let HOME=null;try{const h=localStorage.getItem("ev_home");if(h&&HOMEOF.has(h))HOME=h;}catch(e){}
+const GEO={note:""};
+const DRIVEGAP={towns:Object.keys(TOWNS).filter(t=>!DIX.has(t)),homes:[...HOMEOF.keys()].filter(h=>!(DRIVE.mi&&DRIVE.mi[h]))};
+if(DRIVEGAP.towns.length||DRIVEGAP.homes.length)console.warn(`Drive table out of date (built ${DRIVE.built||"never"}): ${DRIVEGAP.towns.length} town(s) and ${DRIVEGAP.homes.length} home town(s) use straight-line miles until tools/drive-table.py runs. First: ${[...DRIVEGAP.towns,...DRIVEGAP.homes][0]}`);
 function crow(a,b,c,d){const R=3958.8,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b);const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
-// Straight-line miles are worked out once per town for each new position.
-const miOf=e=>{const t=townRow(e);if(!t)return null;
-  if(fromMe()){if(GEO.cpos!==GEO.pos){GEO.cpos=GEO.pos;GEO.cache=new Map();}let m=GEO.cache.get(e.town);if(m===undefined){m=Math.round(crow(GEO.pos.lat,GEO.pos.lon,t.lat,t.lon));GEO.cache.set(e.town,m);}return m;}
-  return t.mi!=null?t.mi:null;};
-const miUnit=()=>fromMe()?" mi straight-line":" mi";
+// {mi, sl} for a row's town from HOME (sl: straight-line), or null. Worked out once per town per home.
+let DC=new Map(),DCK=null;
+function distOf(e){
+  if(!HOME||!e.town)return null;
+  if(DCK!==HOME){DCK=HOME;DC=new Map();}
+  let d=DC.get(e.town);if(d!==undefined)return d;
+  const row=DRIVE.mi&&DRIVE.mi[HOME],i=DIX.get(e.town),t=TOWNS[e.town];
+  if(row&&i!=null&&row[i]!=null)d={mi:row[i],sl:false};
+  else if(t&&typeof t.lat==="number"){const h=HOMEOF.get(HOME);d={mi:Math.round(crow(h.lat,h.lon,t.lat,t.lon)),sl:true};}
+  else d=null;
+  DC.set(e.town,d);return d;
+}
+const miOf=e=>{const d=distOf(e);return d?d.mi:null;};
+const miText=d=>d.sl?`about ${d.mi} mi straight-line`:`${d.mi} mi`;
 // place ending with its town name, optionally followed by a state
 function townEndRe(e){
   const name=e.town.replace(/, [A-Z]{2}$/,"").replace(/\./g,"\\.?").replace(/'/g,"['\\s]?");
@@ -1477,15 +1641,19 @@ const catOk=o=>!S.cat||cats().includes(o.cat);
 const isDate=w=>/^\d{4}-\d{2}-\d{2}$/.test(w||"")&&iso(pd(w))===w;
 const dayLabel2=w=>{const d=pd(w);return `${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`;};
 const whenText=w=>isDate(w)?"on "+dayLabel2(w):WHEN[w].toLowerCase();
+// My Bands is one person's concert watch-list: hidden unless this device turned it on in About (ev_mybands).
+let MB=false;try{MB=localStorage.getItem("ev_mybands")==="1";}catch(e){}
+const shown=o=>MB||o.cat!=="My Bands";
 function readURL(search){
-  const p=new URLSearchParams(search),w=p.get("when"),d=+(p.get("dist")||0);
+  const p=new URLSearchParams(search),w=p.get("when"),d=+(p.get("dist")||0),tn=p.get("town");
   const md=p.get("mode");
   return {mode:md==="weekly"||md==="saved"?md:"upcoming",sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)||isDate(w)?w:"7",
-    cat:catKey(p.getAll("cat").filter(c=>own(CATMETA,c))),dist:DISTS.includes(d)?d:0,q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
+    cat:catKey(p.getAll("cat").filter(c=>own(CATMETA,c)&&(MB||c!=="My Bands"))),dist:DISTS.includes(d)?d:0,town:own(TOWNS,tn)?tn:"",q:(p.get("q")||"").trim(),ev:p.get("ev")||""};
 }
 const U0=readURL(location.search);
 // q: lower-cased for matching; qt: the text as typed, for the URL and the search box.
-const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,from:"ashland",q:U0.q.toLowerCase(),qt:U0.q};
+const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,town:U0.town,q:U0.q.toLowerCase(),qt:U0.q};
+const byPlace=()=>S.sort==="place"&&!!HOME;
 function range(){
   if(isDate(S.when)){const d=pd(S.when);return[d,d];}
   if(S.when==="today")return[today,today];
@@ -1494,15 +1662,17 @@ function range(){
   return[today,addDays(today,+S.when-1)];
 }
 function hay(o){return (o.title+" "+o.place+" "+(o.desc||"")+" "+(o.note||"")+" "+o.region+" "+o.cat+" "+(o.town||"")).toLowerCase();}
-const distOk=e=>!S.dist||(miOf(e)!=null&&miOf(e)<=S.dist);
+// a distance filter needs a home town; without one it is inert (and shows no chip)
+const distOk=e=>!S.dist||!HOME||(miOf(e)!=null&&miOf(e)<=S.dist);
+const townOk=o=>!S.town||o.town===S.town;
 const qOk=e=>{if(!S.q)return true;const x=IX.get(e);return (x?x.h:hay(e)).includes(S.q);};
 // The index, built once at load: day numbers for start, end and each of dates, and the lower-case search text.
 const IX=new Map();
 for(const e of EVENTS){const ds=e.dates&&e.dates.length?e.dates.map(dn):null;IX.set(e,{s:dn(e.start),e:ds?ds[ds.length-1]:dn(e.end||e.start),ds,h:hay(e)});}
 for(const o of RECURRING)IX.set(o,{h:hay(o)});
 // every active filter except category (category counts are taken over this)
-function baseItems(){if(S.mode==="weekly")return RECURRING.filter(o=>inSeason(o)&&qOk(o)&&distOk(o));const r=range();return EVENTS.filter(e=>firstIn(e,r)&&distOk(e)&&qOk(e));}
-function pool(){const r=range();return EVENTS.filter(e=>firstIn(e,r)&&catOk(e)&&distOk(e)&&qOk(e));}
+function baseItems(){if(S.mode==="weekly")return RECURRING.filter(o=>shown(o)&&inSeason(o)&&qOk(o)&&distOk(o)&&townOk(o));const r=range();return EVENTS.filter(e=>shown(e)&&firstIn(e,r)&&distOk(e)&&qOk(e)&&townOk(e));}
+function pool(){const r=range();return EVENTS.filter(e=>shown(e)&&firstIn(e,r)&&catOk(e)&&distOk(e)&&qOk(e)&&townOk(e));}
 
 // --- rows ---
 // --- time: "HH:MM" or "HH:MM-HH:MM", 24-hour Central; anything else counts as absent ---
@@ -1513,12 +1683,14 @@ function fmtTime(v){
   return a.ap===b.ap&&!over?`${a.t}-${b.t} ${b.ap}`:`${a.t} ${a.ap}-${b.t} ${b.ap}`;
 }
 const timeOf=o=>o.time?fmtTime(o.time):"";
+// start time in minutes for sorting a day; untimed rows sort after timed ones
+const tMin=o=>{const m=/^(\d\d):(\d\d)/.exec(o.time||"");return m?+m[1]*60+ +m[2]:1440;};
 // A bad time from the scan is dropped from the page and reported once, loudly.
 {const bad=[...EVENTS,...RECURRING].filter(o=>o.time!==undefined&&!parseTime(o.time));
   if(bad.length)console.warn(`time: ${bad.length} value(s) not "HH:MM" or "HH:MM-HH:MM", ignored; first: "${bad[0].title}"`);}
 // --- the row: glyph tile, title (2 lines), one meta line, and a trailing slot (time over a note) ---
 const townName=o=>o.town?o.town.replace(/, [A-Z]{2}$/,""):o.place;
-function distPiece(o){const mi=miOf(o);if(!o.town||mi==null)return "";if(mi<3)return fromMe()?"Near you":"In town";return fromMe()?`${mi} mi straight-line`:`${mi} mi`;}
+function distPiece(o){const d=distOf(o);if(!d)return "";if(d.mi<3&&!d.sl)return "In town";return d.sl?`≈${d.mi} mi`:`${d.mi} mi`;}
 // Town · distance · Category: the category goes first when the ellipsis cuts, the distance never does
 const metaLine=o=>[townName(o),distPiece(o),o.cat].filter(Boolean).join(" · ");
 const shortD=d=>`${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`;
@@ -1534,7 +1706,7 @@ function noteFor(e,d){
 function evRow(o,id,meta,t,n){
   const lab=[id+"-t",t&&id+"-s1",n&&id+"-s2",id+"-m"].filter(Boolean).join(" ");
   const slot=t||n?`<span class="slot">${t?`<span class="s1" id="${id}-s1">${esc(t)}</span>`:""}${n?`<span class="s2" id="${id}-s2">${esc(n)}</span>`:""}</span>`:"";
-  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${lab}">${iconTile(o.cat)}<span class="body"><span class="t" id="${id}-t">${esc(o.title)}</span><span class="meta2" id="${id}-m">${esc(meta)}</span></span>${slot}</button>`;
+  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${lab}">${iconTile(o.cat)}<span class="body"><span class="t" id="${id}-t">${esc(o.title)}</span><span class="meta2" id="${id}-m">${meta.split(" · ").map(x=>`<span class="mp">${esc(x)}</span>`).join(" · ")}</span></span>${slot}</button>`;
 }
 // ctx: "date" (day groups, Ongoing, Saved day groups) or "near" (under a town header: date, then category)
 function row(e,d,ctx){
@@ -1551,8 +1723,8 @@ const chev=icon("caret-down");
 function viewDate(list){
   const r=range();
   const ongoing=list.filter(isOngoing).sort((a,b)=>lastDay(a)-lastDay(b));
-  const ahead=list.filter(e=>!isOngoing(e)).map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>a.d-b.d||(miOf(a.e)??9999)-(miOf(b.e)??9999));
-  const pre=ongoing.length?`<details class="ongoing"><summary>Ongoing now <span class="n">${ongoing.length} exhibits, runs and series</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,"date")).join("")}</div></details>`:"";
+  const ahead=list.filter(e=>!isOngoing(e)).map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>a.d-b.d||tMin(a.e)-tMin(b.e)||(miOf(a.e)??9999)-(miOf(b.e)??9999));
+  const pre=ongoing.length?`<details class="ongoing"><summary><span class="lbl">Ongoing now</span> <span class="n">${ongoing.length} multi-day event${ongoing.length===1?"":"s"}</span><span class="chev">${chev}</span></summary><div class="list">${ongoing.map(e=>row(e,today,"date")).join("")}</div></details>`:"";
   return {pre,items:ahead,ongoing:ongoing.length,dated:true,key:x=>iso(x.d),row:x=>row(x.e,x.d,"date"),
     label:x=>{const n=daysFrom(x.d);return n===0?"Today":n===1?"Tomorrow":DOWF[x.d.getDay()];},
     sub:x=>`${DOW[x.d.getDay()]}, ${MON[x.d.getMonth()]} ${x.d.getDate()}`};
@@ -1562,11 +1734,11 @@ function viewPlace(list){
   const arr=list.map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>(miOf(a.e)??9999)-(miOf(b.e)??9999)||(a.e.town||"~").localeCompare(b.e.town||"~")||(isOngoing(a.e)?1:0)-(isOngoing(b.e)?1:0)||a.d-b.d);
   const key=x=>miOf(x.e)!=null?x.e.town:(x.e.town||"Distance unknown");
   return {pre:"",items:arr,ongoing:0,key,label:key,row:x=>row(x.e,x.d,"near"),
-    sub:x=>{const mi=miOf(x.e);return mi!=null?(fromMe()?(mi<3?"near you":`${mi} mi straight-line from you`):(mi<3?"in town":`${mi} mi from Ashland`)):"distance unknown";}};
+    sub:x=>{const d=distOf(x.e);return d?(d.mi<3&&!d.sl?"in town":`${miText(d)} from ${homeName(HOME)}`):"distance unknown";}};
 }
 function inSeason(o){return (!o.seasonStart||pd(o.seasonStart)<=today)&&(!o.seasonEnd||pd(o.seasonEnd)>=today);}
 function viewWeekly(){
-  const list=RECURRING.filter(o=>inSeason(o)&&qOk(o)&&catOk(o)&&distOk(o));
+  const list=RECURRING.filter(o=>shown(o)&&inSeason(o)&&qOk(o)&&catOk(o)&&distOk(o)&&townOk(o));
   const order=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];const td=DOW[today.getDay()];
   const rot=order.slice(order.indexOf(td)).concat(order.slice(0,order.indexOf(td)));
   const idx=d=>{const i=rot.indexOf(d);return i<0?7+Math.max(0,DAYORDER.indexOf(d)):i;};
@@ -1581,8 +1753,8 @@ function groupsHTML(items){
 }
 
 // --- controls ---
-const CATS=Object.keys(CATMETA).filter(c=>c!=="Beach");
-const distLabel=()=>fromMe()?"Straight-line distance from you":"Drive distance from Ashland";
+const catList=()=>Object.keys(CATMETA).filter(c=>c!=="Beach"&&(MB||c!=="My Bands"));
+const distLabel=()=>HOME?`Drive distance from ${homeName(HOME)}`:"Drive distance";
 // Phone chips use short labels so the date row fits in two rows; the sidebar and #count keep WHEN.
 const CHIPLABEL={weekend:"Weekend","7":"7 days","30":"30 days"};
 // Phone: the four date chips only; category, From, distance, All dates and one day live in the Filters sheet.
@@ -1597,18 +1769,18 @@ function sideHTML(){
   if(S.mode==="saved")return show;
   return show+
     (S.mode==="upcoming"?`<h2>When</h2>${WHENS.map(([k,v])=>opt("data-when",k,v,S.when===k)).join("")}<label class="optdate${isDate(S.when)?" on":""}"><span>On a date...</span><input type="date" data-k="date" aria-label="On a date" min="${iso(today)}" value="${isDate(S.when)?S.when:""}"></label>`:"")+
-    `<h2>Distance from</h2>${opt("data-from","ashland","Ashland (driving)",S.from!=="me")}${opt("data-from","me","My location (straight-line)",S.from==="me")}`+
-    `<h2>${distLabel()}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m}${miUnit()}`:"Any distance",S.dist===m)).join("")}`+
-    `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${CATS.map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),sel.includes(c),base.filter(e=>e.cat===c).length)).join("")}`;
+    `<h2>Home town</h2><button class="opt" type="button" data-homepick>${HOME?`<span>${esc(HOME)}</span><span class="n">Change</span>`:"<span>Pick a town</span>"}</button>`+
+    (HOME?`<h2>${esc(distLabel())}</h2>${[0,...DISTS].map(m=>opt("data-dist",m,m?`Within ${m} mi`:"Any distance",S.dist===m)).join("")}`:"")+
+    `<h2>Category</h2>${opt("data-cat","","All categories",!S.cat,base.length)}${catList().map(c=>opt("data-cat",c,esc(VIEWLABEL[c]||c),sel.includes(c),base.filter(e=>e.cat===c).length)).join("")}`;
 }
 // Empty results: say what was searched and over which dates, then offer only the ways out that apply.
 const RANGETXT={today:" today",weekend:" this weekend","7":" in the next 7 days","30":" in the next 30 days",all:" on any date"};
 function emptyHTML(){
   const q=$("#search").value.trim(),wk=S.mode==="weekly";
-  const msg=(wk?"No weekly events":"No events")+(S.q?` for "${q}"`:"")+(wk?"":RANGETXT[S.when]||" "+whenText(S.when));
+  const msg=(wk?"No weekly events":"No events")+(S.q?` for "${q}"`:"")+(S.town?` in ${homeName(S.town)}`:"")+(wk?"":RANGETXT[S.when]||" "+whenText(S.when));
   const note=S.cat==="My Bands"&&!S.q&&!wk?"The weekly scan adds your bands when one books a show within driving range.":"";
   const act=(k,l)=>`<button class="eact" type="button" data-act="${k}">${l}</button>`;
-  const acts=(S.q?act("q","Clear search"):"")+(S.cat||S.dist||S.from==="me"?act("filters","Clear all filters"):"")+(!wk&&S.when!=="all"?act("when","Search all dates"):"");
+  const acts=(S.q?act("q","Clear search"):"")+(S.cat||(S.dist&&HOME)||S.town?act("filters","Clear all filters"):"")+(!wk&&S.when!=="all"?act("when","Search all dates"):"");
   return `<div class="empty"><p class="emsg">${esc(msg)}</p>${note?`<p class="enote">${esc(note)}</p>`:""}${acts?`<div class="eacts">${acts}</div>`:""}</div>`;
 }
 // After an empty-state button: its button is gone, so focus the first control in the new results.
@@ -1648,14 +1820,16 @@ function render(opts){
   if(fk){const n=$("#chips").querySelector(fk);if(n)n.focus();}
   renderApplied();
   if(S.mode==="saved"){renderSaved();return gen;}
-  V=S.mode==="weekly"?viewWeekly():S.sort==="place"?viewPlace(pool()):viewDate(pool());
+  V=S.mode==="weekly"?viewWeekly():byPlace()?viewPlace(pool()):viewDate(pool());
   // group counts come from the full list, so a header is right before its rows arrive
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
   V.shown=Math.min(FIRST,V.items.length);
-  const what=S.mode==="weekly"?"weekly events":`events · ${whenText(S.when)}${S.sort==="place"?(fromMe()?" · nearest to you (straight-line)":" · nearest first"):""}`;
+  const what=S.mode==="weekly"?"weekly events":`events · ${whenText(S.when)}${S.town?` · in ${homeName(S.town)}`:""}${byPlace()?` · nearest to ${homeName(HOME)}`:""}`;
   $("#count").textContent=`${V.items.length+V.ongoing} ${what}`;
   $("#announce").textContent="";
-  const gn=$("#geoNote");gn.textContent=GEO.note;gn.hidden=!GEO.note;
+  const gn=$("#geoNote"),needHome=S.mode==="upcoming"&&S.sort==="place"&&!HOME;
+  gn.innerHTML=esc(GEO.note)+(needHome?`${GEO.note?" ":""}Set your home town to sort by distance.<br><button class="eact" type="button" data-h="pick">Pick a town</button>`:"");
+  gn.hidden=!GEO.note&&!needHome;GEO.note="";renderHello();
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
   const res=$("#results");
   res.innerHTML=(html||emptyHTML())+(S.mode==="upcoming"&&cats().includes("My Bands")?MBNOTE:"");
@@ -1714,7 +1888,7 @@ function watchSizes(){if(!sizeRO)return;const els=[$(".bar"),$(".tabs"),...docum
 const scanDay=()=>{const ls=pd(LAST_SCAN);return `${MON[ls.getMonth()]} ${ls.getDate()}`;};
 function staleHTML(){const age=-daysFrom(pd(LAST_SCAN));return age>SCAN_STALE_DAYS?` &middot; <span class="stale">scan ${age} days old - refresh overdue</span>`:"";}
 function setMeta(){
-  const up=EVENTS.filter(isUpcoming).length,stale=-daysFrom(pd(LAST_SCAN))>SCAN_STALE_DAYS;
+  const up=EVENTS.filter(e=>shown(e)&&isUpcoming(e)).length,stale=-daysFrom(pd(LAST_SCAN))>SCAN_STALE_DAYS;
   $("#metaTop").innerHTML=`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming${staleHTML()}`;
   // The bar keeps an overdue scan short and loud; the full wording stays under the title and in About.
   $("#meta").innerHTML=stale?`Updated ${scanDay()} &middot; <span class="stale">overdue</span>`:`Updated ${scanDay()} &middot; ${up.toLocaleString()} upcoming`;
@@ -1726,13 +1900,17 @@ document.addEventListener("click",ev=>{
   if(b.classList.contains("ev")&&b.dataset.ev){openFromRow(b.dataset.ev);return;}
   if(b.id==="aboutBtn"){openAs("about");return;}
   if(b.id==="filtersBtn"){openAs("filters");return;}
+  if(b.id==="homeBtn"||b.hasAttribute("data-homepick")){openHome();return;}
+  if(b.dataset.h&&!b.closest("#sheet")){helloAct(b.dataset.h);return;}
   if(b.dataset.rm){removeApplied(b.dataset.rm);return;}
   if(b.closest("#sheet"))return;
   if(b.dataset.act){emptyAct(b.dataset.act);return;}
   // Destinations push a history entry (Back undoes them); refinements replace the current one.
   if(b.dataset.mode){pressNow(b);if(go({mode:b.dataset.mode}))withTabTransition(o=>render(o));return;}
-  if(b.dataset.sort){pressNow(b);if(go({sort:b.dataset.sort,mode:"upcoming"}))renderSoon();return;}
-  if(b.dataset.from){pressNow(b);setFrom(b.dataset.from);return;}
+  if(b.dataset.sort){
+    // Nearest needs a home town: ask for one, then sort once it is picked
+    if(b.dataset.sort==="place"&&!HOME){pendingNearest=true;openHome();return;}
+    pressNow(b);if(go({sort:b.dataset.sort,mode:"upcoming"}))renderSoon();return;}
   // Sidebar categories toggle independently; All categories clears them.
   if(b.dataset.cat!==undefined){const c=b.dataset.cat,a=c?(cats().includes(c)?cats().filter(x=>x!==c):[...cats(),c]):[];refine({cat:catKey(a)});
     document.querySelectorAll("#side [data-cat]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat?a.includes(x.dataset.cat):!a.length));renderSoon();return;}
@@ -1754,23 +1932,58 @@ function renderSoon(){const n=++renderSeq;requestAnimationFrame(()=>setTimeout((
 document.addEventListener("touchstart",()=>{},{passive:true});
 // Sidebar "On a date...": a valid day from today on.
 document.addEventListener("change",ev=>{if(ev.target.dataset.k!=="date")return;const v=ev.target.value;if(!isDate(v)||pd(v)<today)return;refine({when:v,mode:"upcoming"});render();});
-// Location is asked for only when "My location" is chosen. Any failure falls back to Ashland and says why.
-const FALLBACK=" - showing driving miles from Ashland instead.";
-function geoFail(why){S.from="ashland";GEO.pos=null;GEO.note=why+FALLBACK;render();}
-function setFrom(v){
-  if(v!=="me"){S.from="ashland";GEO.pos=null;GEO.note="";render();return;}
-  if(!("geolocation" in navigator)||!navigator.geolocation){geoFail("This browser cannot share its location");return;}
-  S.from="me";GEO.note="Finding your location...";render();
-  try{
-    navigator.geolocation.getCurrentPosition(p=>{
-      if(S.from!=="me")return;
-      GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude};
-      GEO.note="Distances are straight-line miles from your location, not driving miles.";render();
-    },err=>{
-      if(S.from!=="me")return;
-      geoFail(err&&err.code===1?"Location permission was denied":err&&err.code===3?"Finding your location timed out":"Your location is not available");
-    },{enableHighAccuracy:false,timeout:15000,maximumAge:600000});
-  }catch(e){geoFail("Your location is not available");}
+// --- home town: pick from HOMES, or use the phone's location once to pick the nearest listed town ---
+// The position is used for that one lookup and never stored; only the town key is kept (ev_home).
+let pendingNearest=false,homeFrom=null;
+function setHome(k){
+  HOME=k&&HOMEOF.has(k)?k:null;
+  try{if(HOME)localStorage.setItem("ev_home",HOME);else localStorage.removeItem("ev_home");}catch(e){}
+  renderHomeBtn();
+}
+function renderHomeBtn(){
+  const b=$("#homeBtn");b.classList.toggle("unset",!HOME);
+  b.innerHTML=`<span class="pin">${icon("map-pin")}</span><span class="hn">${esc(HOME?homeName(HOME):"Set your town")}</span>${icon("caret-down")}`;
+  b.setAttribute("aria-label",HOME?`Home town: ${HOME}. Change`:"Set your home town for drive distances");
+}
+const nearestHome=(la,lo)=>{let best=null,bd=1e9;for(const[k,h]of HOMEOF){const d=crow(la,lo,h.lat,h.lon);if(d<bd){bd=d;best=k;}}return [best,bd];};
+// say(msg) reports progress and failures; done(town, miles from you) runs on success. Every failure says what to do next.
+function locateHome(say,done){
+  const nope=why=>say(why+" Pick your town from the list instead.");
+  if(!("geolocation" in navigator)||!navigator.geolocation){nope("This browser can't share its location.");return;}
+  say("Finding your location...");
+  try{navigator.geolocation.getCurrentPosition(p=>{
+      const[k,d]=nearestHome(p.coords.latitude,p.coords.longitude);
+      if(!k||d>60){nope(`You look to be ${Math.round(d)} miles from the nearest listed town${k?` (${homeName(k)})`:""}.`);return;}
+      done(k,Math.round(d));
+    },err=>nope(err&&err.code===1?"Location permission was denied.":err&&err.code===3?"Finding your location timed out.":"Your location isn't available."),
+    {enableHighAccuracy:false,timeout:15000,maximumAge:600000});
+  }catch(e){nope("Your location isn't available.");}
+}
+const setNote=t=>{const g=$("#geoNote");g.textContent=t;g.hidden=!t;};
+const pickedNote=(k,d)=>`Home town set to ${homeName(k)}${d!=null?`, the nearest listed town${d>=3?` (${d} mi from you)`:""}`:""}. Distances are now drive miles from there.`;
+function openHome(){homeFrom=sheet.open&&!sheet.classList.contains("closing")?OPEN:null;openAs("home");}
+// A town chosen in the sheet. Opened from the list: the change (and Nearest, if that is what asked) applies
+// once the sheet's history entry is gone (flushApply). Opened from another sheet: re-render the list behind now,
+// and stepping back reopens that sheet with the new distances.
+function chooseHome(k,d){
+  setHome(k);GEO.note=pickedNote(k,d);
+  if(homeFrom){pendingNearest=false;render({keep:true});}
+  else{pendingApply=pendingNearest?{sort:"place"}:{};pendingNearest=false;}
+  closeSheet();
+}
+// first-run card
+let helloOff=false;try{helloOff=localStorage.getItem("ev_hello")==="off";}catch(e){}
+function renderHello(){
+  const el=$("#hello"),on=!HOME&&!helloOff&&S.mode!=="saved";el.hidden=!on;if(!on){el.innerHTML="";return;}
+  if(el.innerHTML)return;
+  el.innerHTML=`<h2 id="helloT">Events across the Northwoods</h2><p>Northern Wisconsin, the western U.P. and the Arrowhead, updated weekly. Set your town to see drive miles.</p>`+
+    `<div class="eacts"><button class="eact pri" type="button" data-h="loc">${icon("crosshair-simple")}Use my location</button><button class="eact" type="button" data-h="pick">Pick a town</button></div>`+
+    `<button class="hx" type="button" data-h="x" aria-label="Dismiss">${icon("x")}</button>`;
+}
+function helloAct(k){
+  if(k==="pick"){openHome();return;}
+  if(k==="x"){helloOff=true;try{localStorage.setItem("ev_hello","off");}catch(e){}renderHello();$("#search").focus({preventScroll:true});return;}
+  if(k==="loc")locateHome(setNote,(t,d)=>{setHome(t);GEO.note=pickedNote(t,d);render({keep:true});const b=$("#homeBtn");if(b.offsetParent)b.focus({preventScroll:true});});
 }
 let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{refine({q:ev.target.value.trim()});render();},150);});
 addEventListener("resize",setBarH);
@@ -1781,15 +1994,16 @@ function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(
 armMidnight();
 
 // --- history: go() pushes destinations, refine() replaces; render() only ever replaces ---
-const VIEWKEYS=["mode","sort","when","cat","dist","q"];
-const DEF={mode:"upcoming",sort:"date",when:"7",cat:"",dist:0,q:""};
+const VIEWKEYS=["mode","sort","when","cat","dist","town","q"];
+const DEF={mode:"upcoming",sort:"date",when:"7",cat:"",dist:0,town:"",q:""};
 // This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 // OPEN: the open sheet, an event id or "about". Only an event id goes in the URL; About is marked in history.state.
 let OPEN=null;
-const evOf=o=>o&&o!=="about"&&o!=="filters"?o:"";
+const SHEETS=["about","filters","home"];
+const evOf=o=>o&&!SHEETS.includes(o)?o:"";
 try{history.scrollRestoration="manual";}catch(e){}
-const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,q:S.qt});
+const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,town:S.town,q:S.qt});
 function urlFor(v,ev){
   // categories as repeated keys: cat=Concert&cat=Festival
   const u=new URLSearchParams();VIEWKEYS.forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(v[k]!==DEF[k])u.set(k,v[k]);});if(ev)u.set("ev",ev);
@@ -1799,16 +2013,16 @@ function curState(){try{return history.state&&typeof history.state==="object"?hi
 // Rewrite the current entry for the current view, keeping its scroll position and sheet mark.
 function replaceURL(){
   const c=curState();
-  try{history.replaceState({...viewOf(),ev:evOf(OPEN),about:OPEN==="about",filters:OPEN==="filters",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
+  try{history.replaceState({...viewOf(),ev:evOf(OPEN),about:OPEN==="about",filters:OPEN==="filters",home:OPEN==="home",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
 }
-function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.qt=v.q;S.q=v.q.toLowerCase();}
+function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.town=v.town||"";S.qt=v.q;S.q=v.q.toLowerCase();}
 // Destinations: call from a tap or key handler only (Chrome skips entries pushed without a user gesture).
 function go(patch){
   const cur={...viewOf(),open:OPEN||""},next={...cur,...patch};
   if(Object.keys(next).every(k=>next[k]===cur[k]))return false;
   try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}
   if(VIEWKEYS.some(k=>next[k]!==cur[k])){applyView(next);}
-  try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",filters:next.open==="filters",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
+  try{history.pushState({...viewOf(),ev:evOf(next.open),about:next.open==="about",filters:next.open==="filters",home:next.open==="home",y:scrollY,sheet:next.open?PL:""},"",urlFor(viewOf(),evOf(next.open)));}catch(e){}
   return true;
 }
 // Refinements: the caller renders, and render() replaces the entry.
@@ -1818,7 +2032,7 @@ addEventListener("popstate",e=>{
   const st=e.state&&typeof e.state==="object"&&e.state.mode?e.state:{...readURL(location.search),y:null};
   // our own step back after "Show N events": keep the applied filters on this entry
   if(pendingApply&&!OPEN){flushApply();return;}
-  const want=st.about?"about":st.filters?"filters":st.ev||"",ua=!!e.hasUAVisualTransition;
+  const want=st.about?"about":st.filters?"filters":st.home?"home":st.ev||"",ua=!!e.hasUAVisualTransition;
   // Back while a sheet is sliding out: that entry is already gone, so do not step back again. Going to
   // another sheet's entry swaps the content in place; otherwise finish the close now.
   if(sheet.open&&sheet.classList.contains("closing")){
@@ -1855,10 +2069,12 @@ function dateLine(o){
 }
 function distLine(o){
   if(!o.town)return "Distance unknown";
-  const mi=miOf(o),t=`<b>${esc(o.town)}</b> &middot; `;
-  if(mi==null)return t+"Distance unknown";
-  if(mi<3)return t+(fromMe()?"Near you":"In town");
-  return t+`${mi} mi ${fromMe()?"straight-line from you":"driving from Ashland"}`;
+  const t=`<b>${esc(o.town)}</b> &middot; `;
+  if(!HOME)return t+`<button class="sh-set" type="button" data-sh="home">Set your home town</button> to see the drive`;
+  const d=distOf(o);
+  if(!d)return t+"Distance unknown";
+  if(d.mi<3&&!d.sl)return t+"In town";
+  return t+(d.sl?`about ${d.mi} mi straight-line from ${esc(homeName(HOME))} (no road distance yet)`:`${d.mi} mi drive from ${esc(homeName(HOME))}`);
 }
 function shareURL(id){try{const u=new URL(location.href);u.search="?ev="+encodeURIComponent(id);u.hash="";return u.href;}catch(e){return "?ev="+encodeURIComponent(id);}}
 // place, plus the town when the place name lacks it (Directions, calendar LOCATION)
@@ -1868,22 +2084,31 @@ function placeFull(o){const p=o.place||"";return o.town&&!townEndRe(o).test(p)?(
 function sheetHTML(o,id,gone){
   const dest=placeFull(o);
   const src=safeUrl(o.url);let host="";if(src){try{host=new URL(src).hostname.replace(/^www\./,"");}catch(e){}}
-  const text=isWeekly(o)?o.note:o.desc,cal=!gone&&calModel(o);
-  return `<h2 class="sh-title" id="sheetTitle">${esc(o.title)}</h2>${gone?`<p class="sh-gone">No longer listed</p>`:""}<p class="sh-date">${esc(dateLine(o))}</p><p class="sh-venue">${esc(o.place)}</p><p class="sh-dist">${distLine(o)}</p>`+
+  const text=isWeekly(o)?o.note:o.desc,cal=!gone&&calModel(o),rel=gone?"":relDay(o);
+  const rows=(src&&host&&!gone?`<li><a class="sh-row" href="${esc(src)}" target="_blank" rel="noopener"><span class="k">Source</span><span class="v">${esc(host)}</span>${icon("arrow-square-out")}</a></li>`:"")+
+    (o.town&&!gone?`<li><button class="sh-row" type="button" data-sh="town" data-town="${esc(o.town)}"><span class="k">More in</span><span class="v">${esc(townName(o))}</span>${icon("caret-right")}</button></li>`:"");
+  return `<h2 class="sh-title" id="sheetTitle">${esc(o.title)}</h2>${gone?`<p class="sh-gone">No longer listed</p>`:""}<p class="sh-date">${rel?`<span class="sh-when">${rel}</span>`:""}${esc(dateLine(o))}</p><p class="sh-venue">${esc(o.place)}</p><p class="sh-dist">${distLine(o)}</p>`+
     `${text?`<p class="sh-desc">${esc(text)}</p>`:""}<p class="sh-tags">${catTag(o.cat)}</p>`+
-    `<div class="sh-acts">${dest?`<a class="sh-btn pri" href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(dest)}" target="_blank" rel="noopener">${icon("navigation-arrow")}Directions</a>`:""}`+
-    `${gone?"":`<button class="sh-btn" type="button" data-sh="share" data-id="${id}">${icon("share-network")}Share</button>`}`+
-    `${src&&host&&!gone?`<a class="sh-btn" href="${esc(src)}" target="_blank" rel="noopener">${icon("arrow-square-out")}Open on ${esc(host)}</a>`:""}</div>`+
-    `<div class="sh-acts">${saveBtn(id)}${cal?`<button class="sh-btn" type="button" data-sh="ics" data-id="${id}">${icon("calendar-plus")}Add to calendar</button><a class="sh-btn" href="${esc(gcalURL(o,id))}" target="_blank" rel="noopener">${icon("arrow-square-out")}Google Calendar</a>`:""}</div>`+
+    `<div class="sh-acts">${dest?`<a class="sh-btn pri" href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(dest)}" target="_blank" rel="noopener">${icon("navigation-arrow")}Directions</a>`:""}${saveBtn(id)}</div>`+
+    `<div class="sh-acts">${cal?`<button class="sh-btn" type="button" data-sh="cal" aria-expanded="false" aria-controls="calOpts">${icon("calendar-plus")}Add to calendar</button>`:""}`+
+    `${gone?"":`<button class="sh-btn" type="button" data-sh="share" data-id="${id}">${icon("share-network")}Share</button>`}</div>`+
+    (cal?`<div class="calx-opts" id="calOpts" hidden><button class="sh-btn" type="button" data-sh="ics" data-id="${id}">${icon("download-simple")}Apple, Outlook (.ics)</button><a class="sh-btn" href="${esc(gcalURL(o,id))}" target="_blank" rel="noopener">${icon("arrow-square-out")}Google Calendar</a></div>`:"")+
+    (rows?`<ul class="sh-rows">${rows}</ul>`:"")+
     `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p><label class="sh-link" id="sheetLink" hidden>Link to this event<input type="text" readonly></label>`;
+}
+// "On now", "Today" or "Tomorrow" ahead of the date line; nothing for later days (the line names the weekday).
+function relDay(o){
+  if(isWeekly(o)){const i=DOW.indexOf(o.day);return i===today.getDay()?"Today":i===(today.getDay()+1)%7?"Tomorrow":"";}
+  if(!isUpcoming(o))return "";if(isOngoing(o))return "On now";
+  const d=firstIn(o,[today,new Date(2100,0,1)]);if(!d)return "";const n=daysFrom(d);return n===0?"Today":n===1?"Tomorrow":"";
 }
 const GONE=`<h2 class="sh-title" id="sheetTitle">This event is no longer listed</h2><p>It may have ended or been removed in the weekly update.</p><div class="sh-acts"><button class="sh-btn pri" type="button" data-sh="close">See upcoming events</button></div>`;
 // While the sheet is open the page behind cannot scroll; pad for a classic scrollbar so nothing shifts sideways.
 function lockPage(on){const de=document.documentElement,sb=on?innerWidth-de.clientWidth:0;de.classList.toggle("sheet-open",on);de.style.paddingRight=sb>0?sb+"px":"";}
 function openSheet(id){
-  const o=BYID.get(id),snap=!o&&id!=="about"?savedSnap(id):null;OPEN=id;
-  if(id==="filters")FD={cats:cats(),from:S.from,dist:S.dist,when:S.when==="all"||isDate(S.when)?S.when:null};
-  $("#sheetBody").innerHTML=id==="about"?aboutHTML():id==="filters"?filtersHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
+  const o=BYID.get(id),snap=!o&&!SHEETS.includes(id)?savedSnap(id):null;OPEN=id;
+  if(id==="filters")FD={cats:cats(),dist:S.dist,when:S.when==="all"||isDate(S.when)?S.when:null};
+  $("#sheetBody").innerHTML=id==="about"?aboutHTML():id==="filters"?filtersHTML():id==="home"?homeHTML():o?sheetHTML(o,id):snap?sheetHTML(snap,id,true):GONE;
   $("#sheetClose").textContent=id==="filters"?"Done":"Close";
   clearTimeout(closeTimer);sheet.classList.remove("closing");
   if(!sheet.open){
@@ -1931,11 +2156,12 @@ sheet.addEventListener("close",()=>{
   else{
     OPEN=null;const c=curState();
     // The entry this page pushed for the sheet: step back once. A ?ev= link opened directly: drop ev in place.
-    if((c.ev||c.about||c.filters)&&c.sheet===PL){try{history.back();}catch(e){replaceURL();flushApply();}}
+    if((c.ev||c.about||c.filters||c.home)&&c.sheet===PL){try{history.back();}catch(e){replaceURL();flushApply();}}
     else{replaceURL();flushApply();}
   }
   if(id==="about"){$("#aboutBtn").focus({preventScroll:true});return;}
   if(id==="filters"){$("#filtersBtn").focus({preventScroll:true});return;}
+  if(id==="home"){const h=WIDE.matches?$("#side [data-homepick]"):$("#homeBtn");if(h){h.focus({preventScroll:true});return;}}
   const r=id&&rowEl(id);
   if(r)r.focus({preventScroll:true});
   if(!r||document.activeElement!==r){const res=$("#results");res.tabIndex=-1;res.focus({preventScroll:true});}
@@ -1948,19 +2174,56 @@ sheet.addEventListener("click",ev=>{
   else if(b.dataset.sh==="share")shareEvent(b.dataset.id);
   else if(b.dataset.sh==="save")toggleSave(b.dataset.id,b);
   else if(b.dataset.sh==="ics")downloadICS(b.dataset.id);
+  else if(b.dataset.sh==="cal"){const on=b.getAttribute("aria-expanded")!=="true",x=$("#calOpts");b.setAttribute("aria-expanded",on?"true":"false");if(x)x.hidden=!on;}
+  else if(b.dataset.sh==="home")openHome();
+  else if(b.dataset.sh==="town"){pendingApply={town:b.dataset.town,mode:S.mode==="saved"?"upcoming":null};closeSheet();}
+  else if(b.dataset.sh==="app")shareApp();
+  else if(b.dataset.hp==="loc")locateHome(m=>{const l=$("#sheetLive");if(l)l.textContent=m;},(k,d)=>chooseHome(k,d));
+  else if(b.dataset.hp==="clear"){setHome(null);pendingNearest=false;if(homeFrom)render({keep:true});else pendingApply={};closeSheet();}
   else if(b.id==="themeSwitch")setTheme(theme==="dark"?"light":"dark");
+  else if(b.id==="mbSwitch")setMyBands(!MB);
 });
 // About: sources, credit, the watch-list note, freshness, dark mode and the iPhone install hint.
-const SOURCES=[["https://visitashland.com", "Visit Ashland"], ["https://www.coawi.org/517/Ashland-Community-Events", "City of Ashland"], ["https://www.bayfieldcounty.wi.gov/299/Events", "Bayfield County"], ["https://www.bayfield.org/events/", "bayfield.org"], ["https://www.bigtop.org/lineup.html", "Big Top Chautauqua"], ["https://www.stagenorth.com", "StageNorth"], ["https://www.duluthplayhouse.org/upcoming-season", "Duluth Playhouse / NorShor"], ["https://renegadetheaterco.org", "Renegade"], ["https://uwsuper.edu/program/theatre/", "UW-Superior Theatre"], ["https://muskyfest.com", "Musky Fest"], ["https://lumberjackworldchampionships.com", "Lumberjack Championships"], ["https://www.bayfrontfestivalpark.com/events-calendar", "Bayfront Festival Park"], ["https://visitduluth.com", "Visit Duluth"], ["https://www.wisdells.com/wisconsin-dells-events-calendar", "WisDells"], ["https://dnr.wisconsin.gov/topic/fishing", "WI DNR fishing"], ["https://www.badriver.com/", "Bad River Casino"], ["https://www.legendarywaters.com/events", "Legendary Waters"], ["https://www.facebook.com/ashlandfunandgames", "Play Unplugged"], ["https://www.levelupsuperior.com", "Level UP Superior"], ["https://animecons.com/events/schedule.php?loc=us", "anime conventions (400 mi)"]];
+const SOURCES=[["https://visitashland.com", "Visit Ashland"], ["https://www.coawi.org/517/Ashland-Community-Events", "City of Ashland"], ["https://www.bayfieldcounty.wi.gov/299/Events", "Bayfield County"], ["https://www.bayfield.org/events/", "bayfield.org"], ["https://www.bigtop.org/lineup.html", "Big Top Chautauqua"], ["https://www.stagenorth.com", "StageNorth"], ["https://www.duluthplayhouse.org/upcoming-season", "Duluth Playhouse / NorShor"], ["https://renegadetheaterco.org", "Renegade"], ["https://uwsuper.edu/program/theatre/", "UW-Superior Theatre"], ["https://muskyfest.com", "Musky Fest"], ["https://lumberjackworldchampionships.com", "Lumberjack Championships"], ["https://www.bayfrontfestivalpark.com/events-calendar", "Bayfront Festival Park"], ["https://visitduluth.com", "Visit Duluth"], ["https://www.wisdells.com/wisconsin-dells-events-calendar", "WisDells"], ["https://dnr.wisconsin.gov/topic/fishing", "WI DNR fishing"], ["https://www.badriver.com/", "Bad River Casino"], ["https://www.legendarywaters.com/events", "Legendary Waters"], ["https://www.facebook.com/ashlandfunandgames", "Play Unplugged"], ["https://www.levelupsuperior.com", "Level UP Superior"], ["https://animecons.com/events/schedule.php?loc=us", "anime conventions (400 mi)"], ["https://business.rhinelanderchamber.com/events", "Rhinelander Area Chamber"], ["https://vilaswi.com/events/", "Vilas County (Eagle River)"], ["https://events.mtu.edu/", "Michigan Tech (Houghton)"], ["https://ely.org/events/", "Ely Chamber"]];
 const EXT=icon("arrow-square-out");
 function aboutHTML(){
+  const gap=DRIVEGAP.towns.length+DRIVEGAP.homes.length;
   return `<h2 class="sh-title" id="sheetTitle">About</h2>`+
-    `<section class="ab-sec" aria-labelledby="abSrc"><h3 id="abSrc">Sources scanned</h3><ul class="ab-list">${SOURCES.map(([u,n])=>`<li><a class="ab-row" href="${esc(u)}" target="_blank" rel="noopener"><span>${esc(n)}</span>${EXT}</a></li>`).join("")}</ul>`+
-    `<p>Driving distances: OSRM, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</p><p>Icons: Phosphor Icons (MIT)</p></section>`+
-    `<section class="ab-sec" aria-labelledby="abList"><h3 id="abList">Watch-list</h3><p><strong>Concert watch-list</strong> tuned to your taste: metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers, mashups. Past events drop off automatically; rescanned every Thursday.</p></section>`+
-    `<section class="ab-sec" aria-labelledby="abUpd"><h3 id="abUpd">Updates</h3><p>Last updated ${scanDay()}${staleHTML()}</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abCov"><h3 id="abCov">What's covered</h3><p>Events across the Northwoods: northern Wisconsin, Michigan's western U.P., and Duluth, the Iron Range and the North Shore. Bigger concerts, theater and fan conventions further out (the Twin Cities, Madison, Milwaukee, the Dells) are listed too.</p>`+
+    `<p>Every event links to the page it came from. Check there before you drive: details change.</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abHome"><h3 id="abHome">Home town</h3><ul class="ab-list"><li><button class="ab-row" type="button" data-sh="home"><span>${HOME?esc(HOME):"Not set"}</span><span>${HOME?"Change":"Set"} ${icon("caret-right")}</span></button></li></ul>`+
+    `<p>Distances are driving miles from your home town, worked out with OSRM. It's saved on this device only, and your location is never stored or sent anywhere.</p>`+
+    (gap?`<p class="stale">${gap} town${gap===1?"":"s"} added since the road table was built (${esc(DRIVE.built||"never")}) show${gap===1?"s":""} straight-line miles, labelled, until it's rebuilt.</p>`:"")+`</section>`+
+    `<section class="ab-sec" aria-labelledby="abUpd"><h3 id="abUpd">Updates</h3><p>Last updated ${scanDay()}${staleHTML()}. The list is refreshed every Thursday and past events drop off on their own.</p></section>`+
     `<section class="ab-sec" aria-labelledby="abApp"><h3 id="abApp">Display</h3><button class="ab-switch" type="button" role="switch" id="themeSwitch" aria-checked="${theme==="dark"}"><span>Dark mode</span><span class="track" aria-hidden="true"><span class="knob"></span></span></button>`+
-    `<p>On iPhone: tap Share, then Add to Home Screen.</p></section>`;
+    `<button class="ab-switch" type="button" role="switch" id="mbSwitch" aria-checked="${MB}" aria-describedby="mbDesc"><span>Show My Bands</span><span class="track" aria-hidden="true"><span class="knob"></span></span></button>`+
+    `<p id="mbDesc">My Bands is a personal concert watch-list (metal, punk, hardstyle, game and anime covers) kept by the site's maintainer. Off unless you turn it on.</p></section>`+
+    `<section class="ab-sec" aria-labelledby="abShare"><h3 id="abShare">Share and install</h3><ul class="ab-list"><li><button class="ab-row" type="button" data-sh="app"><span>Share this app</span>${icon("share-network")}</button></li></ul>`+
+    `<p>On Android, Chrome offers Install app. On iPhone: tap Share, then Add to Home Screen.</p><p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p></section>`+
+    `<section class="ab-sec" aria-labelledby="abSrc"><h3 id="abSrc">Sources scanned</h3><ul class="ab-list">${SOURCES.map(([u,n])=>`<li><a class="ab-row" href="${esc(u)}" target="_blank" rel="noopener"><span>${esc(n)}</span>${EXT}</a></li>`).join("")}</ul>`+
+    `<p>Driving distances: OSRM, &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</p><p>Icons: Phosphor Icons (MIT)</p></section>`;
+}
+async function shareApp(){
+  const url=location.origin+location.pathname,live=$("#sheetLive");if(live)live.textContent="";
+  if(navigator.share){try{await navigator.share({title:"Northwoods Area Events",text:"Events across the Northwoods, with drive distances from your town.",url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
+  try{await navigator.clipboard.writeText(url);if(live)live.textContent="Link copied";return;}catch(e){}
+  if(live)live.textContent="Copy this link: "+url;
+}
+function setMyBands(on){
+  MB=on;try{if(on)localStorage.setItem("ev_mybands","1");else localStorage.removeItem("ev_mybands");}catch(e){}
+  if(!on&&cats().includes("My Bands"))S.cat=catKey(cats().filter(c=>c!=="My Bands"));
+  const sw=$("#mbSwitch");if(sw)sw.setAttribute("aria-checked",on);
+  setMeta();render({keep:true});
+}
+// Home-town sheet: Use my location, a search box, then every listed town grouped by area. Picking one applies it.
+function homeHTML(){
+  const li=([k])=>`<li data-n="${esc(k.toLowerCase())}"><label class="fo"><input type="radio" name="fhome" value="${esc(k)}"${k===HOME?" checked":""}><span>${esc(k)}</span></label></li>`;
+  return `<h2 class="sh-title" id="sheetTitle">Your home town</h2><p class="hp-lead">Distances are driving miles from this town. It's saved on this device only.</p>`+
+    `<div class="hp-acts"><button class="sh-btn pri" type="button" data-hp="loc">${icon("crosshair-simple")}Use my location</button>${HOME?`<button class="sh-btn" type="button" data-hp="clear">Clear</button>`:""}</div>`+
+    `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p>`+
+    `<div class="hp-find">${icon("magnifying-glass")}<input type="search" id="hpFind" placeholder="Find a town" aria-label="Find a town" autocomplete="off"></div>`+
+    HOMES.map(([g,rows])=>`<fieldset class="fs"><legend>${esc(g)}</legend><ul class="fl">${rows.map(li).join("")}</ul></fieldset>`).join("")+
+    `<p class="hp-none" id="hpNone" hidden>No listed town matches. Pick the closest one, or use your location.</p>`;
 }
 // Share sheet, else copy the link, else show it selected in a read-only field.
 async function shareEvent(id){
@@ -1973,18 +2236,17 @@ async function shareEvent(id){
 // --- Filters sheet: a draft (FD) that "Show N events" or Done applies; Back, Esc and the scrim discard it ---
 let FD=null,pendingApply=null;
 // run fn with the draft's date, distance and From in place of the applied ones
-function withDraft(fn){const keep={when:S.when,dist:S.dist,from:S.from};S.dist=FD.dist;S.from=FD.from;if(FD.when)S.when=FD.when;try{return fn();}finally{Object.assign(S,keep);}}
+function withDraft(fn){const keep={when:S.when,dist:S.dist};S.dist=FD.dist;if(FD.when)S.when=FD.when;try{return fn();}finally{Object.assign(S,keep);}}
 function filtersHTML(){
   const wk=S.mode==="weekly";
   const c=withDraft(()=>{const base=baseItems(),m={};base.forEach(o=>{m[o.cat]=(m[o.cat]||0)+1;});return {m,total:base.length,n:base.filter(o=>!FD.cats.length||FD.cats.includes(o.cat)).length};});
-  const order=CATS.slice().sort((a,b)=>(c.m[b]||0)-(c.m[a]||0)||CATS.indexOf(a)-CATS.indexOf(b));
-  const me=FD.from==="me",unit=me?" mi straight-line":" mi";
+  const CL=catList(),order=CL.slice().sort((a,b)=>(c.m[b]||0)-(c.m[a]||0)||CL.indexOf(a)-CL.indexOf(b));
   const chk=k=>{const n=c.m[k]||0,on=FD.cats.includes(k),off=!n&&!on;return `<li><label class="fo${off?" off":""}"><input type="checkbox" name="fcat" value="${esc(k)}"${on?" checked":""}${off?" disabled":""}><span>${esc(VIEWLABEL[k]||k)}</span><span class="n">${n}</span></label></li>`;};
   const rad=(name,val,label,on)=>`<li><label class="fo"><input type="radio" name="${name}" value="${val}"${on?" checked":""}><span>${label}</span></label></li>`;
   return `<h2 class="sh-title" id="sheetTitle">Filters</h2>`+
     `<fieldset class="fs"><legend>Category</legend><ul class="fl"><li><label class="fo"><input type="checkbox" name="fall"${FD.cats.length?"":" checked"}><span>All categories</span><span class="n">${c.total}</span></label></li>${order.map(chk).join("")}</ul></fieldset>`+
-    `<fieldset class="fs"><legend>Distance from</legend><ul class="fl">${rad("ffrom","ashland","Ashland (driving)",!me)}${rad("ffrom","me","My location (straight-line)",me)}</ul></fieldset>`+
-    `<fieldset class="fs"><legend>${me?"Straight-line distance from you":"Drive distance from Ashland"}</legend><ul class="fl">${[0,...DISTS].map(m=>rad("fdist",m,m?`Within ${m}${unit}`:"Any distance",FD.dist===m)).join("")}</ul></fieldset>`+
+    (HOME?`<fieldset class="fs"><legend>${esc(distLabel())}</legend><ul class="fl">${[0,...DISTS].map(m=>rad("fdist",m,m?`Within ${m} mi`:"Any distance",FD.dist===m)).join("")}</ul></fieldset>`
+      :`<fieldset class="fs"><legend>Drive distance</legend><p class="hp-lead">Set your home town to filter by drive distance.</p><div class="hp-acts"><button class="sh-btn" type="button" data-sh="home">${icon("map-pin")}Set your home town</button></div></fieldset>`)+
     (wk?"":`<fieldset class="fs"><legend>Date</legend><ul class="fl">${rad("fwhen","all","All dates",FD.when==="all")}<li class="fdate"><label class="fo"><input type="radio" name="fwhen" value="date"${isDate(FD.when)?" checked":""}><span>On a date...</span></label><input type="date" id="fdateIn" aria-label="On a date" min="${iso(today)}" value="${isDate(FD.when)?FD.when:""}"></li></ul></fieldset>`)+
     `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p>`+
     `<div class="fs-foot"><button class="sh-btn pri" type="button" data-f="apply">Show ${c.n} ${wk?"weekly ":""}event${c.n===1?"":"s"}</button></div>`;
@@ -1997,44 +2259,40 @@ function refreshFilters(el){
   const f=key&&$("#sheetBody").querySelector(key);if(f)f.focus({preventScroll:true});
 }
 sheet.addEventListener("change",ev=>{
+  if(OPEN==="home"){if(ev.target.name==="fhome")chooseHome(ev.target.value,null);return;}
   if(OPEN!=="filters")return;const t=ev.target;
   if(t.name==="fcat")FD.cats=t.checked?[...FD.cats,t.value]:FD.cats.filter(x=>x!==t.value);
   else if(t.name==="fall")FD.cats=[];
   else if(t.name==="fdist")FD.dist=+t.value;
-  else if(t.name==="ffrom"){if(t.value==="me"){sheetLocate(t);return;}FD.from="ashland";}
   else if(t.name==="fwhen"){const v=$("#fdateIn").value;FD.when=t.value==="all"?"all":isDate(v)&&pd(v)>=today?v:iso(today);}
   else if(t.id==="fdateIn"){if(!isDate(t.value)||pd(t.value)<today)return;FD.when=t.value;}
   else return;
   refreshFilters(t);
 });
-// From: My location in the sheet asks for the position right away, so the counts can use it.
-function sheetLocate(el){
-  const say=m=>{const l=$("#sheetLive");if(l)l.textContent=m;};
-  const fail=why=>{FD.from="ashland";if(OPEN!=="filters")return;refreshFilters($('#sheetBody [name="ffrom"][value="ashland"]'));say(why+FALLBACK);};
-  FD.from="me";
-  if(GEO.pos){refreshFilters(el);return;}
-  if(!("geolocation" in navigator)||!navigator.geolocation){fail("This browser cannot share its location");return;}
-  refreshFilters(el);say("Finding your location...");
-  try{navigator.geolocation.getCurrentPosition(p=>{
-      GEO.pos={lat:p.coords.latitude,lon:p.coords.longitude};
-      if(OPEN==="filters"&&FD.from==="me"){refreshFilters(document.activeElement);say("Distances are straight-line miles from your location.");}
-    },err=>fail(err&&err.code===1?"Location permission was denied":err&&err.code===3?"Finding your location timed out":"Your location is not available"),
-    {enableHighAccuracy:false,timeout:15000,maximumAge:600000});
-  }catch(e){fail("Your location is not available");}
-}
-function applyFilters(){pendingApply={cat:catKey(FD.cats),dist:FD.dist,from:FD.from,when:FD.when};closeSheet();}
+// Home-town search: hide towns (and whole groups) that do not match; nothing re-renders, so focus stays put.
+sheet.addEventListener("input",ev=>{
+  if(OPEN!=="home"||ev.target.id!=="hpFind")return;
+  const q=ev.target.value.trim().toLowerCase();let any=false;
+  $("#sheetBody").querySelectorAll(".fs").forEach(fs=>{let n=0;fs.querySelectorAll("li[data-n]").forEach(li=>{const ok=!q||li.dataset.n.includes(q);li.hidden=!ok;if(ok)n++;});fs.hidden=!n;if(n)any=true;});
+  $("#hpNone").hidden=any;
+});
+function applyFilters(){pendingApply={cat:catKey(FD.cats),dist:FD.dist,when:FD.when};closeSheet();}
 // after the sheet's entry is gone: apply as a refinement of the list entry (no new history entry)
 function flushApply(){
   const d=pendingApply;if(!d)return;pendingApply=null;
-  S.cat=d.cat;S.dist=d.dist;if(d.when&&S.mode==="upcoming")S.when=d.when;
-  if(d.from!==S.from)setFrom(d.from);else render();
+  // from the Filters sheet (cat, dist, when) or an event sheet's "More in <town>" (town, mode)
+  if("cat" in d){S.cat=d.cat;S.dist=d.dist;if(d.when&&S.mode==="upcoming")S.when=d.when;}
+  if(d.mode)S.mode=d.mode;
+  if(d.sort){S.sort=d.sort;S.mode="upcoming";}
+  if("town" in d)S.town=d.town;
+  render();
 }
 // --- applied filters: one removable chip per non-default sheet setting ---
 function appliedList(){
   if(S.mode==="saved")return [];
   const a=cats().map(c=>["cat:"+c,VIEWLABEL[c]||c]);
-  if(S.dist)a.push(["dist",`Within ${S.dist}${miUnit()}`]);
-  if(S.from==="me")a.push(["from","From my location"]);
+  if(S.dist&&HOME)a.push(["dist",`Within ${S.dist} mi of ${homeName(HOME)}`]);
+  if(S.town)a.push(["town",`In ${homeName(S.town)}`]);
   if(S.mode==="upcoming"&&(S.when==="all"||isDate(S.when)))a.push(["when",S.when==="all"?"All dates":dayLabel2(S.when)]);
   return a;
 }
@@ -2044,15 +2302,15 @@ function renderApplied(){
   el.innerHTML=a.map(([k,l])=>`<button type="button" class="achip" data-rm="${esc(k)}" aria-label="Remove ${esc(l)}"><span>${esc(l)}</span>${XICON}</button>`).join("")+(a.length?`<button type="button" class="aclear" data-rm="all">Clear all</button>`:"");
   const fb=$("#filtersBtn"),bd=$("#filtersBadge");fb.setAttribute("aria-label",a.length?`Filters, ${a.length} active`:"Filters");fb.classList.toggle("on",!!a.length);bd.textContent=a.length;bd.hidden=!a.length;
 }
-// Clear all: categories, distance, From (back to Ashland) and the sheet date (back to 7 days). Search stays.
-function clearAll(){S.cat="";S.dist=0;if(S.when==="all"||isDate(S.when))S.when="7";if(S.from==="me")setFrom("ashland");else render();}
+// Clear all: categories, distance, town and the sheet date (back to 7 days). Search and home town stay.
+function clearAll(){S.cat="";S.dist=0;S.town="";if(S.when==="all"||isDate(S.when))S.when="7";render();}
 function removeApplied(k){
   const idx=[...document.querySelectorAll("#applied [data-rm]")].findIndex(x=>x.dataset.rm===k);
   if(k==="all")clearAll();
   else if(k.startsWith("cat:")){refine({cat:catKey(cats().filter(c=>c!==k.slice(4)))});render();}
   else if(k==="dist"){refine({dist:0});render();}
   else if(k==="when"){refine({when:"7"});render();}
-  else if(k==="from")setFrom("ashland");
+  else if(k==="town"){refine({town:""});render();}
   // focus the chip that took this one's place, else Filters, else the results
   const rest=[...document.querySelectorAll("#applied [data-rm]")],fb=$("#filtersBtn");
   const f=k!=="all"&&rest.length?rest[Math.min(idx,rest.length-1)]:fb.offsetParent?fb:null;
@@ -2208,7 +2466,7 @@ function setTheme(t){theme=t;try{localStorage.setItem("ev_theme",theme);}catch(e
 if("IntersectionObserver" in window)new IntersectionObserver(([en])=>{const bar=$(".bar");bar.classList.toggle("collapsed",!en.isIntersecting);bar.classList.toggle("under",!en.isIntersecting);}).observe($(".top"));
 
 $("#search").value=S.qt;
-setMeta();render({keep:true});
+renderHomeBtn();setMeta();render({keep:true});
 if(U0.ev){openSheet(U0.ev);replaceURL();}
 else{const y=curState().y;if(typeof y==="number"&&y>0){flushToY(y);scrollTo(0,y);}}
 

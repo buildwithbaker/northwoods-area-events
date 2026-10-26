@@ -1,7 +1,9 @@
 # CLAUDE.md - northwoods-area-events
 
-A live, always-current list of events around Ashland/Bayfield, the Chequamegon Bay,
-Hayward, Duluth, and the Wisconsin Dells. Anchor town: Ashland, WI.
+A live, always-current list of events across the Northwoods, for anyone in the area: northern
+Wisconsin, the western U.P., Duluth and the Arrowhead (the county list lives in `scan-sources.md`,
+"Coverage area"). Each reader picks a home town and sees real drive miles from it. TOWNS `mi` is
+still measured from Ashland, WI, and is the fallback when no home town is set.
 
 ## Structure
 - `index.html` is the whole app - single file, no build step. Event data lives inline in
@@ -59,6 +61,28 @@ For what used to be one big "Local" bucket:
   never guess a town, coordinates or miles.
 - No `</script` and no `<!--` anywhere in the data - either one ends the page's script.
 
+### Home towns and the drive table (render side - the scan never edits it)
+- Just below the `// ===== render` line sit two constants: `HOMES` (the pickable home towns, grouped by
+  area, `[name, lat, lon]`, hand-kept; a shared key must match its `TOWNS` key exactly) and `DRIVE`
+  (OSRM driving miles from every home town to every `TOWNS` key, with the build date and source).
+- `tools/drive-table.py` rebuilds the single `const DRIVE = ...;` line from `HOMES` + `TOWNS`. Run it
+  from the repo root after any scan that adds or changes a `TOWNS` key (`python tools\drive-table.py`
+  on Windows, `python3 tools/drive-table.py` elsewhere), then stage `index.html`. Standard library only.
+  It fails loud: any OSRM error or missing marker exits non-zero and leaves the file untouched.
+- A town missing from `DRIVE` shows straight-line miles, labelled ("≈12 mi", "no road distance yet"), plus a
+  console warning and a red line in About. Never silent; the fix is to re-run the script.
+- To add a home town: add it to `HOMES` (Census Gazetteer coordinates, or its `TOWNS` row), then re-run the script.
+
+### Reader settings and URL keys
+- On the device only (`localStorage`, every access guarded): `ev_home` (the home town; never in the URL),
+  `ev_theme`, `ev_mybands` (`1` shows My Bands; hidden by default), `ev_hello` (`off` once the first-run
+  card is dismissed), plus the Saved list.
+- URL keys: `mode`, `sort`, `when` (a range key or a `YYYY-MM-DD` date), `cat` (repeatable), `dist`,
+  `town` (a `TOWNS` key: "More in <Town>"), `q`, `ev`. Old links keep loading.
+- **My Bands is hidden by default** on the public app: gone from lists, counts, Filters, search and `cat=`
+  links until a reader turns on "Show My Bands" in About. A direct `?ev=` link still opens. The scan still
+  writes My Bands rows as before.
+
 ## Installable app (manifest + service worker)
 - `manifest.webmanifest` (linked in the head) and `icon-192.png`, `icon-512.png`,
   `icon-maskable-512.png` (rendered from `favicon.svg`) let Android Chrome install the site as an app.
@@ -82,6 +106,8 @@ For what used to be one big "Local" bucket:
   })()));
   ```
 - The weekly scan never touches any of these files.
+- `og.png` (1200x630) and `screenshots/events-light.png` / `events-dark.png` (780x1688, the sizes in the
+  manifest) are rendered from the live UI. Re-render them when the UI changes visibly.
 
 ## Deploy
 GitHub Pages serves this repo as a project site at

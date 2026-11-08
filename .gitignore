@@ -16,3 +16,7 @@ concert-watchlist-bands.md
 youtube-music-artists-A-Z.md
 youtube-music-artists-by-playlist.md
 youtube-music-artists-raw.json
+
+# My Bands rotation state (tools/my-bands.py) - derived from the private watch-list
+.my-bands-state.json
+.my-bands-state.json.tmp

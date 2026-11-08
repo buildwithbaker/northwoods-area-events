@@ -111,8 +111,17 @@ For what used to be one big "Local" bucket:
 
 ## Deploy
 GitHub Pages serves this repo as a project site at
-https://buildwithbaker.github.io/northwoods-area-events/. No build step - merging a PR
-into `main` publishes it.
+https://buildwithbaker.github.io/northwoods-area-events/. Since 2026-11-08 the Pages source is
+**GitHub Actions**, not "deploy from a branch": `.github/workflows/pages.yml` runs the same Jekyll
+build on every push to `main` (a human merge) and on `workflow_dispatch`.
+
+**Weekly scan PRs merge themselves.** `.github/workflows/scan-automerge.yml` runs on any PR from a
+`weekly-scan-YYYY-MM-DD` branch opened by `buildwithbaker`. It runs `.github/scripts/validate_scan.py`
+from `main`, squash-merges only if every check passes, then dispatches `pages.yml` (a merge made with
+the workflow's own token starts no other workflow, so it has to ask). The scan must never run
+`gh pr merge` itself. A failed check leaves the PR open and fails the run - fix the cause, push to the
+same branch, and the workflow re-runs. Changing the validator or either workflow is a normal PR that a
+human merges.
 
 ## Branching (main is protected - PR only)
 

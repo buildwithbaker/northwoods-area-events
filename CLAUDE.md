@@ -69,6 +69,13 @@ For what used to be one big "Local" bucket:
   from the repo root after any scan that adds or changes a `TOWNS` key (`python tools\drive-table.py`
   on Windows, `python3 tools/drive-table.py` elsewhere), then stage `index.html`. Standard library only.
   It fails loud: any OSRM error or missing marker exits non-zero and leaves the file untouched.
+- `tools/add-town.py "Town, ST" [...] --write` adds `TOWNS` rows from named sources only: Census 2024
+  Gazetteer place file, else county-subdivision file, plus OSRM miles to the Ashland anchor, with both
+  in `src`. Exit 2 lists any town it could not resolve (GNIS-only, ambiguous) - leave `town` off those
+  rows. Run `tools/drive-table.py` after it. Added 2026-11-08 so the scan never hand-types a town.
+- `tools/my-bands.py` covers the private My Bands watch-list: `match <venue text files>` checks every
+  act against saved venue calendars at once; `next N` / `mark` / `status` rotate per-act searches,
+  with state in the gitignored `.my-bands-state.json`. It never writes `index.html`.
 - A town missing from `DRIVE` shows straight-line miles, labelled ("≈12 mi", "no road distance yet"), plus a
   console warning and a red line in About. Never silent; the fix is to re-run the script.
 - To add a home town: add it to `HOMES` (Census Gazetteer coordinates, or its `TOWNS` row), then re-run the script.

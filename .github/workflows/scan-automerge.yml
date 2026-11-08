@@ -38,19 +38,23 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PR: ${{ github.event.pull_request.number }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
+      # Current main, NOT the PR's recorded base sha: a PR opened before main moved
+      # (or before this workflow existed) records an older base that lacks the
+      # validator. The PR is compared against what it would actually merge into.
       - name: Check out main (the trusted copy of the validator)
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          ref: ${{ github.event.pull_request.base.ref }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Fetch the PR head without checking it out
-        run: git fetch --no-tags origin "+refs/pull/${PR}/head:refs/remotes/pr/head"
+        run: |
+          git fetch --no-tags origin "+refs/pull/${PR}/head:refs/remotes/pr/head"
+          echo "BASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Validate the scan
         run: python3 .github/scripts/validate_scan.py

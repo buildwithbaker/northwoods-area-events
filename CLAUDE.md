@@ -94,8 +94,9 @@ America/Chicago everywhere in the app.
   Runs over 14 days are not on Tonight; they sit in Upcoming's collapsed "Running now" list.
 - **Upcoming** is the day list from today on, with a sticky date strip, search (`q`), the kind filter and
   Regions. Core regions are on by default: Chequamegon Bay, Duluth / Superior, Hurley / Iron County,
-  Northwoods, Hayward (including "Hayward / Sawyer County"), Western U.P. Every other region is under
-  "Farther away" and off until turned on. The choice is saved in `ev_regions` and also applies to Weekly.
+  Northwoods, Wider Northwoods, Hayward (including "Hayward / Sawyer County"), Western U.P. Every other
+  region is under "Farther away" and off until turned on. The choice is saved in `ev_regions` and also
+  applies to Weekly. Only the default is code: a saved `ev_regions` is never migrated or overwritten.
 - **Weekly** has day chips Mon-Sun plus Other (Monthly, Season, Varies...). It ignores `q` and the kind
   filter; Regions apply.
 - **Saved** is the reader's saved list.

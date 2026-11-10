@@ -2554,8 +2554,8 @@ armMidnight();
 // --- history: go() pushes destinations, refine() replaces; render() only ever replaces ---
 const VIEWKEYS=["mode","sort","when","cat","dist","town","q","day"];
 const DEF={mode:"tonight",sort:"date",when:"all",cat:"",dist:0,town:"",q:"",day:""};
-// Which keys a view writes to the URL. Tonight writes none: a bare cat= would read as an old link and open Upcoming.
-const URLKEYS={tonight:[],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
+// Which keys a view writes to the URL. Tonight writes cat only together with an explicit mode=tonight (urlFor): a bare cat= reads as an old link and opens Upcoming.
+const URLKEYS={tonight:["cat"],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
 // This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 // OPEN: the open sheet, an event id or a SHEETS name. Only an event id goes in the URL; the sheets are marked in history.state.
@@ -2566,7 +2566,7 @@ try{history.scrollRestoration="manual";}catch(e){}
 const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,town:S.town,q:S.qt,day:S.day});
 function urlFor(v,ev){
   const u=new URLSearchParams();
-  if(v.mode!==DEF.mode)u.set("mode",v.mode);
+  if(v.mode!==DEF.mode||(v.mode==="tonight"&&v.cat))u.set("mode",v.mode);
   // categories as repeated keys: cat=Concert&cat=Festival
   (URLKEYS[v.mode]||[]).forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(v[k]!==DEF[k])u.set(k,v[k]);});
   if(ev)u.set("ev",ev);

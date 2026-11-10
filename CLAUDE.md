@@ -80,12 +80,48 @@ For what used to be one big "Local" bucket:
   console warning and a red line in About. Never silent; the fix is to re-run the script.
 - To add a home town: add it to `HOMES` (Census Gazetteer coordinates, or its `TOWNS` row), then re-run the script.
 
+### The four tabs (render side)
+Bottom tabs on a phone, a left rail at 960px and wider: **Tonight, Upcoming, Weekly, Saved**. "Today" is
+America/Chicago everywhere in the app.
+- **Tonight** covers the whole area (no region filter), sorted by drive miles from the home town (Ashland
+  when none is set), then by time, in bands: Close by (<15 mi), Short drive (15-44), Worth the drive
+  (45-89), Farther (90+), Distance unknown. It includes:
+  - a single-day event whose `time` starts at 17:00 or later, or whose end is still ahead (an event that
+    starts before 17:00 with no end time is not "tonight"; it still shows on Upcoming under Today);
+  - an event with no `time`, listed as "Time not listed";
+  - a `dates[]` event with today in `dates`;
+  - a continuous run of 14 days or less that covers today.
+  Runs over 14 days are not on Tonight; they sit in Upcoming's collapsed "Running now" list.
+- **Upcoming** is the day list from today on, with a sticky date strip, search (`q`), the kind filter and
+  Regions. Core regions are on by default: Chequamegon Bay, Duluth / Superior, Hurley / Iron County,
+  Northwoods, Hayward (including "Hayward / Sawyer County"), Western U.P. Every other region is under
+  "Farther away" and off until turned on. The choice is saved in `ev_regions` and also applies to Weekly.
+- **Weekly** has day chips Mon-Sun plus Other (Monthly, Season, Varies...). It ignores `q` and the kind
+  filter; Regions apply.
+- **Saved** is the reader's saved list.
+- The kind filter (Tonight and Upcoming) groups categories for readers; the `cat` URL key still carries
+  category names. My Bands stays its own group, hidden unless `ev_mybands` is on.
+
+### Render-side changes: the invariant
+Any future render-side change must leave these byte-identical to `main`: the data region (from
+`const LAST_SCAN` up to the `// ===== render` marker), the marker line itself, and `HOMES` and `DRIVE`.
+`.github/scripts/validate_scan.py` splits on that marker. Head, CSS, markup and the render JS may change.
+Check with `git diff main -- index.html` that no hunk falls inside the data region.
+
 ### Reader settings and URL keys
 - On the device only (`localStorage`, every access guarded): `ev_home` (the home town; never in the URL),
   `ev_theme`, `ev_mybands` (`1` shows My Bands; hidden by default), `ev_hello` (`off` once the first-run
-  card is dismissed), plus the Saved list.
-- URL keys: `mode`, `sort`, `when` (a range key or a `YYYY-MM-DD` date), `cat` (repeatable), `dist`,
-  `town` (a `TOWNS` key: "More in <Town>"), `q`, `ev`. Old links keep loading.
+  card is dismissed), `ev_regions` (the Regions selection on Upcoming and Weekly; see "The four tabs"),
+  plus the Saved list.
+- URL keys: `mode` (`tonight`, `upcoming`, `weekly`, `saved`), `sort`, `when` (a range key or a
+  `YYYY-MM-DD` date), `cat` (repeatable; category names), `dist`, `town` (a `TOWNS` key: "More in
+  <Town>"), `q`, `day` (Weekly only: `Mon`..`Sun` or `Other`), `ev`. Old links keep loading.
+  - A bare URL (no `mode`) opens Tonight. `mode=tonight` is written explicitly only when Tonight has a
+    kind selection, so `?mode=tonight&cat=Concert` survives a reload and a shared link.
+  - Old-link rule: no `mode` plus any of `when`, `sort`, `cat`, `dist`, `town`, `q` opens Upcoming with
+    those applied. An old link with no `when` keeps the 7-day window it implied (a removable applied chip).
+  - Which keys each tab writes: Tonight `cat`; Upcoming `sort`, `when`, `cat`, `dist`, `town`, `q`;
+    Weekly `day`; Saved none. `ev` opens the event sheet on any tab.
 - **My Bands is hidden by default** on the public app: gone from lists, counts, Filters, search and `cat=`
   links until a reader turns on "Show My Bands" in About. A direct `?ev=` link still opens. The scan still
   writes My Bands rows as before.

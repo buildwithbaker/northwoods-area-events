@@ -2134,7 +2134,7 @@ function toggleGroup(name){
 }
 
 // --- regions: which parts of the area Upcoming and Weekly show. Tonight always covers the whole area. ---
-const REGCORE=["Chequamegon Bay","Duluth / Superior","Hurley / Iron County","Northwoods","Hayward","Western U.P."];
+const REGCORE=["Chequamegon Bay","Duluth / Superior","Hurley / Iron County","Northwoods","Wider Northwoods","Hayward","Western U.P."];
 // "Hayward / Sawyer County" is Hayward
 const regOf=o=>o.region==="Hayward / Sawyer County"?"Hayward":o.region;
 const REGTOT={};[...EVENTS,...RECURRING].forEach(o=>{const k=regOf(o);REGTOT[k]=(REGTOT[k]||0)+1;});

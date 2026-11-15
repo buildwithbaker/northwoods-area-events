@@ -81,17 +81,17 @@ For what used to be one big "Local" bucket:
 - To add a home town: add it to `HOMES` (Census Gazetteer coordinates, or its `TOWNS` row), then re-run the script.
 
 ### The four tabs (render side)
-Bottom tabs on a phone, a left rail at 960px and wider: **Tonight, Upcoming, Weekly, Saved**. "Today" is
-America/Chicago everywhere in the app.
-- **Tonight** covers the whole area (no region filter), sorted by drive miles from the home town (Ashland
+Bottom tabs on a phone, a left rail at 960px and wider: **Today, Upcoming, Weekly, Saved**. "Today" is
+America/Chicago everywhere in the app. (The first tab was "Tonight" until 2026-11-14; its sun icon replaced the moon.)
+- **Today** covers the whole area (no region filter), sorted by drive miles from the home town (Ashland
   when none is set), then by time, in bands: Close by (<15 mi), Short drive (15-44), Worth the drive
-  (45-89), Farther (90+), Distance unknown. It includes:
-  - a single-day event whose `time` starts at 17:00 or later, or whose end is still ahead (an event that
-    starts before 17:00 with no end time is not "tonight"; it still shows on Upcoming under Today);
-  - an event with no `time`, listed as "Time not listed";
+  (45-89), Farther (90+), Distance unknown. It is every event happening today that has not ended:
+  - a single-day event with an end time drops off once that end time passes (an end earlier than the start
+    runs past midnight, so it stays); a start-only `time` stays all day;
+  - an event with no `time`, listed as "Time not listed", stays all day;
   - a `dates[]` event with today in `dates`;
-  - a continuous run of 14 days or less that covers today.
-  Runs over 14 days are not on Tonight; they sit in Upcoming's collapsed "Running now" list.
+  - a continuous run of 14 days or less that covers today (daily hours on a run end it for the day the same way).
+  Runs over 14 days are not on Today; they sit in Upcoming's collapsed "Running now" list.
 - **Upcoming** is the day list from today on, with a sticky date strip, search (`q`), the kind filter and
   Regions. Core regions are on by default: Chequamegon Bay, Duluth / Superior, Hurley / Iron County,
   Northwoods, Wider Northwoods, Hayward (including "Hayward / Sawyer County"), Western U.P. Every other
@@ -100,8 +100,16 @@ America/Chicago everywhere in the app.
 - **Weekly** has day chips Mon-Sun plus Other (Monthly, Season, Varies...). It ignores `q` and the kind
   filter; Regions apply.
 - **Saved** is the reader's saved list.
-- The kind filter (Tonight and Upcoming) groups categories for readers; the `cat` URL key still carries
+- The kind filter (Today and Upcoming) groups categories for readers; the `cat` URL key still carries
   category names. My Bands stays its own group, hidden unless `ev_mybands` is on.
+
+### Look (render side)
+Light surfaces are blue-grey (page `#DCE4EF`, cards `#F6F8FB`); a navy header band (`--band`, `#24406B` light,
+`#1B2A44` dark) runs full width behind the top bar, large title, search row, kind chips and date strip on a phone
+(at 960px+ the bar is the rail footer and the band starts at the title). The `--fam-*` / `--on-fam-*` tile pairs,
+`--band-*` and the tab-bar tokens live in the two `:root` blocks; a new text/background pair needs 4.5:1 (icons
+and borders 3:1) in both themes. Dark `--on-primary-container` is `#D6E3F7`, so components use the token
+and need no per-component white patch.
 
 ### Render-side changes: the invariant
 Any future render-side change must leave these byte-identical to `main`: the data region (from
@@ -114,14 +122,15 @@ Check with `git diff main -- index.html` that no hunk falls inside the data regi
   `ev_theme`, `ev_mybands` (`1` shows My Bands; hidden by default), `ev_hello` (`off` once the first-run
   card is dismissed), `ev_regions` (the Regions selection on Upcoming and Weekly; see "The four tabs"),
   plus the Saved list.
-- URL keys: `mode` (`tonight`, `upcoming`, `weekly`, `saved`), `sort`, `when` (a range key or a
+- URL keys: `mode` (`today`, `upcoming`, `weekly`, `saved`; `tonight` is read as an alias of `today`), `sort`, `when` (a range key or a
   `YYYY-MM-DD` date), `cat` (repeatable; category names), `dist`, `town` (a `TOWNS` key: "More in
   <Town>"), `q`, `day` (Weekly only: `Mon`..`Sun` or `Other`), `ev`. Old links keep loading.
-  - A bare URL (no `mode`) opens Tonight. `mode=tonight` is written explicitly only when Tonight has a
-    kind selection, so `?mode=tonight&cat=Concert` survives a reload and a shared link.
+  - A bare URL (no `mode`) opens Today. `mode=today` is written explicitly only when Today has a
+    kind selection, so `?mode=today&cat=Concert` survives a reload and a shared link. Old
+    `?mode=tonight...` links keep loading and are rewritten to `mode=today`.
   - Old-link rule: no `mode` plus any of `when`, `sort`, `cat`, `dist`, `town`, `q` opens Upcoming with
     those applied. An old link with no `when` keeps the 7-day window it implied (a removable applied chip).
-  - Which keys each tab writes: Tonight `cat`; Upcoming `sort`, `when`, `cat`, `dist`, `town`, `q`;
+  - Which keys each tab writes: Today `cat`; Upcoming `sort`, `when`, `cat`, `dist`, `town`, `q`;
     Weekly `day`; Saved none. `ev` opens the event sheet on any tab.
 - **My Bands is hidden by default** on the public app: gone from lists, counts, Filters, search and `cat=`
   links until a reader turns on "Show My Bands" in About. A direct `?ev=` link still opens. The scan still

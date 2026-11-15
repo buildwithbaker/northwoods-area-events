@@ -13,11 +13,11 @@
 <meta name="text-scale" content="scale">
 <title>Northwoods Area Events</title>
 <meta name="description" content="Events across the Northwoods: northern Wisconsin, the western U.P. and Duluth and the Arrowhead. Pick your town for drive distances. Refreshed weekly.">
-<meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFF2F7">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#EFF2F7">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#24406B">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#24406B">
 <script>
-// Stored dark theme: set it before first paint so no light frame shows. Both theme-color tags carry the active --bg.
-try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content","#0F1420"));}}catch(e){}
+// Stored dark theme: set it before first paint so no light frame shows. Both theme-color tags carry the active --band (the navy header).
+try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark");document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content","#1B2A44"));}}catch(e){}
 </script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -49,9 +49,9 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
    The theme is the app's choice (data-theme), never the phone's. */
 :root{
   --primary:#2E5082; --on-primary:#FFFFFF; --on-primary-container:#25406A; --primary-container:#E4EAF4;
-  --accent:#A07020; --accent-ink:#7A520F; --accent-container:#F2E5C9;
-  --on-surface-variant:#526070; --outline:#B0BAC8; --outline-variant:#DDE2EA;
-  --surface:#EFF2F7; --surface-container:#FFFFFF; --surface-container-high:#FFFFFF; --on-surface-muted:#3c4654;
+  --accent:#A07020; --accent-ink:#7A520F; --accent-container:#F6E7C6;
+  --on-surface-variant:#526070; --outline:#B0BAC8; --outline-variant:#CDD6E3;
+  --surface:#DCE4EF; --surface-container:#F6F8FB; --surface-container-high:#FFFFFF; --on-surface-muted:#3c4654;
   --on-surface:#1A1F2B; --link:#2E5082; --error:#8A1C1C;
   --bar-shadow:0 2px 8px rgba(8,12,20,.12); --sheet-shadow:0 -4px 24px rgba(8,12,20,.2);
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
@@ -61,22 +61,26 @@ try{if(localStorage.getItem("ev_theme")==="dark"){document.documentElement.setAt
   --spring-ios-default:linear(0, 0.082, 0.243, 0.413, 0.562, 0.682, 0.774, 0.841, 0.89, 0.925, 0.949, 0.965, 0.977, 0.984, 0.99, 0.993, 1);
   --ease-sheet:var(--ease-emph-decel);
   /* category tint families: container and glyph/tag text (glyph 5.9:1 or more) */
-  --fam-music:#EEEDFE; --on-fam-music:#3C3489; --fam-celebrate:#FAEEDA; --on-fam-celebrate:#7A5410;
-  --fam-community:#E3EEF3; --on-fam-community:#1E4A5E; --fam-outdoors:#E4F0E1; --on-fam-outdoors:#24552B;
-  --fam-play:#FBEAF0; --on-fam-play:#72243E; --fam-neutral:#EDEFF3; --on-fam-neutral:#3A3F4A;
+  --fam-music:#DCD7FA; --on-fam-music:#3A2F8F; --fam-celebrate:#F6DEB0; --on-fam-celebrate:#6E4A0A;
+  --fam-community:#CFE3EE; --on-fam-community:#164257; --fam-outdoors:#D3E8CE; --on-fam-outdoors:#1F4D26;
+  --fam-play:#F7D3E0; --on-fam-play:#6C1F3A; --fam-neutral:#DDE1E8; --on-fam-neutral:#333944;
+  /* header band (navy, behind the bar, title, search, kind chips and date strip), tab bar, active tab pill */
+  --band:#24406B; --band-chip:#34507D; --band-line:#4F6A96; --band-sub:#C9D6EA; --band-meta:#B4C3DB; --band-link:#F2D49A; --on-band:#FFFFFF;
+  --band-stale:#FFC4C4; --band-field:#F4F7FB; --band-field-line:transparent; --tabbar:#E6ECF5; --tab-pill:#C9D6EA;
   --bar-h:0px; --gh-h:0px; --tabs-h:0px; --stk:0px; color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --primary:#33598C; --on-primary:#FFFFFF; --on-primary-container:#22344F; --primary-container:#22344F;
-  --accent:#D6A24A; --accent-ink:#E2B462; --accent-container:#3A3320;
+  --primary:#33598C; --on-primary:#FFFFFF; --on-primary-container:#D6E3F7; --primary-container:#22344F;
+  --accent:#D6A24A; --accent-ink:#E2B462; --accent-container:#3D3015;
   --on-surface-variant:#9AA6B6; --outline:#3A4556; --outline-variant:#2A3342;
   --surface:#0F1420; --surface-container:#1B2330; --surface-container-high:#222C3C; --on-surface-muted:#C2CAD6;
   --on-surface:#E7EBF1; --link:#9CBBE8; --error:#F2A7A7;
   --bar-shadow:0 2px 8px rgba(0,0,0,.5); --sheet-shadow:0 -4px 24px rgba(0,0,0,.6);
   /* dark families: containers at relative luminance 0.047 or less, glyphs 7:1 or more */
-  --fam-music:#34306A; --on-fam-music:#D2CDFF; --fam-celebrate:#4A3710; --on-fam-celebrate:#F5CD7A;
-  --fam-community:#1D405C; --on-fam-community:#A9D6F2; --fam-outdoors:#1E4526; --on-fam-outdoors:#A8E0AE;
-  --fam-play:#55223F; --on-fam-play:#F8B7D0; --fam-neutral:#343C4C; --on-fam-neutral:#D0D6E0;
+  --fam-music:#3E3880; --on-fam-music:#DCD7FF; --fam-celebrate:#5A4210; --on-fam-celebrate:#F8D58A;
+  --fam-community:#1F4A68; --on-fam-community:#B7DDF5; --fam-outdoors:#22512C; --on-fam-outdoors:#B5E6BA;
+  --fam-play:#62264A; --on-fam-play:#FAC2D7; --fam-neutral:#3A4354; --on-fam-neutral:#D6DCE5;
+  --band:#1B2A44; --band-chip:#2A3B5A; --band-line:#41567A; --band-field:var(--surface-container); --band-field-line:#7C8FB0; --tabbar:var(--surface-container); --tab-pill:var(--primary-container);
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -97,6 +101,9 @@ button,input,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 :root[data-theme="dark"] :focus-visible{outline-color:var(--link)}
+/* on the navy band the ring is white (dark theme keeps --link, which is light enough) */
+.hd :focus-visible,.kinds :focus-visible,.strip :focus-visible,.page>.srch:focus-within{outline-color:var(--on-band)}
+@media (max-width:959px){.bar :focus-visible{outline-color:var(--on-band)}}
 .vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 [hidden]{display:none !important}
@@ -104,66 +111,65 @@ a{color:inherit}
 .shell{padding:0 var(--sr) calc(var(--tabs-h) + 24px) var(--sl)}
 .page{max-width:760px;margin:0 auto}
 /* 44px top bar: app mark left, short title centre (shown once the large title has scrolled away), About right */
-.bar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:calc(44px + env(safe-area-inset-top));padding:env(safe-area-inset-top) var(--sr) 0 var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));background:var(--surface);border-bottom:1px solid transparent}
-.bar.under{border-bottom-color:var(--outline-variant);box-shadow:var(--bar-shadow)}
+.bar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:calc(44px + env(safe-area-inset-top));padding:env(safe-area-inset-top) var(--sr) 0 var(--sl);margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));background:var(--band)}
+.bar.under{box-shadow:var(--bar-shadow)}
 .bar .mark{width:26px;height:26px}
-.btitle{font-size:1rem;font-weight:700;line-height:1.25;color:var(--on-surface);text-align:center;white-space:nowrap;visibility:hidden}
+.btitle{font-size:1rem;font-weight:700;line-height:1.25;color:var(--on-band);text-align:center;white-space:nowrap;visibility:hidden}
 .bar.collapsed .btitle{visibility:visible}
 .topbtns{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
-.iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);border:0;background:none;color:var(--on-surface-variant);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.iconbtn{flex-shrink:0;width:44px;height:44px;border-radius:var(--r-md);border:0;background:none;color:var(--on-band);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .iconbtn svg{width:24px;height:24px}
 .installbtn{flex-shrink:0;min-height:44px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container);font-size:.9375rem;font-weight:600;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer}
 .installbtn svg{width:16px;height:16px;flex-shrink:0}
 @media (max-width:420px){.installbtn{padding:0 10px}.installbtn svg{display:none}}
-:root[data-theme="dark"] .installbtn{border-color:var(--link);color:#fff}
+:root[data-theme="dark"] .installbtn{border-color:var(--link)}
 /* large title */
-.hd{padding:4px 0 2px}
-.big{margin:0;font-size:2.125rem;font-weight:800;line-height:1.1;letter-spacing:-.3px;color:var(--on-surface);overflow-wrap:anywhere}
-.subl{margin-top:2px;font-size:.9375rem;color:var(--on-surface-variant)}
-.meta{margin-top:2px;font-size:.75rem;color:var(--on-surface-variant)}
+/* the navy band: the bar, title block, search row, kind chips and date strip share --band, full width. The shadow and clip-path carry it past the 760px column to both screen edges. */
+.hd{padding:4px 0 2px;background:var(--band);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax -2px)}
+.big{margin:0;font-size:2.125rem;font-weight:800;line-height:1.1;letter-spacing:-.3px;color:var(--on-band);overflow-wrap:anywhere}
+.subl{margin-top:2px;font-size:.9375rem;color:var(--band-sub)}
+.meta{margin-top:2px;font-size:.75rem;color:var(--band-meta)}
 .stale{color:var(--error);font-weight:600}
+.meta .stale{color:var(--band-stale)}
 .ctxrow{display:flex;flex-wrap:wrap;gap:0 14px}
-.ctx{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;border:0;background:none;font-size:1.0625rem;font-weight:700;color:var(--link);cursor:pointer;text-align:left}
+.ctx{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;border:0;background:none;font-size:1.0625rem;font-weight:700;color:var(--band-link);cursor:pointer;text-align:left}
 .ctx svg{width:18px;height:18px}
 .ctx svg:last-child{width:16px;height:16px}
-.srch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;margin-top:6px;background:var(--surface-container);border:1px solid var(--outline);border-radius:var(--r-md)}
+.srch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;margin-top:6px;background:var(--band-field);border:1px solid var(--band-field-line);border-radius:var(--r-md);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(-8px -100vmax)}
 .srch svg{width:18px;height:18px;color:var(--on-surface-variant)}
 .srch input{flex:1 1 auto;min-width:0;min-height:42px;border:0;outline:0;background:none;font-size:max(16px,1rem)}
 .srch:focus-within{outline:2px solid var(--primary);outline-offset:2px}
 :root[data-theme="dark"] .srch:focus-within{outline-color:var(--link)}
 .srch input::placeholder{color:var(--on-surface-variant)}
 /* kind of event: icon-only filter button, a divider, then quick chips (multi-select) */
-.kinds,.strip{display:flex;gap:8px;overflow-x:auto;margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));padding:8px var(--sr) 8px var(--sl);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.kinds,.strip{display:flex;gap:8px;overflow-x:auto;margin:0 calc(-1 * var(--sr)) 0 calc(-1 * var(--sl));padding:8px var(--sr) 12px var(--sl);scrollbar-width:none;-webkit-overflow-scrolling:touch;background:var(--band);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(0 -100vmax -8px -100vmax)}
 .kinds::-webkit-scrollbar,.strip::-webkit-scrollbar{display:none}
 .kinds{align-items:center}
-.fbtn{position:relative;flex:0 0 44px;width:44px;height:44px;padding:0;border-radius:var(--r-pill);border:1.5px solid var(--primary);background:var(--surface-container);color:var(--primary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-:root[data-theme="dark"] .fbtn{border-color:var(--link);color:var(--link)}
+.fbtn{position:relative;flex:0 0 44px;width:44px;height:44px;padding:0;border-radius:var(--r-pill);border:1.5px solid var(--on-band);background:transparent;color:var(--on-band);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .fbtn svg{width:20px;height:20px}
-.fbtn[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
-.fbadge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-pill);background:var(--accent-ink);color:var(--surface);font-size:.6875rem;font-weight:800;line-height:18px;text-align:center}
-.vsep{flex:0 0 1px;align-self:stretch;margin:6px 2px;background:var(--outline)}
-.chip{position:relative;flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:var(--r-pill);border:1px solid var(--outline);background:var(--surface-container);font-size:.875rem;font-weight:700;color:var(--on-surface);white-space:nowrap;cursor:pointer}
+.fbtn[aria-pressed="true"]{background:var(--on-band);color:var(--band);border-color:var(--on-band)}
+.fbadge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-pill);background:var(--band-link);color:var(--band);font-size:.6875rem;font-weight:800;line-height:18px;text-align:center}
+.vsep{flex:0 0 1px;align-self:stretch;margin:6px 2px;background:var(--band-line)}
+.chip{position:relative;flex:0 0 auto;min-height:40px;padding:0 14px;border-radius:var(--r-pill);border:1px solid var(--band-line);background:var(--band-chip);font-size:.875rem;font-weight:700;color:var(--on-band);white-space:nowrap;cursor:pointer}
 .chip::after,.achip::after,.aclear::after{content:"";position:absolute;left:0;right:0;top:50%;height:48px;transform:translateY(-50%)}
-.chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.chip[aria-pressed="true"]{background:var(--on-band);border-color:var(--on-band);color:var(--band)}
 /* sticky date strip (Upcoming) and weekday chips (Weekly) */
-.strip{position:sticky;top:var(--bar-h);z-index:15;background:var(--surface);padding-top:6px;padding-bottom:6px}
-.day{position:relative;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:56px;min-height:56px;padding:6px 10px;border-radius:14px;border:1px solid var(--outline);background:var(--surface-container);cursor:pointer}
-.dw{font-size:.75rem;font-weight:600;color:var(--on-surface-variant);text-transform:uppercase;letter-spacing:.04em}
-.dn{font-size:1rem;font-weight:800;color:var(--on-surface);line-height:1.3;display:inline-flex;align-items:center}
+.strip{position:sticky;top:var(--bar-h);z-index:15;padding-top:6px;padding-bottom:12px}
+.day{position:relative;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:56px;min-height:56px;padding:6px 10px;border-radius:14px;border:1px solid var(--band-line);background:var(--band-chip);cursor:pointer}
+.dw{font-size:.75rem;font-weight:600;color:var(--band-sub);text-transform:uppercase;letter-spacing:.04em}
+.dn{font-size:1rem;font-weight:800;color:var(--on-band);line-height:1.3;display:inline-flex;align-items:center}
 .dn svg{width:18px;height:18px}
-.day[aria-pressed="true"]{background:var(--primary);border-color:var(--primary)}
-.day[aria-pressed="true"] .dw,.day[aria-pressed="true"] .dn{color:var(--on-primary)}
+.day[aria-pressed="true"]{background:var(--on-band);border-color:var(--on-band)}
+.day[aria-pressed="true"] .dw,.day[aria-pressed="true"] .dn{color:var(--band)}
 .day.later input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0;font-size:16px}
-.day.later:focus-within{outline:2px solid var(--primary);outline-offset:2px}
+.day.later:focus-within{outline:2px solid var(--on-band);outline-offset:2px}
 /* applied legacy filters (when / distance / town / nearest) */
 .applied{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
 .achip{position:relative;display:inline-flex;align-items:center;gap:4px;min-height:32px;max-width:100%;padding:0 8px 0 12px;border-radius:var(--r-pill);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container);font-size:.875rem;font-weight:500;text-align:left;overflow-wrap:anywhere;cursor:pointer}
-:root[data-theme="dark"] .achip{color:#fff}
 .achip svg{width:16px;height:16px;flex-shrink:0}
 .aclear{position:relative;min-height:32px;padding:0 8px;border:0;background:none;color:var(--link);font-size:.875rem;font-weight:600;text-decoration:underline;cursor:pointer}
 /* first run card, geo note */
 .hello{position:relative;margin-top:8px;padding:12px 16px;border-radius:var(--r-md);border:1px solid var(--primary);background:var(--primary-container);color:var(--on-primary-container)}
-:root[data-theme="dark"] .hello{color:var(--on-surface)}
 .hello h2{font-size:1rem;font-weight:700;line-height:1.3;padding-right:36px}
 .hello p{margin-top:2px;font-size:.875rem;line-height:1.4;padding-right:8px}
 .hello .eacts{margin-top:10px}
@@ -178,8 +184,9 @@ a{color:inherit}
 .geonote .eact{display:inline-flex;align-items:center;margin-top:8px;min-height:40px}
 .count{font-size:.875rem;line-height:1.5;min-height:1.5em;color:var(--on-surface-muted);margin:8px 4px 0}
 /* day / band headers: sticky under the bar (and the strip, when there is one) */
-.ghead{position:sticky;top:calc(var(--bar-h) + var(--stk));z-index:10;background:var(--surface);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:14px 4px 8px;font-size:.9375rem;font-weight:800;color:var(--accent-ink)}
-.ghead .n{color:var(--on-surface-variant);font-weight:600;font-size:.8125rem}
+.ghead{position:sticky;top:calc(var(--bar-h) + var(--stk));z-index:10;background:var(--surface);display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding:20px 4px 8px;font-size:1.25rem;font-weight:800;color:var(--on-surface)}
+.ghead::before{content:"";align-self:center;width:4px;height:1.1em;border-radius:2px;background:var(--accent);margin-right:2px}
+.ghead .n{background:var(--accent-container);color:var(--accent-ink);padding:1px 8px;border-radius:var(--r-pill);font-weight:700;font-size:.8125rem}
 .ghead .sub{margin-left:auto;font-weight:600;color:var(--on-surface-variant);font-size:.8125rem}
 /* rows: tile, time (bold primary) over title (2 lines) over "venue, town"; miles on the right */
 .list{background:var(--surface-container);border:1px solid var(--outline-variant);border-radius:var(--r-lg);overflow:hidden}
@@ -188,13 +195,13 @@ a{color:inherit}
 .itile{flex:0 0 44px;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center}
 .itile svg{width:24px;height:24px}
 .ev .body{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;min-width:0}
-.t1{font-size:.875rem;font-weight:700;color:var(--link);line-height:1.3}
-.t1 .x{font-weight:500;color:var(--on-surface-variant)}
+.t1{font-size:.875rem;font-weight:600;color:var(--on-surface-muted);line-height:1.3}
+.t1 .x{font-weight:700;color:var(--accent-ink)}
 .t1.un{font-style:italic;font-weight:400;color:var(--on-surface-variant)}
 .ev .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:1rem;font-weight:600;line-height:1.3;color:var(--on-surface);overflow-wrap:anywhere}
 .ev .meta2{font-size:.875rem;line-height:1.3;color:var(--on-surface-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev .nt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.8125rem;line-height:1.3;color:var(--on-surface-variant);overflow-wrap:anywhere}
-.ev .mi{flex:0 0 auto;max-width:5.5em;text-align:right;font-size:.8125rem;font-weight:700;color:var(--on-surface-variant)}
+.ev .mi{flex:0 0 auto;max-width:5.5em;text-align:right;font-size:.8125rem;font-weight:600;color:var(--on-surface-variant)}
 .fam-music{background:var(--fam-music);color:var(--on-fam-music)}
 .fam-celebrate{background:var(--fam-celebrate);color:var(--on-fam-celebrate)}
 .fam-community{background:var(--fam-community);color:var(--on-fam-community)}
@@ -221,7 +228,6 @@ a{color:inherit}
 .eacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .eact{min-height:44px;padding:0 16px;border-radius:var(--r-pill);border:1px solid var(--link);background:var(--surface-container-high);color:var(--link);font-size:.9375rem;font-weight:600;cursor:pointer}
 .link{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;margin-top:16px;padding:12px 14px;background:var(--primary-container);border:0;border-radius:var(--r-lg);text-align:left;font-size:.9375rem;font-weight:700;color:var(--on-primary-container);cursor:pointer}
-:root[data-theme="dark"] .link{color:#fff}
 .link svg{width:22px;height:22px;flex-shrink:0}
 .link span{flex:1 1 auto}
 .link svg:last-child{width:18px;height:18px}
@@ -229,14 +235,13 @@ a{color:inherit}
 .savednote{font-size:.875rem;color:var(--on-surface-variant);margin:12px 4px 0}
 .past{margin-top:12px}
 /* bottom tab bar on phones; the left rail at 960px+ */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface-container);border-top:1px solid var(--outline-variant);padding:0 var(--sr) env(safe-area-inset-bottom) var(--sl)}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--tabbar);border-top:1px solid var(--outline-variant);padding:0 var(--sr) env(safe-area-inset-bottom) var(--sl)}
 .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 4px;color:var(--on-surface-variant);text-decoration:none;font-size:.75rem;font-weight:600;line-height:1.25;text-align:center;cursor:pointer;min-width:0}
 .tab .ic{display:grid;place-items:center;width:56px;max-width:100%;height:28px;border-radius:var(--r-pill)}
 .tab .ic svg{width:22px;height:22px}
 .tab .tl{max-width:100%;overflow-wrap:anywhere}
 .tab[aria-current="page"]{color:var(--on-surface)}
-.tab[aria-current="page"] .ic{background:var(--primary-container);color:var(--on-primary-container)}
-:root[data-theme="dark"] .tab[aria-current="page"] .ic{color:#fff}
+.tab[aria-current="page"] .ic{background:var(--tab-pill);color:var(--on-primary-container)}
 .tab:focus-visible{outline-offset:-2px}
 .brand{display:none}
 
@@ -246,8 +251,10 @@ a{color:inherit}
 /* desktop: left rail with the four tabs, a column of about 760px, sheets as centred dialogs */
 @media (min-width:960px){
   .shell{margin-left:232px;padding:0 32px 64px}
-  .page{padding-top:16px}
-  .bar{position:fixed;left:0;bottom:0;top:auto;width:232px;min-height:0;margin:0;padding:8px 16px 12px;display:flex;justify-content:space-between;background:var(--surface-container);border:0;z-index:31}
+  .page{padding-top:0}
+  .hd{padding-top:20px}
+  .bar{position:fixed;left:0;bottom:0;top:auto;width:232px;min-height:0;margin:0;padding:8px 16px 12px;display:flex;justify-content:space-between;background:var(--tabbar);border:0;z-index:31}
+  .iconbtn{color:var(--on-surface-variant)}
   .bar.under{box-shadow:none}
   .btitle,.bar .mark{display:none}
   .topbtns{width:100%;justify-content:space-between}
@@ -300,7 +307,6 @@ html.sheet-open{overflow:hidden}
 .sh-btn.pri{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
 .sh-btn svg{width:18px;height:18px;margin-right:8px;flex-shrink:0}
 .sh-btn[aria-pressed="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
-:root[data-theme="dark"] .sh-btn[aria-pressed="true"]{color:#fff}
 .sh-acts+.sh-acts{margin-top:8px}
 .sh-gone{margin-bottom:4px;font-weight:600;color:var(--error)}
 .sh-live{margin-top:12px;font-size:.875rem;font-weight:600}
@@ -317,7 +323,6 @@ html.sheet-open{overflow:hidden}
 .sh-row .v{flex:1 1 auto;min-width:0;font-weight:600;color:var(--link)}
 .sh-row svg{width:16px;height:16px;flex-shrink:0;color:var(--on-surface-variant)}
 .sh-btn[aria-expanded="true"]{background:var(--primary-container);border-color:var(--primary);color:var(--on-primary-container)}
-:root[data-theme="dark"] .sh-btn[aria-expanded="true"]{color:#fff}
 .calx-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .calx-opts[hidden]{display:none}
 .sh-dist .sh-set{border:0;background:none;padding:0;color:var(--link);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
@@ -421,11 +426,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-music-notes" viewBox="0 0 256 256"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></symbol><symbol id="i-guitar" viewBox="0 0 256 256"><path d="M249.66,46.34l-40-40a8,8,0,0,0-11.31,11.32L200.69,20,140.52,80.16C117.73,68.3,92.21,69.29,76.75,84.74a42.27,42.27,0,0,0-9.39,14.37A8.24,8.24,0,0,1,59.81,104c-14.59.49-27.26,5.72-36.65,15.11C11.08,131.22,6,148.6,8.74,168.07,11.4,186.7,21.07,205.15,36,220s33.34,24.56,52,27.22A71.13,71.13,0,0,0,98.1,248c15.32,0,28.83-5.23,38.76-15.16,9.39-9.39,14.62-22.06,15.11-36.65a8.24,8.24,0,0,1,4.92-7.55,42.12,42.12,0,0,0,14.37-9.39c15.45-15.46,16.44-41,4.58-63.77L236,55.31l2.34,2.34a8,8,0,1,0,11.32-11.31ZM160,167.93a26.12,26.12,0,0,1-8.95,5.83,24.24,24.24,0,0,0-15,21.89c-.36,10.46-4,19.41-10.43,25.88-8.44,8.43-21,11.95-35.36,9.89C75,229.25,59.73,221.19,47.27,208.73S26.75,181,24.58,165.81c-2-14.37,1.46-26.92,9.89-35.36C40.94,124,49.89,120.37,60.35,120h0a24.22,24.22,0,0,0,21.89-15,26.12,26.12,0,0,1,5.83-9c5.49-5.49,13-8.13,21.38-8.13a49.38,49.38,0,0,1,19.13,4.19L108.5,112.19a32,32,0,1,0,35.31,35.31l20.08-20.08C170.41,142.71,169.47,158.41,160,167.93Zm-10.4-61.48a72.9,72.9,0,0,1,5.93,6.75l-15.42,15.42a32.22,32.22,0,0,0-12.68-12.68l15.42-15.43A73,73,0,0,1,149.55,106.45ZM112,128a16,16,0,0,1,16,16h0a16,16,0,1,1-16-16Zm48.85-32.85a86.94,86.94,0,0,0-6.68-6L176,67.31,188.69,80l-21.83,21.82A86.94,86.94,0,0,0,160.86,95.14ZM200,68.68,187.32,56,212,31.31,224.69,44ZM93.66,194.33a8,8,0,0,1-11.31,11.32l-32-32a8,8,0,0,1,11.32-11.31Z"/></symbol><symbol id="i-mask-happy" viewBox="0 0 256 256"><path d="M217,34.8a15.94,15.94,0,0,0-14.82-1.71C188.15,38.55,159.82,47.71,128,47.71S67.84,38.55,53.79,33.09A16,16,0,0,0,32,48v55.77c0,35.84,9.65,69.65,27.18,95.18,18.16,26.46,42.6,41,68.82,41s50.66-14.57,68.82-41C214.35,173.44,224,139.63,224,103.79V48A16,16,0,0,0,217,34.8Zm-9,69c0,32.64-8.66,63.23-24.37,86.13C168.54,211.9,148.79,224,128,224s-40.54-12.1-55.63-34.08C56.66,167,48,136.43,48,103.79V48c15.11,5.87,45.58,15.71,80,15.71S192.9,53.87,208,48v55.81Zm-18,18.87A8,8,0,1,1,178,133.33c-2.68-3-8.85-5.33-14-5.33s-11.36,2.34-14,5.33A8,8,0,1,1,138,122.66c5.71-6.38,16.14-10.66,26-10.66S184.25,116.28,190,122.66ZM92,128c-5.19,0-11.36,2.34-14,5.33A8,8,0,1,1,66,122.66C71.75,116.28,82.18,112,92,112s20.25,4.28,26,10.66A8,8,0,1,1,106,133.33C103.36,130.34,97.19,128,92,128Zm76.45,45.19a52.9,52.9,0,0,1-80.9,0A8,8,0,1,1,99.72,162.8a36.89,36.89,0,0,0,56.56,0,8,8,0,0,1,12.17,10.39Z"/></symbol><symbol id="i-confetti" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"/></symbol><symbol id="i-identification-badge" viewBox="0 0 256 256"><path d="M75.19,198.4a8,8,0,0,0,11.21-1.6,52,52,0,0,1,83.2,0,8,8,0,1,0,12.8-9.6A67.88,67.88,0,0,0,155,165.51a40,40,0,1,0-53.94,0A67.88,67.88,0,0,0,73.6,187.2,8,8,0,0,0,75.19,198.4ZM128,112a24,24,0,1,1-24,24A24,24,0,0,1,128,112Zm72-88H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM88,64a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Z"/></symbol><symbol id="i-poker-chip" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,152a48,48,0,1,1,48-48A48.05,48.05,0,0,1,128,176Zm39.21-98.53a63.66,63.66,0,0,0-31.21-13V40.37a87.6,87.6,0,0,1,48.28,20ZM120,64.52a63.66,63.66,0,0,0-31.21,13L71.72,60.4a87.6,87.6,0,0,1,48.28-20ZM77.47,88.79a63.66,63.66,0,0,0-13,31.21H40.37a87.6,87.6,0,0,1,20-48.28ZM64.52,136a63.66,63.66,0,0,0,13,31.21L60.4,184.28a87.6,87.6,0,0,1-20-48.28Zm24.27,42.53A63.66,63.66,0,0,0,120,191.48v24.15a87.6,87.6,0,0,1-48.28-20ZM136,191.48a63.66,63.66,0,0,0,31.21-12.95l17.07,17.07a87.6,87.6,0,0,1-48.28,20Zm42.53-24.27A63.66,63.66,0,0,0,191.48,136h24.15a87.6,87.6,0,0,1-20,48.28ZM191.48,120a63.66,63.66,0,0,0-12.95-31.21L195.6,71.72a87.6,87.6,0,0,1,20,48.28Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></symbol><symbol id="i-chalkboard-teacher" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H53.39a8,8,0,0,0,7.23-4.57,48,48,0,0,1,86.76,0,8,8,0,0,0,7.23,4.57H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,144a24,24,0,1,1,24,24A24,24,0,0,1,80,144Zm136,56H159.43a64.39,64.39,0,0,0-28.83-26.16,40,40,0,1,0-53.2,0A64.39,64.39,0,0,0,48.57,200H40V56H216ZM56,96V80a8,8,0,0,1,8-8H192a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H176a8,8,0,0,1,0-16h8V88H72v8a8,8,0,0,1-16,0Z"/></symbol><symbol id="i-person-simple-hike" viewBox="0 0 256 256"><path d="M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm48,112v88a8,8,0,0,1-16,0V151.66c-25.75-2.25-34.35-15.52-42-27.36-2.85-4.39-5.56-8.57-9.13-12.19l-13.4,30.81,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.14-10.52L122.19,96.5a8,8,0,0,1,11-3.92,40.92,40.92,0,0,1,8,5.47c6.37,5.52,10.51,11.91,14.16,17.55,7.68,11.84,13.22,20.4,36.6,20.4A8,8,0,0,1,200,144ZM72,152a8,8,0,0,0,7.35-4.85l24-56a8,8,0,0,0-4.2-10.5l-28-12a8,8,0,0,0-10.5,4.2l-24,56a8,8,0,0,0,4.2,10.5l28,12A8,8,0,0,0,72,152ZM54.51,127.8,72.2,86.5l13.3,5.7L67.8,133.49Z"/></symbol><symbol id="i-fish-simple" viewBox="0 0 256 256"><path d="M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm42,79.08c-15.08,20.84-37.53,34.88-66.7,41.74-20.08,4.72-43.54,6-70.12,3.93q2.4,17.82,6.72,37.54a8,8,0,0,1-6.1,9.52,7.81,7.81,0,0,1-1.72.19,8,8,0,0,1-7.81-6.29q-4.89-22.36-7.41-42.62-20.22-2.51-42.58-7.41a8,8,0,0,1,3.43-15.63q19.7,4.32,37.5,6.73c-2.09-26.56-.78-50,3.93-70.06C66,83.55,80.05,61.1,100.88,46,115,35.76,140.15,23.64,179.27,24c21.19.21,40.83,4.33,43.81,6.08a8,8,0,0,1,2.83,2.83c1.75,3,5.87,22.59,6.08,43.78C232.21,98.31,228.57,129.44,210,155.08Zm-23.76,2.8A112.07,112.07,0,0,1,98.12,69.74C75.64,94,66.7,132.47,71.36,184.6,123.51,189.28,162,180.35,186.25,157.88ZM212.44,43.56a175.75,175.75,0,0,0-39.22-3.51c-24.34.64-44.71,6.49-60.76,17.39a96,96,0,0,0,86.09,86.1c10.91-16,16.76-36.42,17.4-60.76A175.82,175.82,0,0,0,212.44,43.56Z"/></symbol><symbol id="i-paw-print" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"/></symbol><symbol id="i-tree-palm" viewBox="0 0 256 256"><path d="M237.79,53.23a66.86,66.86,0,0,0-97.74,0,72.21,72.21,0,0,0-12.05,17,72.21,72.21,0,0,0-12-17,66.86,66.86,0,0,0-97.74,0,8,8,0,0,0,2.6,12.85L77,90.55a71.42,71.42,0,0,0-43.36,33.21,70.64,70.64,0,0,0-7.2,54.32A8,8,0,0,0,39,182.36l81-61.68V224a8,8,0,0,0,16,0V120.68l81,61.68a8,8,0,0,0,12.57-4.28,70.64,70.64,0,0,0-7.2-54.32A71.42,71.42,0,0,0,179,90.55l56.22-24.47a8,8,0,0,0,2.6-12.85ZM67.08,48a51.13,51.13,0,0,1,37.28,16.26,56.53,56.53,0,0,1,14.26,26.93L39,56.53A50.5,50.5,0,0,1,67.08,48ZM40,161.5a54.82,54.82,0,0,1,7.47-29.7,55.55,55.55,0,0,1,34-25.89A56.52,56.52,0,0,1,96.1,104a55.82,55.82,0,0,1,16.23,2.41ZM208.5,131.8A54.82,54.82,0,0,1,216,161.5l-72.3-55.1a56.3,56.3,0,0,1,64.83,25.4ZM137.38,91.19a56.53,56.53,0,0,1,14.26-26.93A51.13,51.13,0,0,1,188.92,48,50.5,50.5,0,0,1,217,56.53Z"/></symbol><symbol id="i-balloon" viewBox="0 0 256 256"><path d="M128,16a88.1,88.1,0,0,0-88,88c0,23.43,9.4,49.42,25.13,69.5,12.08,15.41,26.5,26,41.91,31.09L96.65,228.85A8,8,0,0,0,104,240h48a8,8,0,0,0,7.35-11.15L149,204.59c15.4-5.07,29.83-15.68,41.91-31.09C206.6,153.42,216,127.43,216,104A88.1,88.1,0,0,0,128,16Zm11.87,208H116.13l6.94-16.19c1.64.12,3.28.19,4.93.19s3.29-.07,4.93-.19Zm38.4-60.37C163.94,181.93,146.09,192,128,192s-35.94-10.07-50.27-28.37C64.12,146.27,56,124,56,104a72,72,0,0,1,144,0C200,124,191.88,146.27,178.27,163.63Zm-1-59.74A8.52,8.52,0,0,1,176,104a8,8,0,0,1-7.88-6.68,41.29,41.29,0,0,0-33.43-33.43,8,8,0,1,1,2.64-15.78,57.5,57.5,0,0,1,46.57,46.57A8,8,0,0,1,177.32,103.89Z"/></symbol><symbol id="i-game-controller" viewBox="0 0 256 256"><path d="M176,112H152a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16ZM104,96H96V88a8,8,0,0,0-16,0v8H72a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM241.48,200.65a36,36,0,0,1-54.94,4.81c-.12-.12-.24-.24-.35-.37L146.48,160h-37L69.81,205.09l-.35.37A36.08,36.08,0,0,1,44,216,36,36,0,0,1,8.56,173.75a.68.68,0,0,1,0-.14L24.93,89.52A59.88,59.88,0,0,1,83.89,40H172a60.08,60.08,0,0,1,59,49.25c0,.06,0,.12,0,.18l16.37,84.17a.68.68,0,0,1,0,.14A35.74,35.74,0,0,1,241.48,200.65ZM172,144a44,44,0,0,0,0-88H83.89A43.9,43.9,0,0,0,40.68,92.37l0,.13L24.3,176.59A20,20,0,0,0,58,194.3l41.92-47.59a8,8,0,0,1,6-2.71Zm59.7,32.59-8.74-45A60,60,0,0,1,172,160h-4.2L198,194.31a20.09,20.09,0,0,0,17.46,5.39,20,20,0,0,0,16.23-23.11Z"/></symbol><symbol id="i-swimming-pool" viewBox="0 0 256 256"><path d="M88,149.39a8,8,0,0,0,8-8V128h64v15.29a8,8,0,0,0,16,0V32a8,8,0,0,0-16,0V48H96V32a8,8,0,0,0-16,0V141.39A8,8,0,0,0,88,149.39ZM96,112V96h64v16Zm64-48V80H96V64ZM24,168a8,8,0,0,1,8-8c14.42,0,22.19,5.18,28.44,9.34C66,173.06,70.42,176,80,176s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34a8,8,0,0,1,0,16c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,178.94,137.57,176,128,176s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,178.94,41.58,176,32,176A8,8,0,0,1,24,168Zm208,40a8,8,0,0,1-8,8c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,218.94,137.57,216,128,216s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,218.94,41.58,216,32,216a8,8,0,0,1,0-16c14.42,0,22.19,5.18,28.44,9.34C66,213.06,70.42,216,80,216s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34A8,8,0,0,1,232,208Z"/></symbol><symbol id="i-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/></symbol><symbol id="i-calendar-blank" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></symbol><symbol id="i-repeat" viewBox="0 0 256 256"><path d="M24,128A72.08,72.08,0,0,1,96,56H204.69L194.34,45.66a8,8,0,0,1,11.32-11.32l24,24a8,8,0,0,1,0,11.32l-24,24a8,8,0,0,1-11.32-11.32L204.69,72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H51.31l10.35-10.34a8,8,0,0,0-11.32-11.32l-24,24a8,8,0,0,0,0,11.32l24,24a8,8,0,0,0,11.32-11.32L51.31,200H160a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></symbol><symbol id="i-bookmark-simple" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 256 256"><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol><symbol id="i-info" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-arrow-square-out" viewBox="0 0 256 256"><path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/></symbol><symbol id="i-download-simple" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></symbol><symbol id="i-magnifying-glass" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol><symbol id="i-share-network" viewBox="0 0 256 256"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></symbol><symbol id="i-navigation-arrow" viewBox="0 0 256 256"><path d="M237.33,106.21,61.41,41l-.16-.05A16,16,0,0,0,40.9,61.25a1,1,0,0,0,.05.16l65.26,175.92A15.77,15.77,0,0,0,121.28,248h.3a15.77,15.77,0,0,0,15-11.29l.06-.2,21.84-78,78-21.84.2-.06a16,16,0,0,0,.62-30.38ZM149.84,144.3a8,8,0,0,0-5.54,5.54L121.3,232l-.06-.17L56,56l175.82,65.22.16.06Z"/></symbol><symbol id="i-calendar-plus" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H136v16a8,8,0,0,1-16,0V160H104a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,160,152Z"/></symbol><symbol id="i-bookmark-simple-fill" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Z"/></symbol><symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol><symbol id="i-crosshair-simple" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V184a8,8,0,0,0-16,0v31.63A88.13,88.13,0,0,1,40.37,136H72a8,8,0,0,0,0-16H40.37A88.13,88.13,0,0,1,120,40.37V72a8,8,0,0,0,16,0V40.37A88.13,88.13,0,0,1,215.63,120H184a8,8,0,0,0,0,16h31.63A88.13,88.13,0,0,1,136,215.63Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol><symbol id="i-moon" viewBox="0 0 256 256"><path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/></symbol><symbol id="i-map-trifold" viewBox="0 0 256 256"><path d="M228.92,49.69a8,8,0,0,0-6.86-1.45L160.93,63.52,99.58,32.84a8,8,0,0,0-5.52-.6l-64,16A8,8,0,0,0,24,56V200a8,8,0,0,0,9.94,7.76l61.13-15.28,61.35,30.68A8.15,8.15,0,0,0,160,224a8,8,0,0,0,1.94-.24l64-16A8,8,0,0,0,232,200V56A8,8,0,0,0,228.92,49.69ZM104,52.94l48,24V203.06l-48-24ZM40,62.25l48-12v127.5l-48,12Zm176,131.5-48,12V78.25l48-12Z"/></symbol></svg>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-music-notes" viewBox="0 0 256 256"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></symbol><symbol id="i-guitar" viewBox="0 0 256 256"><path d="M249.66,46.34l-40-40a8,8,0,0,0-11.31,11.32L200.69,20,140.52,80.16C117.73,68.3,92.21,69.29,76.75,84.74a42.27,42.27,0,0,0-9.39,14.37A8.24,8.24,0,0,1,59.81,104c-14.59.49-27.26,5.72-36.65,15.11C11.08,131.22,6,148.6,8.74,168.07,11.4,186.7,21.07,205.15,36,220s33.34,24.56,52,27.22A71.13,71.13,0,0,0,98.1,248c15.32,0,28.83-5.23,38.76-15.16,9.39-9.39,14.62-22.06,15.11-36.65a8.24,8.24,0,0,1,4.92-7.55,42.12,42.12,0,0,0,14.37-9.39c15.45-15.46,16.44-41,4.58-63.77L236,55.31l2.34,2.34a8,8,0,1,0,11.32-11.31ZM160,167.93a26.12,26.12,0,0,1-8.95,5.83,24.24,24.24,0,0,0-15,21.89c-.36,10.46-4,19.41-10.43,25.88-8.44,8.43-21,11.95-35.36,9.89C75,229.25,59.73,221.19,47.27,208.73S26.75,181,24.58,165.81c-2-14.37,1.46-26.92,9.89-35.36C40.94,124,49.89,120.37,60.35,120h0a24.22,24.22,0,0,0,21.89-15,26.12,26.12,0,0,1,5.83-9c5.49-5.49,13-8.13,21.38-8.13a49.38,49.38,0,0,1,19.13,4.19L108.5,112.19a32,32,0,1,0,35.31,35.31l20.08-20.08C170.41,142.71,169.47,158.41,160,167.93Zm-10.4-61.48a72.9,72.9,0,0,1,5.93,6.75l-15.42,15.42a32.22,32.22,0,0,0-12.68-12.68l15.42-15.43A73,73,0,0,1,149.55,106.45ZM112,128a16,16,0,0,1,16,16h0a16,16,0,1,1-16-16Zm48.85-32.85a86.94,86.94,0,0,0-6.68-6L176,67.31,188.69,80l-21.83,21.82A86.94,86.94,0,0,0,160.86,95.14ZM200,68.68,187.32,56,212,31.31,224.69,44ZM93.66,194.33a8,8,0,0,1-11.31,11.32l-32-32a8,8,0,0,1,11.32-11.31Z"/></symbol><symbol id="i-mask-happy" viewBox="0 0 256 256"><path d="M217,34.8a15.94,15.94,0,0,0-14.82-1.71C188.15,38.55,159.82,47.71,128,47.71S67.84,38.55,53.79,33.09A16,16,0,0,0,32,48v55.77c0,35.84,9.65,69.65,27.18,95.18,18.16,26.46,42.6,41,68.82,41s50.66-14.57,68.82-41C214.35,173.44,224,139.63,224,103.79V48A16,16,0,0,0,217,34.8Zm-9,69c0,32.64-8.66,63.23-24.37,86.13C168.54,211.9,148.79,224,128,224s-40.54-12.1-55.63-34.08C56.66,167,48,136.43,48,103.79V48c15.11,5.87,45.58,15.71,80,15.71S192.9,53.87,208,48v55.81Zm-18,18.87A8,8,0,1,1,178,133.33c-2.68-3-8.85-5.33-14-5.33s-11.36,2.34-14,5.33A8,8,0,1,1,138,122.66c5.71-6.38,16.14-10.66,26-10.66S184.25,116.28,190,122.66ZM92,128c-5.19,0-11.36,2.34-14,5.33A8,8,0,1,1,66,122.66C71.75,116.28,82.18,112,92,112s20.25,4.28,26,10.66A8,8,0,1,1,106,133.33C103.36,130.34,97.19,128,92,128Zm76.45,45.19a52.9,52.9,0,0,1-80.9,0A8,8,0,1,1,99.72,162.8a36.89,36.89,0,0,0,56.56,0,8,8,0,0,1,12.17,10.39Z"/></symbol><symbol id="i-confetti" viewBox="0 0 256 256"><path d="M111.49,52.63a15.8,15.8,0,0,0-26,5.77L33,202.78A15.83,15.83,0,0,0,47.76,224a16,16,0,0,0,5.46-1l144.37-52.5a15.8,15.8,0,0,0,5.78-26Zm-8.33,135.21-35-35,13.16-36.21,58.05,58.05Zm-55,20,14-38.41,24.45,24.45ZM156,168.64,87.36,100l13-35.87,91.43,91.43ZM160,72a37.8,37.8,0,0,1,3.84-15.58C169.14,45.83,179.14,40,192,40c6.7,0,11-2.29,13.65-7.21A22,22,0,0,0,208,23.94,8,8,0,0,1,224,24c0,12.86-8.52,32-32,32-6.7,0-11,2.29-13.65,7.21A22,22,0,0,0,176,72.06,8,8,0,0,1,160,72ZM136,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm101.66,82.34a8,8,0,1,1-11.32,11.31l-16-16a8,8,0,0,1,11.32-11.32Zm4.87-42.75-24,8a8,8,0,0,1-5.06-15.18l24-8a8,8,0,0,1,5.06,15.18Z"/></symbol><symbol id="i-identification-badge" viewBox="0 0 256 256"><path d="M75.19,198.4a8,8,0,0,0,11.21-1.6,52,52,0,0,1,83.2,0,8,8,0,1,0,12.8-9.6A67.88,67.88,0,0,0,155,165.51a40,40,0,1,0-53.94,0A67.88,67.88,0,0,0,73.6,187.2,8,8,0,0,0,75.19,198.4ZM128,112a24,24,0,1,1-24,24A24,24,0,0,1,128,112Zm72-88H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V40A16,16,0,0,0,200,24Zm0,192H56V40H200ZM88,64a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H96A8,8,0,0,1,88,64Z"/></symbol><symbol id="i-poker-chip" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,152a48,48,0,1,1,48-48A48.05,48.05,0,0,1,128,176Zm39.21-98.53a63.66,63.66,0,0,0-31.21-13V40.37a87.6,87.6,0,0,1,48.28,20ZM120,64.52a63.66,63.66,0,0,0-31.21,13L71.72,60.4a87.6,87.6,0,0,1,48.28-20ZM77.47,88.79a63.66,63.66,0,0,0-13,31.21H40.37a87.6,87.6,0,0,1,20-48.28ZM64.52,136a63.66,63.66,0,0,0,13,31.21L60.4,184.28a87.6,87.6,0,0,1-20-48.28Zm24.27,42.53A63.66,63.66,0,0,0,120,191.48v24.15a87.6,87.6,0,0,1-48.28-20ZM136,191.48a63.66,63.66,0,0,0,31.21-12.95l17.07,17.07a87.6,87.6,0,0,1-48.28,20Zm42.53-24.27A63.66,63.66,0,0,0,191.48,136h24.15a87.6,87.6,0,0,1-20,48.28ZM191.48,120a63.66,63.66,0,0,0-12.95-31.21L195.6,71.72a87.6,87.6,0,0,1,20,48.28Z"/></symbol><symbol id="i-house-line" viewBox="0 0 256 256"><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol><symbol id="i-users-three" viewBox="0 0 256 256"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></symbol><symbol id="i-chalkboard-teacher" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H53.39a8,8,0,0,0,7.23-4.57,48,48,0,0,1,86.76,0,8,8,0,0,0,7.23,4.57H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM80,144a24,24,0,1,1,24,24A24,24,0,0,1,80,144Zm136,56H159.43a64.39,64.39,0,0,0-28.83-26.16,40,40,0,1,0-53.2,0A64.39,64.39,0,0,0,48.57,200H40V56H216ZM56,96V80a8,8,0,0,1,8-8H192a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H176a8,8,0,0,1,0-16h8V88H72v8a8,8,0,0,1-16,0Z"/></symbol><symbol id="i-person-simple-hike" viewBox="0 0 256 256"><path d="M152,80a32,32,0,1,0-32-32A32,32,0,0,0,152,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,152,32Zm48,112v88a8,8,0,0,1-16,0V151.66c-25.75-2.25-34.35-15.52-42-27.36-2.85-4.39-5.56-8.57-9.13-12.19l-13.4,30.81,37.2,26.57A8,8,0,0,1,160,176v56a8,8,0,0,1-16,0V180.12l-31.07-22.2L79.34,235.19A8,8,0,0,1,72,240a7.84,7.84,0,0,1-3.19-.67,8,8,0,0,1-4.14-10.52L122.19,96.5a8,8,0,0,1,11-3.92,40.92,40.92,0,0,1,8,5.47c6.37,5.52,10.51,11.91,14.16,17.55,7.68,11.84,13.22,20.4,36.6,20.4A8,8,0,0,1,200,144ZM72,152a8,8,0,0,0,7.35-4.85l24-56a8,8,0,0,0-4.2-10.5l-28-12a8,8,0,0,0-10.5,4.2l-24,56a8,8,0,0,0,4.2,10.5l28,12A8,8,0,0,0,72,152ZM54.51,127.8,72.2,86.5l13.3,5.7L67.8,133.49Z"/></symbol><symbol id="i-fish-simple" viewBox="0 0 256 256"><path d="M168,76a12,12,0,1,1-12-12A12,12,0,0,1,168,76Zm42,79.08c-15.08,20.84-37.53,34.88-66.7,41.74-20.08,4.72-43.54,6-70.12,3.93q2.4,17.82,6.72,37.54a8,8,0,0,1-6.1,9.52,7.81,7.81,0,0,1-1.72.19,8,8,0,0,1-7.81-6.29q-4.89-22.36-7.41-42.62-20.22-2.51-42.58-7.41a8,8,0,0,1,3.43-15.63q19.7,4.32,37.5,6.73c-2.09-26.56-.78-50,3.93-70.06C66,83.55,80.05,61.1,100.88,46,115,35.76,140.15,23.64,179.27,24c21.19.21,40.83,4.33,43.81,6.08a8,8,0,0,1,2.83,2.83c1.75,3,5.87,22.59,6.08,43.78C232.21,98.31,228.57,129.44,210,155.08Zm-23.76,2.8A112.07,112.07,0,0,1,98.12,69.74C75.64,94,66.7,132.47,71.36,184.6,123.51,189.28,162,180.35,186.25,157.88ZM212.44,43.56a175.75,175.75,0,0,0-39.22-3.51c-24.34.64-44.71,6.49-60.76,17.39a96,96,0,0,0,86.09,86.1c10.91-16,16.76-36.42,17.4-60.76A175.82,175.82,0,0,0,212.44,43.56Z"/></symbol><symbol id="i-paw-print" viewBox="0 0 256 256"><path d="M212,80a28,28,0,1,0,28,28A28,28,0,0,0,212,80Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,120ZM72,108a28,28,0,1,0-28,28A28,28,0,0,0,72,108ZM44,120a12,12,0,1,1,12-12A12,12,0,0,1,44,120ZM92,88A28,28,0,1,0,64,60,28,28,0,0,0,92,88Zm0-40A12,12,0,1,1,80,60,12,12,0,0,1,92,48Zm72,40a28,28,0,1,0-28-28A28,28,0,0,0,164,88Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,48Zm23.12,100.86a35.3,35.3,0,0,1-16.87-21.14,44,44,0,0,0-84.5,0A35.25,35.25,0,0,1,69,148.82,40,40,0,0,0,88,224a39.48,39.48,0,0,0,15.52-3.13,64.09,64.09,0,0,1,48.87,0,40,40,0,0,0,34.73-72ZM168,208a24,24,0,0,1-9.45-1.93,80.14,80.14,0,0,0-61.19,0,24,24,0,0,1-20.71-43.26,51.22,51.22,0,0,0,24.46-30.67,28,28,0,0,1,53.78,0,51.27,51.27,0,0,0,24.53,30.71A24,24,0,0,1,168,208Z"/></symbol><symbol id="i-tree-palm" viewBox="0 0 256 256"><path d="M237.79,53.23a66.86,66.86,0,0,0-97.74,0,72.21,72.21,0,0,0-12.05,17,72.21,72.21,0,0,0-12-17,66.86,66.86,0,0,0-97.74,0,8,8,0,0,0,2.6,12.85L77,90.55a71.42,71.42,0,0,0-43.36,33.21,70.64,70.64,0,0,0-7.2,54.32A8,8,0,0,0,39,182.36l81-61.68V224a8,8,0,0,0,16,0V120.68l81,61.68a8,8,0,0,0,12.57-4.28,70.64,70.64,0,0,0-7.2-54.32A71.42,71.42,0,0,0,179,90.55l56.22-24.47a8,8,0,0,0,2.6-12.85ZM67.08,48a51.13,51.13,0,0,1,37.28,16.26,56.53,56.53,0,0,1,14.26,26.93L39,56.53A50.5,50.5,0,0,1,67.08,48ZM40,161.5a54.82,54.82,0,0,1,7.47-29.7,55.55,55.55,0,0,1,34-25.89A56.52,56.52,0,0,1,96.1,104a55.82,55.82,0,0,1,16.23,2.41ZM208.5,131.8A54.82,54.82,0,0,1,216,161.5l-72.3-55.1a56.3,56.3,0,0,1,64.83,25.4ZM137.38,91.19a56.53,56.53,0,0,1,14.26-26.93A51.13,51.13,0,0,1,188.92,48,50.5,50.5,0,0,1,217,56.53Z"/></symbol><symbol id="i-balloon" viewBox="0 0 256 256"><path d="M128,16a88.1,88.1,0,0,0-88,88c0,23.43,9.4,49.42,25.13,69.5,12.08,15.41,26.5,26,41.91,31.09L96.65,228.85A8,8,0,0,0,104,240h48a8,8,0,0,0,7.35-11.15L149,204.59c15.4-5.07,29.83-15.68,41.91-31.09C206.6,153.42,216,127.43,216,104A88.1,88.1,0,0,0,128,16Zm11.87,208H116.13l6.94-16.19c1.64.12,3.28.19,4.93.19s3.29-.07,4.93-.19Zm38.4-60.37C163.94,181.93,146.09,192,128,192s-35.94-10.07-50.27-28.37C64.12,146.27,56,124,56,104a72,72,0,0,1,144,0C200,124,191.88,146.27,178.27,163.63Zm-1-59.74A8.52,8.52,0,0,1,176,104a8,8,0,0,1-7.88-6.68,41.29,41.29,0,0,0-33.43-33.43,8,8,0,1,1,2.64-15.78,57.5,57.5,0,0,1,46.57,46.57A8,8,0,0,1,177.32,103.89Z"/></symbol><symbol id="i-game-controller" viewBox="0 0 256 256"><path d="M176,112H152a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16ZM104,96H96V88a8,8,0,0,0-16,0v8H72a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM241.48,200.65a36,36,0,0,1-54.94,4.81c-.12-.12-.24-.24-.35-.37L146.48,160h-37L69.81,205.09l-.35.37A36.08,36.08,0,0,1,44,216,36,36,0,0,1,8.56,173.75a.68.68,0,0,1,0-.14L24.93,89.52A59.88,59.88,0,0,1,83.89,40H172a60.08,60.08,0,0,1,59,49.25c0,.06,0,.12,0,.18l16.37,84.17a.68.68,0,0,1,0,.14A35.74,35.74,0,0,1,241.48,200.65ZM172,144a44,44,0,0,0,0-88H83.89A43.9,43.9,0,0,0,40.68,92.37l0,.13L24.3,176.59A20,20,0,0,0,58,194.3l41.92-47.59a8,8,0,0,1,6-2.71Zm59.7,32.59-8.74-45A60,60,0,0,1,172,160h-4.2L198,194.31a20.09,20.09,0,0,0,17.46,5.39,20,20,0,0,0,16.23-23.11Z"/></symbol><symbol id="i-swimming-pool" viewBox="0 0 256 256"><path d="M88,149.39a8,8,0,0,0,8-8V128h64v15.29a8,8,0,0,0,16,0V32a8,8,0,0,0-16,0V48H96V32a8,8,0,0,0-16,0V141.39A8,8,0,0,0,88,149.39ZM96,112V96h64v16Zm64-48V80H96V64ZM24,168a8,8,0,0,1,8-8c14.42,0,22.19,5.18,28.44,9.34C66,173.06,70.42,176,80,176s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34a8,8,0,0,1,0,16c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,178.94,137.57,176,128,176s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,178.94,41.58,176,32,176A8,8,0,0,1,24,168Zm208,40a8,8,0,0,1-8,8c-9.58,0-14,2.94-19.56,6.66-6.25,4.16-14,9.34-28.44,9.34s-22.2-5.18-28.44-9.34C142,218.94,137.57,216,128,216s-14,2.94-19.56,6.66c-6.24,4.16-14,9.34-28.43,9.34s-22.19-5.18-28.44-9.34C46,218.94,41.58,216,32,216a8,8,0,0,1,0-16c14.42,0,22.19,5.18,28.44,9.34C66,213.06,70.42,216,80,216s14-2.94,19.56-6.66c6.24-4.16,14-9.34,28.43-9.34s22.2,5.18,28.44,9.34c5.58,3.72,10,6.66,19.57,6.66s14-2.94,19.56-6.66c6.25-4.16,14-9.34,28.44-9.34A8,8,0,0,1,232,208Z"/></symbol><symbol id="i-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/></symbol><symbol id="i-calendar-blank" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"/></symbol><symbol id="i-repeat" viewBox="0 0 256 256"><path d="M24,128A72.08,72.08,0,0,1,96,56H204.69L194.34,45.66a8,8,0,0,1,11.32-11.32l24,24a8,8,0,0,1,0,11.32l-24,24a8,8,0,0,1-11.32-11.32L204.69,72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H51.31l10.35-10.34a8,8,0,0,0-11.32-11.32l-24,24a8,8,0,0,0,0,11.32l24,24a8,8,0,0,0,11.32-11.32L51.31,200H160a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></symbol><symbol id="i-bookmark-simple" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 256 256"><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol><symbol id="i-info" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"/></symbol><symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol><symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol><symbol id="i-arrow-square-out" viewBox="0 0 256 256"><path d="M224,104a8,8,0,0,1-16,0V59.32l-66.33,66.34a8,8,0,0,1-11.32-11.32L196.68,48H152a8,8,0,0,1,0-16h64a8,8,0,0,1,8,8Zm-40,24a8,8,0,0,0-8,8v72H48V80h72a8,8,0,0,0,0-16H48A16,16,0,0,0,32,80V208a16,16,0,0,0,16,16H176a16,16,0,0,0,16-16V136A8,8,0,0,0,184,128Z"/></symbol><symbol id="i-download-simple" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></symbol><symbol id="i-magnifying-glass" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol><symbol id="i-share-network" viewBox="0 0 256 256"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></symbol><symbol id="i-navigation-arrow" viewBox="0 0 256 256"><path d="M237.33,106.21,61.41,41l-.16-.05A16,16,0,0,0,40.9,61.25a1,1,0,0,0,.05.16l65.26,175.92A15.77,15.77,0,0,0,121.28,248h.3a15.77,15.77,0,0,0,15-11.29l.06-.2,21.84-78,78-21.84.2-.06a16,16,0,0,0,.62-30.38ZM149.84,144.3a8,8,0,0,0-5.54,5.54L121.3,232l-.06-.17L56,56l175.82,65.22.16.06Z"/></symbol><symbol id="i-calendar-plus" viewBox="0 0 256 256"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-48-56a8,8,0,0,1-8,8H136v16a8,8,0,0,1-16,0V160H104a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16A8,8,0,0,1,160,152Z"/></symbol><symbol id="i-bookmark-simple-fill" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Z"/></symbol><symbol id="i-map-pin" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></symbol><symbol id="i-crosshair-simple" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V184a8,8,0,0,0-16,0v31.63A88.13,88.13,0,0,1,40.37,136H72a8,8,0,0,0,0-16H40.37A88.13,88.13,0,0,1,120,40.37V72a8,8,0,0,0,16,0V40.37A88.13,88.13,0,0,1,215.63,120H184a8,8,0,0,0,0,16h31.63A88.13,88.13,0,0,1,136,215.63Z"/></symbol><symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol><symbol id="i-sun" viewBox="0 0 256 256"><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></symbol><symbol id="i-map-trifold" viewBox="0 0 256 256"><path d="M228.92,49.69a8,8,0,0,0-6.86-1.45L160.93,63.52,99.58,32.84a8,8,0,0,0-5.52-.6l-64,16A8,8,0,0,0,24,56V200a8,8,0,0,0,9.94,7.76l61.13-15.28,61.35,30.68A8.15,8.15,0,0,0,160,224a8,8,0,0,0,1.94-.24l64-16A8,8,0,0,0,232,200V56A8,8,0,0,0,228.92,49.69ZM104,52.94l48,24V203.06l-48-24ZM40,62.25l48-12v127.5l-48,12Zm176,131.5-48,12V78.25l48-12Z"/></symbol></svg>
 <div class="shell">
   <header class="bar">
     <svg class="mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect x="2" y="2" width="96" height="96" rx="21" fill="#2E5082"/><rect x="20" y="26" width="60" height="56" rx="7" fill="#fff"/><path d="M27 26h46a7 7 0 0 1 7 7v8H20v-8a7 7 0 0 1 7-7z" fill="#A07020"/><rect x="33" y="18" width="6" height="14" rx="3" fill="#fff"/><rect x="61" y="18" width="6" height="14" rx="3" fill="#fff"/><polygon points="50,46 40,60 45,60 36,73 64,73 55,60 60,60" fill="#2F6B3A"/><rect x="47.5" y="73" width="5" height="5" fill="#2F6B3A"/></svg>
-    <span class="btitle" id="btitle" aria-hidden="true">Tonight</span>
+    <span class="btitle" id="btitle" aria-hidden="true">Today</span>
     <div class="topbtns">
       <button class="installbtn" id="installBtn" type="button" hidden><svg class="i" aria-hidden="true" focusable="false"><use href="#i-download-simple"/></svg>Install app</button>
       <button class="iconbtn" id="aboutBtn" type="button" aria-label="About" aria-haspopup="dialog"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-info"/></svg></button>
@@ -433,7 +438,7 @@ SOFTWARE.
   </header>
   <div class="page">
     <div class="hd">
-      <h1 class="big" id="bigT">Tonight</h1>
+      <h1 class="big" id="bigT">Today</h1>
       <p class="subl" id="subl"></p>
       <p class="meta" id="metaTop"></p>
       <div class="ctxrow" id="ctxrow"></div>
@@ -453,7 +458,7 @@ SOFTWARE.
 </div>
 <nav class="tabs" aria-label="Views">
   <div class="brand"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect x="2" y="2" width="96" height="96" rx="21" fill="#2E5082"/><rect x="20" y="26" width="60" height="56" rx="7" fill="#fff"/><path d="M27 26h46a7 7 0 0 1 7 7v8H20v-8a7 7 0 0 1 7-7z" fill="#A07020"/><rect x="33" y="18" width="6" height="14" rx="3" fill="#fff"/><rect x="61" y="18" width="6" height="14" rx="3" fill="#fff"/><polygon points="50,46 40,60 45,60 36,73 64,73 55,60 60,60" fill="#2F6B3A"/><rect x="47.5" y="73" width="5" height="5" fill="#2F6B3A"/></svg><span>Northwoods Area Events</span></div>
-  <a class="tab" href="./" data-tab="tonight"><span class="ic"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-moon"/></svg></span><span class="tl">Tonight</span></a>
+  <a class="tab" href="./" data-tab="today"><span class="ic"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-sun"/></svg></span><span class="tl">Today</span></a>
   <a class="tab" href="?mode=upcoming" data-tab="upcoming"><span class="ic"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-calendar-blank"/></svg></span><span class="tl">Upcoming</span></a>
   <a class="tab" href="?mode=weekly" data-tab="weekly"><span class="ic"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-repeat"/></svg></span><span class="tl">Weekly</span></a>
   <a class="tab" href="?mode=saved" data-tab="saved"><span class="ic"><svg class="i" aria-hidden="true" focusable="false"><use href="#i-bookmark-simple"/></svg></span><span class="tl">Saved</span></a>
@@ -2154,7 +2159,7 @@ const WHENS=[["today","Today"],["weekend","This weekend"],["7","Next 7 days"],["
 const WHEN=Object.fromEntries(WHENS);
 const DISTS=[25,60,120,250];
 const own=(o,k)=>k!=null&&Object.prototype.hasOwnProperty.call(o,k);
-// URL keys: mode (Tonight is the default and is left out), day (Weekly), sort, when, cat, dist, town, q (Upcoming), ev. Defaults are left out.
+// URL keys: mode (Today is the default and is left out; mode=tonight is an old alias for it), day (Weekly), sort, when, cat, dist, town, q (Upcoming), ev. Defaults are left out.
 // Never "from": a shared My location link would ask for location on load.
 // Categories: S.cat holds the ticked ones as one string (CATMETA order, newline-joined), so views compare as values.
 const CATORDER=Object.keys(CATMETA);
@@ -2170,13 +2175,13 @@ const whenText=w=>isDate(w)?"on "+dayLabel2(w):WHEN[w].toLowerCase();
 let MB=false;try{MB=localStorage.getItem("ev_mybands")==="1";}catch(e){}
 const shown=o=>MB||o.cat!=="My Bands";
 const WD=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-const MODES=["tonight","upcoming","weekly","saved"];
+const MODES=["today","upcoming","weekly","saved"];
 const LEGACY=["when","sort","cat","dist","town","q"];
 function readURL(search){
-  const p=new URLSearchParams(search),w=p.get("when"),d=+(p.get("dist")||0),tn=p.get("town"),md=p.get("mode"),dy=p.get("day");
-  // No mode = Tonight. An old link (no mode, but any of when / sort / cat / dist / town / q) opens Upcoming with those applied.
+  const p=new URLSearchParams(search),w=p.get("when"),d=+(p.get("dist")||0),tn=p.get("town"),md=p.get("mode")==="tonight"?"today":p.get("mode"),dy=p.get("day");
+  // No mode = Today (mode=tonight is read as today). An old link (no mode, but any of when / sort / cat / dist / town / q) opens Upcoming with those applied.
   const legacy=!MODES.includes(md)&&LEGACY.some(k=>p.has(k));
-  const mode=MODES.includes(md)?md:legacy?"upcoming":"tonight";
+  const mode=MODES.includes(md)?md:legacy?"upcoming":"today";
   return {mode,sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)||isDate(w)?w:(legacy?"7":"all"),
     cat:catKey(p.getAll("cat").filter(c=>own(CATMETA,c)&&(MB||c!=="My Bands"))),dist:DISTS.includes(d)?d:0,town:own(TOWNS,tn)?tn:"",q:(p.get("q")||"").trim(),
     day:WD.includes(dy)||dy==="Other"?dy:"",ev:p.get("ev")||""};
@@ -2218,7 +2223,7 @@ function toggleGroup(name){
   refine({cat:catKey(next)});
 }
 
-// --- regions: which parts of the area Upcoming and Weekly show. Tonight always covers the whole area. ---
+// --- regions: which parts of the area Upcoming and Weekly show. Today always covers the whole area. ---
 const REGCORE=["Chequamegon Bay","Duluth / Superior","Hurley / Iron County","Northwoods","Wider Northwoods","Hayward","Western U.P."];
 // "Hayward / Sawyer County" is Hayward
 const regOf=o=>o.region==="Hayward / Sawyer County"?"Hayward":o.region;
@@ -2299,24 +2304,23 @@ function recRow(o,sel){
 const group=(label,n,items,sub,day)=>`<h2 class="ghead"${day?` data-day="${day}"`:""}>${esc(label)} <span class="n">${n} event${n===1?"":"s"}</span>${sub?`<span class="sub">${esc(sub)}</span>`:""}</h2><div class="list">${items}</div>`;
 const chev=icon("caret-down");
 
-// --- Tonight: today (America/Chicago) across the whole area ---
-// In: a single day today, a dates[] event with today in dates, or a continuous run of 14 days or less that covers today;
-// with a time, it starts at 5 PM or later or its end is still ahead; without one it is listed as "Time not listed".
+// --- Today: everything happening today (America/Chicago) that has not ended, across the whole area ---
+// In: a single day today, a dates[] event with today in dates, or a continuous run of 14 days or less that covers today.
+// With an end time it drops off once that time has passed; a start-only time or no time ("Time not listed") stays all day.
 // Runs over 14 days belong to Upcoming's "Running now".
-function tonightOk(e){
+function todayOk(e){
   const x=IX.get(e);
   if(x.ds){if(!x.ds.includes(TD))return false;}
   else if(x.s>TD||x.e<TD||x.e-x.s+1>14)return false;
-  const t=parseTime(e.time);if(!t)return true;
-  const a=t.a[0]*60+t.a[1];if(a>=1020)return true;
-  if(!t.b)return false;
+  const t=parseTime(e.time);if(!t||!t.b)return true;
+  const a=t.a[0]*60+t.a[1];
   let b=t.b[0]*60+t.b[1];if(b<=a)b+=1440;
   return b>NOWMIN;
 }
-const tonightList=()=>{NOWMIN=chiParts().min;return EVENTS.filter(e=>shown(e)&&catOk(e)&&tonightOk(e));};
+const todayList=()=>{NOWMIN=chiParts().min;return EVENTS.filter(e=>shown(e)&&catOk(e)&&todayOk(e));};
 const BANDS=[["Close by","under 15 mi"],["Short drive","15-44 mi"],["Worth the drive","45-89 mi"],["Farther","90+ mi"],["Distance unknown",""]];
 const bandOf=m=>m==null?4:m<15?0:m<45?1:m<90?2:3;
-function viewTonight(list){
+function viewToday(list){
   const arr=list.map(e=>({e,m:miOf(e)})).sort((a,b)=>(a.m??9999)-(b.m??9999)||tMin(a.e)-tMin(b.e)||a.e.title.localeCompare(b.e.title));
   return {pre:"",items:arr,ongoing:0,key:x=>bandOf(x.m),label:x=>BANDS[bandOf(x.m)][0],sub:x=>BANDS[bandOf(x.m)][1],row:x=>row(x.e,today,"date")};
 }
@@ -2361,7 +2365,7 @@ function groupsHTML(items){
 }
 
 // --- head: large title, subtitle, context buttons, search, kind row, date strip / weekday chips ---
-const TITLES={tonight:"Tonight",upcoming:"Upcoming",weekly:"Weekly",saved:"Saved"};
+const TITLES={today:"Today",upcoming:"Upcoming",weekly:"Weekly",saved:"Saved"};
 const ctxBtn=(open,ic,label)=>`<button class="ctx" type="button" data-open="${open}" aria-haspopup="dialog">${icon(ic)}${esc(label)}${icon("caret-down")}</button>`;
 function kindChips(){
   const gs=kgroups(),n=gs.filter(kon).length;
@@ -2388,11 +2392,11 @@ function renderHead(){
   const m=S.mode,fk=fkey(document.activeElement);
   $("#bigT").textContent=TITLES[m];$("#btitle").textContent=TITLES[m];
   const rl=regionLabel();
-  $("#subl").textContent=m==="tonight"?`${shortD(today)}, 5 PM and later · whole area`:m==="upcoming"?`${shortD(today)} and later · ${rl}`:m==="weekly"?`Repeating events · ${rl}`:"Saved on this device";
+  $("#subl").textContent=m==="today"?`${shortD(today)} · happening now and later · whole area`:m==="upcoming"?`${shortD(today)} and later · ${rl}`:m==="weekly"?`Repeating events · ${rl}`:"Saved on this device";
   const hn=homeName(HOME||FALLBACK_HOME);
-  put($("#ctxrow"),m==="tonight"?ctxBtn("home","map-pin",`Closest to ${hn}`):m==="upcoming"?ctxBtn("regions","map-trifold",rl)+ctxBtn("home","map-pin",`From ${hn}`):m==="weekly"?ctxBtn("regions","map-trifold",rl):"");
+  put($("#ctxrow"),m==="today"?ctxBtn("home","map-pin",`Closest to ${hn}`):m==="upcoming"?ctxBtn("regions","map-trifold",rl)+ctxBtn("home","map-pin",`From ${hn}`):m==="weekly"?ctxBtn("regions","map-trifold",rl):"");
   $("#srchWrap").hidden=m!=="upcoming";
-  const kd=$("#kinds");kd.hidden=!(m==="tonight"||m==="upcoming");if(!kd.hidden)put(kd,kindChips());
+  const kd=$("#kinds");kd.hidden=!(m==="today"||m==="upcoming");if(!kd.hidden)put(kd,kindChips());
   const sp=$("#strip"),dated=m==="upcoming"&&!byPlace();sp.hidden=!(dated||m==="weekly");
   sp.setAttribute("aria-label",m==="weekly"?"Day of the week":"Jump to a day");sp.setAttribute("role","group");
   if(!sp.hidden){const ch=put(sp,m==="weekly"?stripWk():stripUp());if(m==="weekly"){const on=sp.querySelector('[aria-pressed="true"]');if(on)sp.scrollLeft=Math.max(0,on.offsetLeft-sp.clientWidth/2+on.offsetWidth/2);}}
@@ -2402,8 +2406,8 @@ function renderHead(){
 // --- empty states: say what was searched, then offer only the ways out that apply ---
 function emptyHTML(){
   const act=(k,l)=>`<button class="eact" type="button" data-act="${k}">${l}</button>`;
-  if(S.mode==="tonight"){
-    return `<div class="empty"><p class="emsg">${S.cat?"Nothing of this kind tonight.":"Nothing listed for tonight."}</p><div class="eacts">${S.cat?act("kinds","Show all kinds"):""}${act("upcoming","See what's coming up")}</div></div>`;
+  if(S.mode==="today"){
+    return `<div class="empty"><p class="emsg">${S.cat?"Nothing of this kind left today.":"Nothing left today."}</p><div class="eacts">${S.cat?act("kinds","Show all kinds"):""}${act("upcoming","See what's coming up")}</div></div>`;
   }
   if(S.mode==="weekly")return `<div class="empty"><p class="emsg">Nothing listed for this day in these regions.</p><div class="eacts">${act("regions","Change regions")}</div></div>`;
   const q=$("#search").value.trim();
@@ -2424,9 +2428,9 @@ function emptyAct(k){
 }
 // My Bands: the criteria only. The band lists are private and never appear on the page.
 const MBNOTE=`<details class="mbnote tail"><summary>How My Bands is picked<span class="chev">${chev}</span></summary><p>My Bands lists touring acts from a concert watch-list tuned to metal, hard electronic / hardstyle / S3RL, punk, rap, game &amp; anime covers and mashups. The weekly scan adds a show when one of these bands books a date within driving range, and rescans every Thursday.</p></details>`;
-function tonightTail(){
+function todayTail(){
   const n=weeklyTodayN();if(!n)return "";
-  return `<button class="link tail" type="button" data-golink>${icon("repeat")}<span>Also every ${DOWF[today.getDay()]}: ${n} regular night${n===1?"":"s"}</span>${icon("caret-right")}</button>`;
+  return `<button class="link tail" type="button" data-golink>${icon("repeat")}<span>Also every ${DOWF[today.getDay()]}: ${n} regular event${n===1?"":"s"}</span>${icon("caret-right")}</button>`;
 }
 function setTabs(m){document.querySelectorAll(".tab").forEach(t=>{if(t.dataset.tab===m)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});}
 // Rendering: the header, count line and first screenful (about 12 rows) in the tap's task, then the rest in
@@ -2438,18 +2442,18 @@ function render(opts){
   document.documentElement.dataset.view=S.mode;setTabs(S.mode);const gen=++GEN;
   renderHead();renderApplied();
   if(S.mode==="saved"){renderSaved();return gen;}
-  V=S.mode==="tonight"?viewTonight(tonightList()):S.mode==="weekly"?viewWeekly():byPlace()?viewPlace(poolUp()):viewUp(poolUp());
+  V=S.mode==="today"?viewToday(todayList()):S.mode==="weekly"?viewWeekly():byPlace()?viewPlace(poolUp()):viewUp(poolUp());
   // group counts come from the full list, so a header is right before its rows arrive
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
   V.shown=Math.min(FIRST,V.items.length);
   LASTN=V.items.length+V.ongoing;
   const n=LASTN;
-  $("#count").textContent=S.mode==="tonight"?`${n} event${n===1?"":"s"} tonight`:S.mode==="weekly"?`${n} regular event${n===1?"":"s"}`:`${n} event${n===1?"":"s"}${S.when!=="all"?" · "+whenText(S.when):""}${S.town?` · in ${homeName(S.town)}`:""}`;
+  $("#count").textContent=S.mode==="today"?`${n} event${n===1?"":"s"} today`:S.mode==="weekly"?`${n} regular event${n===1?"":"s"}`:`${n} event${n===1?"":"s"}${S.when!=="all"?" · "+whenText(S.when):""}${S.town?` · in ${homeName(S.town)}`:""}`;
   $("#announce").textContent="";
   $("#geoNote").innerHTML=esc(GEO.note);$("#geoNote").hidden=!GEO.note;GEO.note="";renderHello();
   const html=V.pre+groupsHTML(V.items.slice(0,V.shown));
   const res=$("#results");
-  res.innerHTML=(html||emptyHTML())+(S.mode==="tonight"?tonightTail():"")+((S.mode==="upcoming"||S.mode==="tonight")&&cats().includes("My Bands")?MBNOTE:"");
+  res.innerHTML=(html||emptyHTML())+(S.mode==="today"?todayTail():"")+((S.mode==="upcoming"||S.mode==="today")&&cats().includes("My Bands")?MBNOTE:"");
   const ls=res.querySelectorAll(":scope > .list");V.last=ls[ls.length-1]||null;
   replaceURL();
   setBarH();
@@ -2630,17 +2634,17 @@ function helloAct(k){
 let qt;$("#search").addEventListener("input",ev=>{clearTimeout(qt);qt=setTimeout(()=>{refine({q:ev.target.value.trim()});render();},150);});
 addEventListener("resize",setBarH);
 // A tab left open overnight: recompute "today" when it comes back, and at local midnight while it stays open.
-// Tonight depends on the time of day too, so it is rebuilt every time the page comes back.
-function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render({keep:true});}else if(S.mode==="tonight")render({keep:true});}
+// Today depends on the time of day too, so it is rebuilt every time the page comes back.
+function refreshDay(){const was=iso(today);setToday();if(iso(today)!==was){setMeta();render({keep:true});}else if(S.mode==="today")render({keep:true});}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;refreshDay();});
 function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,0,0,1);setTimeout(()=>{refreshDay();armMidnight();},m-n);}
 armMidnight();
 
 // --- history: go() pushes destinations, refine() replaces; render() only ever replaces ---
 const VIEWKEYS=["mode","sort","when","cat","dist","town","q","day"];
-const DEF={mode:"tonight",sort:"date",when:"all",cat:"",dist:0,town:"",q:"",day:""};
-// Which keys a view writes to the URL. Tonight writes cat only together with an explicit mode=tonight (urlFor): a bare cat= reads as an old link and opens Upcoming.
-const URLKEYS={tonight:["cat"],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
+const DEF={mode:"today",sort:"date",when:"all",cat:"",dist:0,town:"",q:"",day:""};
+// Which keys a view writes to the URL. Today writes cat only together with an explicit mode=today (urlFor): a bare cat= reads as an old link and opens Upcoming.
+const URLKEYS={today:["cat"],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
 // This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 // OPEN: the open sheet, an event id or a SHEETS name. Only an event id goes in the URL; the sheets are marked in history.state.
@@ -2651,7 +2655,7 @@ try{history.scrollRestoration="manual";}catch(e){}
 const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,town:S.town,q:S.qt,day:S.day});
 function urlFor(v,ev){
   const u=new URLSearchParams();
-  if(v.mode!==DEF.mode||(v.mode==="tonight"&&v.cat))u.set("mode",v.mode);
+  if(v.mode!==DEF.mode||(v.mode==="today"&&v.cat))u.set("mode",v.mode);
   // categories as repeated keys: cat=Concert&cat=Festival
   (URLKEYS[v.mode]||[]).forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(v[k]!==DEF[k])u.set(k,v[k]);});
   if(ev)u.set("ev",ev);
@@ -2893,7 +2897,7 @@ function kindsHTML(){
 }
 function regionsHTML(){
   const c=regionCounts(),li=k=>`<li><label class="fo"><input type="checkbox" name="freg" value="${esc(k)}"${REGON.has(k)?" checked":""}><span><span class="l1">${esc(k)}</span><span class="sub">${c[k]||0} event${c[k]===1?"":"s"}</span></span></label></li>`;
-  return `<h2 class="sh-title" id="sheetTitle">Regions</h2><p class="hp-lead">Upcoming and Weekly show the regions you turn on. Tonight always covers the whole area.</p>`+
+  return `<h2 class="sh-title" id="sheetTitle">Regions</h2><p class="hp-lead">Upcoming and Weekly show the regions you turn on. Today always covers the whole area.</p>`+
     `<p class="fsec">Around here</p><ul class="fl opts">${REGCORE.map(li).join("")}</ul>`+
     (REGFAR.length?`<p class="fsec">Farther away · off until you turn them on</p><ul class="fl opts">${REGFAR.map(li).join("")}</ul>`:"")+
     `<p class="sh-live" id="sheetLive" role="status" aria-live="polite"></p>`+
@@ -3089,9 +3093,9 @@ function downloadICS(id){
 }
 
 // Theme: light by default, dark only when tapped. The choice is remembered when storage allows it.
-// Both theme-color tags carry the active theme's --bg: the theme is the app's choice, not the phone's.
+// Both theme-color tags carry the active theme's --band: the theme is the app's choice, not the phone's.
 // The switch lives in the About sheet.
-function applyTheme(t){document.documentElement.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content",t==="dark"?"#0F1420":"#EFF2F7"));const sw=$("#themeSwitch");if(sw)sw.setAttribute("aria-checked",t==="dark");}
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute("content",t==="dark"?"#1B2A44":"#24406B"));const sw=$("#themeSwitch");if(sw)sw.setAttribute("aria-checked",t==="dark");}
 let theme="light";try{if(localStorage.getItem("ev_theme")==="dark")theme="dark";}catch(e){}
 applyTheme(theme);
 function setTheme(t){theme=t;try{localStorage.setItem("ev_theme",theme);}catch(e){}applyTheme(theme);setBarH();}

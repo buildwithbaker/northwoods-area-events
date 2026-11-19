@@ -135,6 +135,10 @@ a{color:inherit}
 .ctx{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 4px;border:0;background:none;font-size:1.0625rem;font-weight:700;color:var(--band-link);cursor:pointer;text-align:left}
 .ctx svg{width:18px;height:18px}
 .ctx svg:last-child{width:16px;height:16px}
+/* sort switch (Today, Upcoming): Time | Distance */
+.sortsw{display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.sortsw .lbl{font-size:.875rem;font-weight:600;color:var(--band-sub)}
+.sortsw .chip{min-height:36px}
 .srch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;margin-top:6px;background:var(--band-field);border:1px solid var(--band-field-line);border-radius:var(--r-md);box-shadow:0 0 0 100vmax var(--band);clip-path:inset(-8px -100vmax)}
 .srch svg{width:18px;height:18px;color:var(--on-surface-variant)}
 .srch input{flex:1 1 auto;min-width:0;min-height:42px;border:0;outline:0;background:none;font-size:max(16px,1rem)}
@@ -200,6 +204,7 @@ a{color:inherit}
 .t1.un{font-style:italic;font-weight:400;color:var(--on-surface-variant)}
 .ev .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:1rem;font-weight:600;line-height:1.3;color:var(--on-surface);overflow-wrap:anywhere}
 .ev .meta2{font-size:.875rem;line-height:1.3;color:var(--on-surface-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .twn{font-size:1rem;font-weight:700;color:var(--on-surface)}
 .ev .nt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.8125rem;line-height:1.3;color:var(--on-surface-variant);overflow-wrap:anywhere}
 .ev .mi{flex:0 0 auto;max-width:5.5em;text-align:right;font-size:.8125rem;font-weight:600;color:var(--on-surface-variant)}
 .fam-music{background:var(--fam-music);color:var(--on-fam-music)}
@@ -2056,7 +2061,7 @@ const WHENS=[["today","Today"],["weekend","This weekend"],["7","Next 7 days"],["
 const WHEN=Object.fromEntries(WHENS);
 const DISTS=[25,60,120,250];
 const own=(o,k)=>k!=null&&Object.prototype.hasOwnProperty.call(o,k);
-// URL keys: mode (Today is the default and is left out; mode=tonight is an old alias for it), day (Weekly), sort, when, cat, dist, town, q (Upcoming), ev. Defaults are left out.
+// URL keys: mode (Today is the default and is left out; mode=tonight is an old alias for it), day (Weekly), sort (Today: time; Upcoming: place), when, cat, dist, town, q (Upcoming), ev. Defaults are left out.
 // Never "from": a shared My location link would ask for location on load.
 // Categories: S.cat holds the ticked ones as one string (CATMETA order, newline-joined), so views compare as values.
 const CATORDER=Object.keys(CATMETA);
@@ -2079,13 +2084,13 @@ function readURL(search){
   // No mode = Today (mode=tonight is read as today). An old link (no mode, but any of when / sort / cat / dist / town / q) opens Upcoming with those applied.
   const legacy=!MODES.includes(md)&&LEGACY.some(k=>p.has(k));
   const mode=MODES.includes(md)?md:legacy?"upcoming":"today";
-  return {mode,sort:p.get("sort")==="place"?"place":"date",when:own(WHEN,w)||isDate(w)?w:(legacy?"7":"all"),
+  return {mode,sort:p.get("sort")==="place"?"place":"date",tsort:mode==="today"&&p.get("sort")==="time"?"time":"place",when:own(WHEN,w)||isDate(w)?w:(legacy?"7":"all"),
     cat:catKey(p.getAll("cat").filter(c=>own(CATMETA,c)&&(MB||c!=="My Bands"))),dist:DISTS.includes(d)?d:0,town:own(TOWNS,tn)?tn:"",q:(p.get("q")||"").trim(),
     day:WD.includes(dy)||dy==="Other"?dy:"",ev:p.get("ev")||""};
 }
 const U0=readURL(location.search);
 // q: lower-cased for matching; qt: the text as typed, for the URL and the search box.
-const S={mode:U0.mode,sort:U0.sort,when:U0.when,cat:U0.cat,dist:U0.dist,town:U0.town,q:U0.q.toLowerCase(),qt:U0.q,day:U0.day};
+const S={mode:U0.mode,sort:U0.sort,tsort:U0.tsort,when:U0.when,cat:U0.cat,dist:U0.dist,town:U0.town,q:U0.q.toLowerCase(),qt:U0.q,day:U0.day};
 const byPlace=()=>S.sort==="place";
 function range(){
   if(isDate(S.when)){const d=pd(S.when);return[d,d];}
@@ -2171,18 +2176,19 @@ function noteFor(e,d){
   if(e.end&&e.end!==e.start){const a=pd(e.start),b=lastDay(e);return Math.round((b-a)/864e5)<=6?`${DOW[a.getDay()]}-${DOW[b.getDay()]}`:thru(b);}
   return "";
 }
-// --- the row: category tile, time (bold primary) or italic "Time not listed", title (2 lines), "venue, town", drive miles on the right ---
+// --- the row: category tile, time (bold primary) or italic "Time not listed", title (2 lines), "Town · venue", drive miles on the right ---
 const t1HTML=(time,extra,id)=>{const x=extra?`<span class="x"> · ${esc(extra)}</span>`:"";return time?`<span class="t1" id="${id}">${esc(time)}${x}</span>`:`<span class="t1 un" id="${id}">Time not listed${x}</span>`;};
 const plainT1=(txt,id)=>`<span class="t1" id="${id}">${esc(txt)}</span>`;
-function whereText(o){
-  if(!o.town)return o.place||"";
-  const v=venue(o),t=townName(o);return v?`${v}, ${t}`:t;
+// Line 2: the town (larger, bold) first, then the venue. The town answers "can I get there", so the ellipsis never cuts it.
+function whereHTML(o){
+  if(!o.town)return esc(o.place||"");
+  const v=venue(o);return `<span class="twn">${esc(townName(o))}</span>${v?` · ${esc(v)}`:""}`;
 }
 // One row button; its name reads time, title, place, distance.
 function evRow(o,id,t1,note){
   const mi=distPiece(o);
   const lab=[id+"-1",id+"-t",id+"-m",mi&&id+"-d"].filter(Boolean).join(" ");
-  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${lab}">${iconTile(o.cat)}<span class="body">${t1}<span class="t" id="${id}-t">${esc(o.title)}</span><span class="meta2" id="${id}-m">${esc(whereText(o))}</span>${note?`<span class="nt">${esc(note)}</span>`:""}</span>${mi?`<span class="mi" id="${id}-d">${esc(mi)}</span>`:""}</button>`;
+  return `<button type="button" class="ev" data-ev="${id}" aria-haspopup="dialog" aria-labelledby="${lab}">${iconTile(o.cat)}<span class="body">${t1}<span class="t" id="${id}-t">${esc(o.title)}</span><span class="meta2" id="${id}-m">${whereHTML(o)}</span>${note?`<span class="nt">${esc(note)}</span>`:""}</span>${mi?`<span class="mi" id="${id}-d">${esc(mi)}</span>`:""}</button>`;
 }
 // ctx: "date" (day groups) or "near" (under a town header: date first)
 function row(e,d,ctx){
@@ -2221,6 +2227,13 @@ function viewToday(list){
   const arr=list.map(e=>({e,m:miOf(e)})).sort((a,b)=>(a.m??9999)-(b.m??9999)||tMin(a.e)-tMin(b.e)||a.e.title.localeCompare(b.e.title));
   return {pre:"",items:arr,ongoing:0,key:x=>bandOf(x.m),label:x=>BANDS[bandOf(x.m)][0],sub:x=>BANDS[bandOf(x.m)][1],row:x=>row(x.e,today,"date")};
 }
+// Today sorted by start time: Morning / Afternoon / Evening / Time not listed, then nearest first within a time.
+const TBANDS=[["Morning","before noon"],["Afternoon","noon to 5 pm"],["Evening","5 pm and later"],["Time not listed",""]];
+const tbandOf=t=>t>=1440?3:t<720?0:t<1020?1:2;
+function viewTodayTime(list){
+  const arr=list.map(e=>({e,t:tMin(e),m:miOf(e)})).sort((a,b)=>a.t-b.t||(a.m??9999)-(b.m??9999)||a.e.title.localeCompare(b.e.title));
+  return {pre:"",items:arr,ongoing:0,key:x=>tbandOf(x.t),label:x=>TBANDS[tbandOf(x.t)][0],sub:x=>TBANDS[tbandOf(x.t)][1],row:x=>row(x.e,today,"date")};
+}
 const weeklyTodayN=()=>weeklyList(DOW[today.getDay()],false).length;
 
 // --- Upcoming: from today on, a day list; runs over 14 days that are still going wait in "Running now" ---
@@ -2236,7 +2249,7 @@ function viewUp(list){
     label:x=>{const n=daysFrom(x.d);return n===0?"Today":n===1?"Tomorrow":DOWF[x.d.getDay()];},
     sub:x=>`${DOW[x.d.getDay()]}, ${MON[x.d.getMonth()]} ${x.d.getDate()}`};
 }
-// old ?sort=place links: nearest town first
+// Upcoming sorted by distance (sort=place): nearest town first
 function viewPlace(list){
   const r=range();
   const arr=list.map(e=>({e,d:firstIn(e,r)})).sort((a,b)=>(miOf(a.e)??9999)-(miOf(b.e)??9999)||(a.e.town||"~").localeCompare(b.e.town||"~")||(isOngoing(a.e)?1:0)-(isOngoing(b.e)?1:0)||a.d-b.d);
@@ -2263,6 +2276,10 @@ function groupsHTML(items){
 
 // --- head: large title, subtitle, context buttons, search, kind row, date strip / weekday chips ---
 const TITLES={today:"Today",upcoming:"Upcoming",weekly:"Weekly",saved:"Saved"};
+// Sort switch: Today defaults to Distance (tsort), Upcoming to Time (sort).
+const nearOn=()=>S.mode==="today"?S.tsort==="place":byPlace();
+const sortSw=()=>{const n=nearOn();return `<span class="sortsw" role="group" aria-label="Sort by"><span class="lbl" aria-hidden="true">Sort</span><button class="chip" type="button" data-sort="time" aria-pressed="${!n}">Time</button><button class="chip" type="button" data-sort="near" aria-pressed="${n}">Distance</button></span>`;};
+function setSort(near){if(S.mode==="today")refine({tsort:near?"place":"time"});else refine({sort:near?"place":"date"});}
 const ctxBtn=(open,ic,label)=>`<button class="ctx" type="button" data-open="${open}" aria-haspopup="dialog">${icon(ic)}${esc(label)}${icon("caret-down")}</button>`;
 function kindChips(){
   const gs=kgroups(),n=gs.filter(kon).length;
@@ -2282,7 +2299,7 @@ const stripWk=()=>[...WD,"Other"].map(d=>`<button class="chip" type="button" dat
 function put(el,html){if(el._h===html)return false;el._h=html;el.innerHTML=html;return true;}
 function fkey(el){
   if(!el||!el.closest)return null;const c=el.closest("#kinds,#strip,#ctxrow");if(!c)return null;
-  for(const k of ["grp","gall","open","wd","day"])if(el.dataset[k]!==undefined)return `#${c.id} [data-${k.replace(/[A-Z]/g,m=>"-"+m.toLowerCase())}${el.dataset[k]===""?"":`="${CSS.escape(el.dataset[k])}"`}]`;
+  for(const k of ["grp","gall","open","wd","day","sort"])if(el.dataset[k]!==undefined)return `#${c.id} [data-${k.replace(/[A-Z]/g,m=>"-"+m.toLowerCase())}${el.dataset[k]===""?"":`="${CSS.escape(el.dataset[k])}"`}]`;
   return null;
 }
 function renderHead(){
@@ -2291,7 +2308,7 @@ function renderHead(){
   const rl=regionLabel();
   $("#subl").textContent=m==="today"?`${shortD(today)} · happening now and later · whole area`:m==="upcoming"?`${shortD(today)} and later · ${rl}`:m==="weekly"?`Repeating events · ${rl}`:"Saved on this device";
   const hn=homeName(HOME||FALLBACK_HOME);
-  put($("#ctxrow"),m==="today"?ctxBtn("home","map-pin",`Closest to ${hn}`):m==="upcoming"?ctxBtn("regions","map-trifold",rl)+ctxBtn("home","map-pin",`From ${hn}`):m==="weekly"?ctxBtn("regions","map-trifold",rl):"");
+  put($("#ctxrow"),m==="today"?ctxBtn("home","map-pin",`From ${hn}`)+sortSw():m==="upcoming"?ctxBtn("regions","map-trifold",rl)+ctxBtn("home","map-pin",`From ${hn}`)+sortSw():m==="weekly"?ctxBtn("regions","map-trifold",rl):"");
   $("#srchWrap").hidden=m!=="upcoming";
   const kd=$("#kinds");kd.hidden=!(m==="today"||m==="upcoming");if(!kd.hidden)put(kd,kindChips());
   const sp=$("#strip"),dated=m==="upcoming"&&!byPlace();sp.hidden=!(dated||m==="weekly");
@@ -2339,7 +2356,7 @@ function render(opts){
   document.documentElement.dataset.view=S.mode;setTabs(S.mode);const gen=++GEN;
   renderHead();renderApplied();
   if(S.mode==="saved"){renderSaved();return gen;}
-  V=S.mode==="today"?viewToday(todayList()):S.mode==="weekly"?viewWeekly():byPlace()?viewPlace(poolUp()):viewUp(poolUp());
+  V=S.mode==="today"?(S.tsort==="time"?viewTodayTime:viewToday)(todayList()):S.mode==="weekly"?viewWeekly():byPlace()?viewPlace(poolUp()):viewUp(poolUp());
   // group counts come from the full list, so a header is right before its rows arrive
   V.count={};V.items.forEach(x=>{const k=V.key(x);V.count[k]=(V.count[k]||0)+1;});
   V.shown=Math.min(FIRST,V.items.length);
@@ -2473,6 +2490,7 @@ document.addEventListener("click",ev=>{
   if(b.hasAttribute("data-golink")){const d=DOW[today.getDay()];if(go({mode:"weekly",day:d}))withTabTransition(o=>{const g=render({...o,keep:true});scrollTo(0,0);return g;});return;}
   if(b.dataset.grp!==undefined){toggleGroup(b.dataset.grp);renderHead();renderSoon();return;}
   if(b.hasAttribute("data-gall")){refine({cat:""});renderHead();renderSoon();return;}
+  if(b.dataset.sort){setSort(b.dataset.sort==="near");renderHead();renderSoon();return;}
   if(b.dataset.wd){refine({day:b.dataset.wd===DOW[today.getDay()]?"":b.dataset.wd});renderHead();renderSoon();return;}
   if(b.classList.contains("day")&&b.dataset.day){jumpToDay(b.dataset.day);return;}
 });
@@ -2538,10 +2556,10 @@ function armMidnight(){const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(
 armMidnight();
 
 // --- history: go() pushes destinations, refine() replaces; render() only ever replaces ---
-const VIEWKEYS=["mode","sort","when","cat","dist","town","q","day"];
-const DEF={mode:"today",sort:"date",when:"all",cat:"",dist:0,town:"",q:"",day:""};
-// Which keys a view writes to the URL. Today writes cat only together with an explicit mode=today (urlFor): a bare cat= reads as an old link and opens Upcoming.
-const URLKEYS={today:["cat"],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
+const VIEWKEYS=["mode","sort","tsort","when","cat","dist","town","q","day"];
+const DEF={mode:"today",sort:"date",tsort:"place",when:"all",cat:"",dist:0,town:"",q:"",day:""};
+// Which keys a view writes to the URL. Today writes cat and sort (from tsort) only together with an explicit mode=today (urlFor): a bare cat= or sort= reads as an old link and opens Upcoming.
+const URLKEYS={today:["cat","tsort"],upcoming:["sort","when","cat","dist","town","q"],weekly:["day"],saved:[]};
 // This page load's mark on the sheet entries it pushes, so a reload never history.back()s into another document.
 const PL=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 // OPEN: the open sheet, an event id or a SHEETS name. Only an event id goes in the URL; the sheets are marked in history.state.
@@ -2549,12 +2567,12 @@ let OPEN=null;
 const SHEETS=["about","kinds","regions","home"];
 const evOf=o=>o&&!SHEETS.includes(o)?o:"";
 try{history.scrollRestoration="manual";}catch(e){}
-const viewOf=()=>({mode:S.mode,sort:S.sort,when:S.when,cat:S.cat,dist:S.dist,town:S.town,q:S.qt,day:S.day});
+const viewOf=()=>({mode:S.mode,sort:S.sort,tsort:S.tsort,when:S.when,cat:S.cat,dist:S.dist,town:S.town,q:S.qt,day:S.day});
 function urlFor(v,ev){
   const u=new URLSearchParams();
-  if(v.mode!==DEF.mode||(v.mode==="today"&&v.cat))u.set("mode",v.mode);
+  if(v.mode!==DEF.mode||(v.mode==="today"&&(v.cat||v.tsort!==DEF.tsort)))u.set("mode",v.mode);
   // categories as repeated keys: cat=Concert&cat=Festival
-  (URLKEYS[v.mode]||[]).forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(v[k]!==DEF[k])u.set(k,v[k]);});
+  (URLKEYS[v.mode]||[]).forEach(k=>{if(k==="cat"){if(v.cat)v.cat.split("\n").forEach(c=>u.append("cat",c));}else if(k==="tsort"){if(v.tsort!==DEF.tsort)u.set("sort",v.tsort);}else if(v[k]!==DEF[k])u.set(k,v[k]);});
   if(ev)u.set("ev",ev);
   const qs=u.toString();return location.pathname+(qs?"?"+qs:"");
 }
@@ -2564,7 +2582,7 @@ function replaceURL(){
   const c=curState();
   try{history.replaceState({...viewOf(),open:OPEN||"",y:typeof c.y==="number"?c.y:0,sheet:OPEN?c.sheet||"":""},"",urlFor(viewOf(),evOf(OPEN)));}catch(e){}
 }
-function applyView(v){S.mode=v.mode;S.sort=v.sort;S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.town=v.town||"";S.qt=v.q;S.q=v.q.toLowerCase();S.day=v.day||"";}
+function applyView(v){S.mode=v.mode;S.sort=v.sort;S.tsort=v.tsort||"place";S.when=v.when;S.cat=v.cat;S.dist=v.dist;S.town=v.town||"";S.qt=v.q;S.q=v.q.toLowerCase();S.day=v.day||"";}
 // Destinations: call from a tap or key handler only (Chrome skips entries pushed without a user gesture).
 function go(patch){
   const cur={...viewOf(),open:OPEN||""},next={...cur,...patch};
@@ -2578,7 +2596,7 @@ function go(patch){
 function refine(patch){if("q" in patch){S.qt=patch.q;S.q=patch.q.toLowerCase();delete patch.q;}Object.assign(S,patch);}
 addEventListener("pagehide",()=>{try{history.replaceState({...curState(),y:scrollY},"");}catch(e){}});
 addEventListener("popstate",e=>{
-  const st=e.state&&typeof e.state==="object"&&e.state.mode?{day:"",...e.state}:{...readURL(location.search),y:null};
+  const st=e.state&&typeof e.state==="object"&&e.state.mode?{day:"",tsort:"place",...e.state}:{...readURL(location.search),y:null};
   // our own step back after a sheet that leaves a change to apply: keep it on this entry
   if(pendingApply&&!OPEN){flushApply();return;}
   const want=st.open||st.ev||"",ua=!!e.hasUAVisualTransition;
@@ -2829,7 +2847,6 @@ function appliedList(){
   if(S.when!=="all")a.push(["when",isDate(S.when)?dayLabel2(S.when):WHEN[S.when]]);
   if(S.dist&&HOME)a.push(["dist",`Within ${S.dist} mi of ${homeName(HOME)}`]);
   if(S.town)a.push(["town",`In ${homeName(S.town)}`]);
-  if(byPlace())a.push(["sort","Nearest first"]);
   return a;
 }
 const XICON=icon("x");
@@ -2837,8 +2854,8 @@ function renderApplied(){
   const a=appliedList(),el=$("#applied");el.hidden=!a.length;
   put(el,a.map(([k,l])=>`<button type="button" class="achip" data-rm="${esc(k)}" aria-label="Remove ${esc(l)}"><span>${esc(l)}</span>${XICON}</button>`).join("")+(a.length?`<button type="button" class="aclear" data-rm="all">Clear all</button>`:""));
 }
-// Clear all: date range, distance, town and nearest-first. Search, kinds and regions stay.
-function clearApplied(){S.when="all";S.dist=0;S.town="";S.sort="date";}
+// Clear all: date range, distance and town. Search, kinds, regions and the sort switch stay.
+function clearApplied(){S.when="all";S.dist=0;S.town="";}
 function clearAll(){clearApplied();S.cat="";render();}
 function removeApplied(k){
   const idx=[...document.querySelectorAll("#applied [data-rm]")].findIndex(x=>x.dataset.rm===k);
@@ -2846,7 +2863,6 @@ function removeApplied(k){
   else if(k==="dist")S.dist=0;
   else if(k==="when")S.when="all";
   else if(k==="town")S.town="";
-  else if(k==="sort")S.sort="date";
   render();
   // focus the chip that took this one's place, else the search box
   const rest=[...document.querySelectorAll("#applied [data-rm]")];

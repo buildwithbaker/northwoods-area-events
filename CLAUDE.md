@@ -83,8 +83,8 @@ For what used to be one big "Local" bucket:
 ### The four tabs (render side)
 Bottom tabs on a phone, a left rail at 960px and wider: **Today, Upcoming, Weekly, Saved**. "Today" is
 America/Chicago everywhere in the app. (The first tab was "Tonight" until 2026-11-14; its sun icon replaced the moon.)
-- **Today** covers the whole area (no region filter). A Sort switch (Time | Distance) sits under the home-town
-  button on Today and Upcoming. Today defaults to Distance: drive miles from the home town (Ashland
+- **Today** covers the whole area (no region filter). A Sort switch (Time | Distance) sits at the start of the kind
+  row on Today and Upcoming. Today defaults to Distance: drive miles from the home town (Ashland
   when none is set), then by time, in bands: Close by (<15 mi), Short drive (15-44), Worth the drive
   (45-89), Farther (90+), Distance unknown. It is every event happening today that has not ended:
   - a single-day event with an end time drops off once that end time passes (an end earlier than the start
@@ -93,14 +93,15 @@ America/Chicago everywhere in the app. (The first tab was "Tonight" until 2026-1
   - a `dates[]` event with today in `dates`;
   - a continuous run of 14 days or less that covers today (daily hours on a run end it for the day the same way).
   Runs over 14 days are not on Today; they sit in Upcoming's collapsed "Running now" list.
-  Sorted by Time, Today groups by start time (Morning before noon, Afternoon noon-5 pm, Evening 5 pm on, Time not
-  listed), nearest first within a time.
-- **Upcoming** defaults to Time (the day list). Distance groups by town, nearest first, and hides the date strip.
-- **Upcoming** is the day list from today on, with a sticky date strip, search (`q`), the kind filter and
+  Sorted by Time, Today puts what a reader can still get to first: Happening now (started, end time still ahead),
+  then Morning / Afternoon / Evening for starts later today, then Started earlier (a start-only time already past;
+  the source gives no end, so it may be over), then Time not listed. Nearest first within a start time.
+- **Upcoming** defaults to Time: the day list from today on, with a sticky date strip, search (`q`), the kind filter and
   Regions. Core regions are on by default: Chequamegon Bay, Duluth / Superior, Hurley / Iron County,
   Northwoods, Wider Northwoods, Hayward (including "Hayward / Sawyer County"), Western U.P. Every other
   region is under "Farther away" and off until turned on. The choice is saved in `ev_regions` and also
   applies to Weekly. Only the default is code: a saved `ev_regions` is never migrated or overwritten.
+  Sorted by Distance it groups by town, nearest first, hides the date strip, and each row shows the venue only.
 - **Weekly** has day chips Mon-Sun plus Other (Monthly, Season, Varies...). It ignores `q` and the kind
   filter; Regions apply.
 - **Saved** is the reader's saved list.
@@ -114,7 +115,8 @@ Light surfaces are blue-grey (page `#DCE4EF`, cards `#F6F8FB`); a navy header ba
 `--band-*` and the tab-bar tokens live in the two `:root` blocks; a new text/background pair needs 4.5:1 (icons
 and borders 3:1) in both themes. Dark `--on-primary-container` is `#D6E3F7`, so components use the token
 and need no per-component white patch.
-Event rows: line 2 is the town (`.twn`, 1rem bold) then ` · venue`, town first so the ellipsis never cuts it.
+Event rows: line 2 is the town (`.twn`, 1rem bold) then ` · venue`. Town first, so at normal text size the ellipsis
+cuts the venue; at very large text sizes a long town name can still be cut. Under a town header only the venue shows.
 
 ### Render-side changes: the invariant
 Any future render-side change must leave these byte-identical to `main`: the data region (from
